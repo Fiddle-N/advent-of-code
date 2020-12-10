@@ -50,11 +50,11 @@ class AdapterArray:
         return total
 
     def distinct_arrangements(self):
-        chunks = more_itertools.split_when(self.joltage, lambda x, y: y - x == 3)
-        chunks_greater_than_2 = [chunk for chunk in chunks if len(chunk) > 2]
-        chunk_lengths = [len(chunk) for chunk in chunks_greater_than_2]
-        length_to_arrangement = {length: self._arrangements(length) for length in set(chunk_lengths)}
-        arrangements = [length_to_arrangement[chunk_length] for chunk_length in chunk_lengths]
+        one_jolt_differences = more_itertools.split_when(self.joltage, lambda x, y: y - x == 3)
+        one_jolt_difference_sections_greater_than_2 = [section for section in one_jolt_differences if len(section) > 2]
+        section_lengths = [len(section) for section in one_jolt_difference_sections_greater_than_2]
+        length_to_arrangement = {length: self._arrangements(length) for length in set(section_lengths)}
+        arrangements = [length_to_arrangement[section_length] for section_length in section_lengths]
         return math.prod(arrangements)
 
 
