@@ -32,19 +32,21 @@ class AdapterArray:
                 raise Exception
         return one_jolts, three_jolts
 
-    def _is_valid(self, path):
+    @staticmethod
+    def _is_valid(path):
         for lower, upper in path:
             if upper - lower not in (1, 2, 3):
                 return False
         return True
 
-    def _arrangements(self, length):
+    @staticmethod
+    def _arrangements(length):
         graph = nx.complete_graph(length, nx.DiGraph())
         paths = nx.all_simple_paths(graph, source=0, target=length-1)
         pairwise_paths = [nx.utils.pairwise(path) for path in paths]
         total = 0
         for path in pairwise_paths:
-            is_valid_path = self._is_valid(path)
+            is_valid_path = AdapterArray._is_valid(path)
             if is_valid_path:
                 total += 1
         return total
