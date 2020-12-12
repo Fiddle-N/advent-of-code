@@ -1,4 +1,4 @@
-from day3 import process
+from day_03 import process
 
 
 def test_toboggan_slopes():

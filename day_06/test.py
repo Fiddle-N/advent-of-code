@@ -1,4 +1,4 @@
-from day6 import process
+from day_06 import process
 
 
 def test_questions_anyone_answered():

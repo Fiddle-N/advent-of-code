@@ -1,4 +1,4 @@
-from day1 import process
+from day_01 import process
 
 
 def test_combo_2():

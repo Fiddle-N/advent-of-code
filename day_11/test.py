@@ -1,4 +1,4 @@
-from day11 import process
+from day_11 import process
 
 
 class TestTheoreticalModel:

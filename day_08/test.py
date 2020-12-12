@@ -1,4 +1,4 @@
-from day8 import process
+from day_08 import process
 
 def test():
     input_str = """\

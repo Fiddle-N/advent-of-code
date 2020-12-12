@@ -51,11 +51,16 @@ class AdapterArray:
                 total += 1
         return total
 
-    def distinct_arrangements(self):
+    def distinct_arrangements(self, style='calculated'):
         one_jolt_differences = more_itertools.split_when(self.joltage, lambda x, y: y - x == 3)
         one_jolt_difference_sections_greater_than_2 = [section for section in one_jolt_differences if len(section) > 2]
         section_lengths = [len(section) for section in one_jolt_difference_sections_greater_than_2]
-        length_to_arrangement = {length: self._arrangements(length) for length in set(section_lengths)}
+        if style == 'calculated':
+            length_to_arrangement = {length: self._arrangements(length) for length in set(section_lengths)}
+        elif style == 'hardcoded':
+            length_to_arrangement = {3: 2, 4: 4, 5: 7}
+        else:
+            raise Exception
         arrangements = [length_to_arrangement[section_length] for section_length in section_lengths]
         return math.prod(arrangements)
 
@@ -64,7 +69,7 @@ def main():
     adapter_array = AdapterArray()
     one_jolts, three_jolts = adapter_array.jolts()
     print(f'1-jolt multiplied by 3-jolt differences: {one_jolts * three_jolts}')
-    print(f'Adapter distinct arrangements: {adapter_array.distinct_arrangements()}')
+    print(f"Adapter distinct arrangements: {adapter_array.distinct_arrangements(style='hardcoded')}")
 
 
 if __name__ == '__main__':

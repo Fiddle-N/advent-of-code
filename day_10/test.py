@@ -1,4 +1,4 @@
-from day10 import process
+from day_10 import process
 
 
 def test_example_1():
