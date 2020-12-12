@@ -2,7 +2,6 @@ import dataclasses
 import timeit
 
 
-
 @dataclasses.dataclass(frozen=True)
 class Instr:
     action: str
@@ -101,10 +100,10 @@ def main():
         'Manhattan Distance of theoretical final position from current position: ',
         final_theoretical_pos.manhattan_dist()
     )
-    actual_theoretical_pos = process_with_actual_actions(ship)
+    final_actual_pos = process_with_actual_actions(ship)
     print(
         'Manhattan Distance of actual final position from current position: ',
-        actual_theoretical_pos.manhattan_dist()
+        final_actual_pos.manhattan_dist()
     )
 
 
