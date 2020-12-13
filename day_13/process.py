@@ -35,7 +35,8 @@ class ShuttleSearch:
         earliest_bus = min(bus_id_waited_mins.items(), key=lambda x: x[1])
         return earliest_bus
 
-    def _mod_inv(self, bus_id_prod, bus_id):
+    @staticmethod
+    def _mod_inv(bus_id_prod, bus_id):
         return pow(bus_id_prod, -1, bus_id)
 
     def chinese_remainder(self, use_sympy=False):
