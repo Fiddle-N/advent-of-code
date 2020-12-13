@@ -1,6 +1,8 @@
 import math
 import timeit
 
+import sympy.ntheory.modular
+
 
 class ShuttleSearch:
 
@@ -36,22 +38,26 @@ class ShuttleSearch:
     def _mod_inv(self, bus_id_prod, bus_id):
         return pow(bus_id_prod, -1, bus_id)
 
-    def chinese_remainder(self):
+    def chinese_remainder(self, use_sympy=False):
         bus_id_mod_result = {}
         for pos, bus_id in enumerate(self.bus_ids):
             if bus_id == 'x':
                 continue
             bus_id_mod_result[bus_id] = (bus_id - pos) % bus_id
-        if math.gcd(*bus_id_mod_result.keys()) != 1:
-            raise Exception('bus ids are not coprime, chinese remainder not possible')
-        total_prod = math.prod(bus_id_mod_result.keys())
-        result = 0
-        for bus_id, mod_result in bus_id_mod_result.items():
-            bus_id_prod = total_prod // bus_id
-            mod_inv = self._mod_inv(bus_id_prod, bus_id)
-            bus_id_result = mod_result * mod_inv * bus_id_prod
-            result += bus_id_result
-        return result % total_prod
+        if use_sympy:
+            result, _ = sympy.ntheory.modular.crt(bus_id_mod_result.keys(), bus_id_mod_result.values())
+            return result
+        else:
+            if math.gcd(*bus_id_mod_result.keys()) != 1:
+                raise Exception('bus ids are not coprime, chinese remainder not possible')
+            total_prod = math.prod(bus_id_mod_result.keys())
+            result = 0
+            for bus_id, mod_result in bus_id_mod_result.items():
+                bus_id_prod = total_prod // bus_id
+                mod_inv = self._mod_inv(bus_id_prod, bus_id)
+                bus_id_result = mod_result * mod_inv * bus_id_prod
+                result += bus_id_result
+            return result % total_prod
 
 
 def main():
