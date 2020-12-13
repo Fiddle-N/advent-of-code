@@ -3,6 +3,7 @@ import math
 import functools
 import timeit
 
+
 def read():
     input_list = []
     with open('input.txt') as f:
