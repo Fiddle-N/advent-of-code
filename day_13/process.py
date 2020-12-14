@@ -40,24 +40,24 @@ class ShuttleSearch:
         return pow(bus_id_prod, -1, bus_id)
 
     def chinese_remainder(self, use_sympy=False):
-        bus_id_mod_result = {}
+        mods = {}
         for pos, bus_id in enumerate(self.bus_ids):
             if bus_id == 'x':
                 continue
-            bus_id_mod_result[bus_id] = (bus_id - pos) % bus_id
+            mods[bus_id] = (bus_id - pos) % bus_id
         if use_sympy:
-            result, _ = sympy.ntheory.modular.crt(bus_id_mod_result.keys(), bus_id_mod_result.values())
+            result, _ = sympy.ntheory.modular.crt(mods.keys(), mods.values())
             return result
         else:
-            if math.gcd(*bus_id_mod_result.keys()) != 1:
+            if math.gcd(*mods.keys()) != 1:
                 raise Exception('bus ids are not coprime, chinese remainder not possible')
-            total_prod = math.prod(bus_id_mod_result.keys())
+            total_prod = math.prod(mods.keys())
             result = 0
-            for bus_id, mod_result in bus_id_mod_result.items():
-                bus_id_prod = total_prod // bus_id
-                mod_inv = self._mod_inv(bus_id_prod, bus_id)
-                bus_id_result = mod_result * mod_inv * bus_id_prod
-                result += bus_id_result
+            for bus_id, mod in mods.items():
+                prod = total_prod // bus_id
+                mod_inv = self._mod_inv(prod, bus_id)
+                bus_result = mod * mod_inv * prod
+                result += bus_result
             return result % total_prod
 
 
