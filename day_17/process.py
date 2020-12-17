@@ -95,7 +95,7 @@ class PocketDimensionModel:
 def run_model(pocket_dimension, dimension_no, cycles):
     model = PocketDimensionModel(pocket_dimension, dimension_no)
     next_pocket_dimension = None
-    for _ in range(6):
+    for _ in range(cycles):
         next_pocket_dimension = next(model)
     active_cubes = len([coord for coord, cube in next_pocket_dimension.cubes.items() if cube == ACTIVE])
     return active_cubes
