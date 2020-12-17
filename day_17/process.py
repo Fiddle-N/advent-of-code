@@ -55,8 +55,9 @@ class PocketDimensionModel:
 
     def __next__(self):
         cubes = self.dimension.cubes
+        active_cubes = {coord: cube for coord, cube in cubes.items() if cube == ACTIVE}
         next_coords = set()
-        for coord, cube in cubes.items():
+        for coord, cube in active_cubes.items():
             for direction in self._directions:
                 neighbour = coord + direction
                 next_coords.add(neighbour)
