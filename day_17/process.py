@@ -84,11 +84,11 @@ class PocketDimensionModel:
 
     @property
     def _directions(self):
-        dimension_params = [[-1, 0, 1]] * self.dimension_no
+        dimension_params = [-1, 0, 1]
         no_change = (0,) * self.dimension_no
         return [
             Coord(*coords)
-            for coords in itertools.product(*dimension_params)
+            for coords in itertools.product(dimension_params, repeat=self.dimension_no)
             if coords != no_change
         ]
 
