@@ -151,4 +151,5 @@ def test_find_sea_monster():
         row = list(raw_row)
         image.append(row)
     np_image = np.array(image)
-    assert process.JurassicJigsaw._find_sea_monsters(np_image) == 2
+    assert process.JurassicJigsaw._find_sea_monsters(np_image, regex_mode='full') == 2
+    assert process.JurassicJigsaw._find_sea_monsters(np_image, regex_mode='chunked') == 2

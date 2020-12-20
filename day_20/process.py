@@ -2,7 +2,7 @@ import dataclasses
 import collections
 import itertools
 import math
-import re
+import regex as re
 import timeit
 
 import more_itertools
@@ -184,18 +184,25 @@ class JurassicJigsaw:
         return [int(corner) for corner in corners]
 
     @staticmethod
-    def _find_sea_monsters(image):
+    def _find_sea_monsters(image, regex_mode):
         image = [''.join(row) for row in image]
-        matches = 0
-        for rows in more_itertools.windowed(image, 3):
-            window_iters = [more_itertools.windowed(row, 20) for row in rows]
-            for section in zip(*window_iters):
-                section_str = [''.join(line) for line in section]
-                pattern_line = zip(JurassicJigsaw.SEA_MONSTER_PATTERN, section_str)
-                match = all(re.fullmatch(pattern, line) for pattern, line in pattern_line)
-                if match:
-                    matches += 1
-        return matches
+        if regex_mode == 'chunked':
+            matches = 0
+            for rows in more_itertools.windowed(image, 3):
+                window_iters = [more_itertools.windowed(row, 20) for row in rows]
+                for section in zip(*window_iters):
+                    section_str = [''.join(line) for line in section]
+                    pattern_line = zip(JurassicJigsaw.SEA_MONSTER_PATTERN, section_str)
+                    match = all(re.fullmatch(pattern, line) for pattern, line in pattern_line)
+                    if match:
+                        matches += 1
+            return matches
+        elif regex_mode == 'full':
+            image_str = '\n'.join(image)
+            len_pattern = len(JurassicJigsaw.SEA_MONSTER_PATTERN[0])
+            spaces_between_rows = '.{{{}}}'.format(len(image) - len_pattern + 1)
+            pattern = f'{spaces_between_rows}'.join(JurassicJigsaw.SEA_MONSTER_PATTERN)
+            return len(re.findall(pattern, image_str, flags=re.DOTALL, overlapped=True))
 
     def assemble_picture(self):
         raw_picture = []
@@ -208,16 +215,16 @@ class JurassicJigsaw:
             raw_picture.append(concat_arrays)
         self.picture = Tile(np.concatenate(raw_picture, axis=0))
 
-    def find_sea_monsters(self):
+    def find_sea_monsters(self, regex_mode='full'):
         for _ in range(4):
-            monsters = self._find_sea_monsters(self.picture.tile)
+            monsters = self._find_sea_monsters(self.picture.tile, regex_mode)
             if monsters:
                 return monsters
             else:
                 self.picture.rotate()
         self.picture.flip()
         for _ in range(4):
-            monsters = self._find_sea_monsters(self.picture.tile)
+            monsters = self._find_sea_monsters(self.picture.tile, regex_mode)
             if monsters:
                 return monsters
             else:
@@ -236,7 +243,7 @@ def main():
     corner_tiles = jurassic_jigsaw.corner_tiles()
     print(f'Corner tiles: {corner_tiles}')
     print(f'Corner tiles product: {math.prod(corner_tiles)}')
-    print(f'Sea monsters: {jurassic_jigsaw.find_sea_monsters()}')
+    print(f"Sea monsters: {jurassic_jigsaw.find_sea_monsters()}")
     print(f'Water roughness: {jurassic_jigsaw.water_roughness()}')
 
 
