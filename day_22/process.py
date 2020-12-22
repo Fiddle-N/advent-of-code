@@ -49,7 +49,6 @@ class Combat:
         self._deck_cache = set()
         self._first_round = True
 
-
     @staticmethod
     def _process_raw_player(raw_player):
         raw_player_lines = raw_player.splitlines()
