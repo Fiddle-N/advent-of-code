@@ -113,7 +113,7 @@ Tile 3079:
 ..#.......
 ..#.###..."""
 
-    jurassic_jigsaw = process.JurassicJigsaw(input_str)
+    jurassic_jigsaw = process.JurassicJigsaw.from_text(input_str)
     assert set(jurassic_jigsaw.corner_tiles()) == {1951, 3079, 2971, 1171}
     assert jurassic_jigsaw.find_sea_monsters() == 2
     assert jurassic_jigsaw.water_roughness() == 273
@@ -151,5 +151,5 @@ def test_find_sea_monster():
         row = list(raw_row)
         image.append(row)
     np_image = np.array(image)
-    assert process.JurassicJigsaw._find_sea_monsters(np_image, regex_mode='full') == 2
-    assert process.JurassicJigsaw._find_sea_monsters(np_image, regex_mode='chunked') == 2
+    assert process.JurassicJigsaw._find_sea_monsters_in_single_orientation(np_image, regex_mode='full') == 2
+    assert process.JurassicJigsaw._find_sea_monsters_in_single_orientation(np_image, regex_mode='chunked') == 2
