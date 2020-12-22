@@ -22,10 +22,9 @@ class AllergenAssessment:
 
     @classmethod
     def from_string(cls, food_str):
-        re_pattern = r'(.*) \(contains (.*)\)'
         foods = []
         for line in food_str.splitlines():
-            line_re = re.match(re_pattern, line)
+            line_re = re.match('(.*) \(contains (.*)\)', line)
             raw_ingredients = line_re.group(1)
             raw_allergens = line_re.group(2)
             ingredients = {*raw_ingredients.split()}
