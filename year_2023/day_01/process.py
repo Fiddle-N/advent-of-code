@@ -13,9 +13,9 @@ WORD_LETTERS = {
 }
 
 
-def read_file() -> str:
+def read_file() -> list[str]:
     with open("input.txt") as f:
-        return f.read()
+        return f.read().splitlines()
 
 
 def _get_cal_val(line: str, include_word_numbers: bool) -> int:
@@ -28,9 +28,12 @@ def _get_cal_val(line: str, include_word_numbers: bool) -> int:
     return int(mapped_digits[0] + mapped_digits[-1])
 
 
-def sum_cal_vals(cal_doc: str, include_word_numbers: bool) -> int:
-    cal_doc_list = cal_doc.splitlines()
-    return sum(_get_cal_val(line, include_word_numbers) for line in cal_doc_list)
+def get_cal_vals(cal_doc: list[str], include_word_numbers: bool) -> list[int]:
+    return [_get_cal_val(line, include_word_numbers) for line in cal_doc]
+
+
+def sum_cal_vals(cal_doc: list[str], include_word_numbers: bool) -> int:
+    return sum(get_cal_vals(cal_doc, include_word_numbers))
 
 
 def main() -> None:
