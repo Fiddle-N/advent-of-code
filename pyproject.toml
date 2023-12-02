@@ -1,0 +1,18 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "advent-of-code"
+version = "0.0.1"
+
+[project]
+dependencies = [
+    "pytest",
+    "regex",
+]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--import-mode=importlib",
+]
