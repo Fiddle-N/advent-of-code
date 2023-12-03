@@ -38,7 +38,7 @@ class EngineSchematic:
             for number_match in numbers_match:
                 number_coords_range = (
                     Coords(line_no, number_match.start()),
-                    Coords(line_no, number_match.end() - 1),
+                    Coords(line_no, number_match.end()),
                 )
                 self.numbers[number_coords_range] = int(number_match.group())
             symbols_match = re.finditer(r'[^\d.]', line)
@@ -50,7 +50,7 @@ class EngineSchematic:
         self._expanded_coord_range = {}
         for coord_range in self.numbers:
             start_coord, end_coord = coord_range
-            y_range = range(start_coord.y, end_coord.y + 1)
+            y_range = range(start_coord.y, end_coord.y)
             for y in y_range:
                 self._expanded_coord_range[Coords(start_coord.x, y)] = coord_range
 
