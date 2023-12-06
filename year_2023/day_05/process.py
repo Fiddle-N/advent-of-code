@@ -68,7 +68,7 @@ class Almanac:
         self.category_map = {}
         self.maps = {}
         for map_ in maps_input:
-            map_label, *_ = map_.split('\n')
+            map_label, *map_nums = map_.split('\n')
 
             parsed_label = parse.parse('{source_category}-to-{dest_category} map:', map_label)
             source_category = parsed_label['source_category']
@@ -77,7 +77,7 @@ class Almanac:
 
             self.maps[(source_category, dest_category)] = [
                 Map(*[int(num) for num in nums.split()])
-                for nums in _
+                for nums in map_nums
             ]
 
     @classmethod
