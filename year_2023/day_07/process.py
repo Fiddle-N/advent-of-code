@@ -3,7 +3,15 @@ import enum
 from dataclasses import dataclass
 
 
-class Card(enum.Enum):
+class EnumValueOrderingMixin:
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def __le__(self, other):
+        return self.value <= other.value
+
+
+class Card(EnumValueOrderingMixin, enum.Enum):
     ACE = 14
     KING = 13
     QUEEN = 12
@@ -18,14 +26,8 @@ class Card(enum.Enum):
     THREE = 3
     TWO = 2
 
-    def __lt__(self, other):
-        return self.value < other.value
 
-    def __le__(self, other):
-        return self.value <= other.value
-
-
-class CardWithJokerRule(enum.Enum):
+class CardWithJokerRule(EnumValueOrderingMixin, enum.Enum):
     ACE = 14
     KING = 13
     QUEEN = 12
@@ -40,14 +42,8 @@ class CardWithJokerRule(enum.Enum):
     TWO = 2
     JOKER = 1
 
-    def __lt__(self, other):
-        return self.value < other.value
 
-    def __le__(self, other):
-        return self.value <= other.value
-
-
-class Type(enum.Enum):
+class Type(EnumValueOrderingMixin, enum.Enum):
     HIGH_CARD = enum.auto()
     ONE_PAIR = enum.auto()
     TWO_PAIR = enum.auto()
@@ -56,29 +52,11 @@ class Type(enum.Enum):
     FOUR_OF_A_KIND = enum.auto()
     FIVE_OF_A_KIND = enum.auto()
 
-    def __lt__(self, other):
-        return self.value < other.value
-
-    def __le__(self, other):
-        return self.value <= other.value
-
 
 class Hand:
 
-    def __init__(self, cards, joker_rule=False) -> None:
-        self.cards = cards
-        card_count = collections.Counter(self.cards)
-        if joker_rule:
-            joker_count = card_count[CardWithJokerRule.JOKER]
-            card_count_without_joker = {card: count for card, count in card_count.items() if card != CardWithJokerRule.JOKER}
-            if card_count_without_joker:
-                max_card_count = max(card_count_without_joker.items(), key=lambda entry: entry[1])
-                card_count_without_joker[max_card_count[0]] += joker_count
-                card_count = card_count_without_joker
-        self._count = list(sorted(card_count.values()))
-
-    @classmethod
-    def from_string(cls, hand_str, joker_rule=False):
+    def __init__(self, cards_str, joker_rule=False) -> None:
+        self.joker_rule = joker_rule
         card_cls = CardWithJokerRule if joker_rule else Card
         card_mapping = {
             'A': card_cls.ACE,
@@ -95,48 +73,43 @@ class Hand:
             '2': card_cls.TWO,
             'J': CardWithJokerRule.JOKER if joker_rule else Card.JACK
         }
-        cards = tuple(card_mapping[card] for card in hand_str)
-        return cls(cards, joker_rule)
+        self.cards = tuple(card_mapping[card] for card in cards_str)
 
     def __repr__(self):
         return repr(self.cards)
 
-    def _is_five_of_a_kind(self):
-        return self._count == [5]
-
-    def _is_four_of_a_kind(self):
-        return self._count == [1, 4]
-
-    def _is_full_house(self):
-        return self._count == [2, 3]
-
-    def _is_three_of_a_kind(self):
-        return self._count == [1, 1, 3]
-
-    def _is_two_pair(self):
-        return self._count == [1, 2, 2]
-
-    def _is_one_pair(self):
-        return self._count == [1, 1, 1, 2]
-
-    def _is_high_card(self):
-        return self._count == [1, 1, 1, 1, 1]
-
-    types = {
-        _is_five_of_a_kind: Type.FIVE_OF_A_KIND,
-        _is_four_of_a_kind: Type.FOUR_OF_A_KIND,
-        _is_full_house: Type.FULL_HOUSE,
-        _is_three_of_a_kind: Type.THREE_OF_A_KIND,
-        _is_two_pair: Type.TWO_PAIR,
-        _is_one_pair: Type.ONE_PAIR,
-        _is_high_card: Type.HIGH_CARD,
-    }
-
     def type(self):
-        for type_fn, type_ in self.types.items():
-            if type_fn(self):
-                return type_
-        raise ValueError('No types fit the hand')
+        card_count = collections.Counter(self.cards)
+
+        if self.joker_rule:
+            joker_count = card_count[CardWithJokerRule.JOKER]
+            card_count_without_joker = {
+                card: count for card, count in card_count.items() if card != CardWithJokerRule.JOKER
+            }
+            if card_count_without_joker:
+                max_card_count = max(card_count_without_joker.items(), key=lambda entry: entry[1])
+                card_count_without_joker[max_card_count[0]] += joker_count
+                card_count = card_count_without_joker
+
+        counts = list(sorted(card_count.values()))
+
+        match counts:
+            case [5]:
+                return Type.FIVE_OF_A_KIND
+            case [1, 4]:
+                return Type.FOUR_OF_A_KIND
+            case [2, 3]:
+                return Type.FULL_HOUSE
+            case [1, 1, 3]:
+                return Type.THREE_OF_A_KIND
+            case [1, 2, 2]:
+                return Type.TWO_PAIR
+            case [1, 1, 1, 2]:
+                return Type.ONE_PAIR
+            case [1, 1, 1, 1, 1]:
+                return Type.HIGH_CARD
+            case _:
+                raise ValueError('No types fit the hand')
 
     def __eq__(self, other):
         return self.cards == other.cards
@@ -168,7 +141,7 @@ class CamelCardGame:
         self.hand_bids = []
         for hand_bid in card_input.splitlines():
             hand_input, bid_input = hand_bid.split()
-            hand = Hand.from_string(hand_input, joker_rule)
+            hand = Hand(hand_input, joker_rule)
             self.hand_bids.append(HandBid(hand, int(bid_input)))
 
     def ranked(self):
