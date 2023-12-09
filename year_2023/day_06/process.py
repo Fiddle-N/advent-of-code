@@ -1,5 +1,4 @@
 import math
-import operator
 from dataclasses import dataclass
 
 
@@ -18,10 +17,12 @@ class WinningRange:
         return self.hold_at_most - self.hold_at_least + 1
 
 
-def quad_formula(a, b, c, mode):
-    assert mode in ('plus', 'minus')
-    op = operator.add if mode == 'plus' else operator.sub
-    return op(-b, (b ** 2 - 4 * 1 * c) ** 0.5) / 2 * a
+def quad_formula(a, b, c):
+    sqrt_b2_4ac = (b ** 2 - 4 * a * c) ** 0.5
+    denominator_2a = 2 * a
+    plus_case = (-b + sqrt_b2_4ac) / denominator_2a
+    minus_case = (-b - sqrt_b2_4ac) / denominator_2a
+    return plus_case, minus_case
 
 
 class Races:
@@ -65,8 +66,7 @@ class Races:
             a = 1
             b = -race.time
             c = race.winning_dist
-            lower_bound = quad_formula(a, b, c, mode='minus')
-            upper_bound = quad_formula(a, b, c, mode='plus')
+            upper_bound, lower_bound = quad_formula(a, b, c)
 
             # the least time to hold is always the nearest integer higher than the lower bound
             # e.g.
