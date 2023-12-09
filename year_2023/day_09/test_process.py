@@ -22,7 +22,7 @@ def test_history_1():
     assert process.prev_extrapolated_val(next_history) == -3
 
 
-def test_seq_2():
+def test_history_2():
     history_input = '1 3 6 10 15 21'
     history = process.history_from_str(history_input)
     full_history = process.get_full_history(history)
@@ -43,7 +43,7 @@ def test_seq_2():
     assert process.prev_extrapolated_val(next_history) == 0
 
 
-def test_seq_3():
+def test_history_3():
     history_input = '10 13 16 21 30 45'
     history = process.history_from_str(history_input)
     full_history = process.get_full_history(history)
