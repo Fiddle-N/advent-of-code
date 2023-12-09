@@ -3,7 +3,6 @@ import enum
 import itertools
 import math
 
-
 import parse
 
 START_ELEMENT = 'AAA'
@@ -87,7 +86,11 @@ def main() -> None:
         f"Total number of steps required to reach {END_ELEMENT}:",
         steps,
     )
-    print(navigate_simultaneously(nav))
+    print(
+        f'Total number of steps required to end on a {END_NODES_LETTER} element '
+        f'starting from a {START_NODES_LETTER} element simultaneously:',
+        navigate_simultaneously(nav)
+    )
 
 
 if __name__ == "__main__":
