@@ -54,7 +54,7 @@ class Races:
         for race in self.races:
             # apply quadratic formula
             # if time to hold the button is x, race time is y and distance record is z
-            # then the race equation can be defined as y(y - x) > z
+            # then the race equation can be defined as x(y - x) > z
             # we can plug in y and z; so if time is 7 and distance is 9 the equation is x(7 - x) > 9
             # this expands to x^2 - 7x + 9 < 0
             # a quadratic equation - we need to solve for x^2 - 7x + 9 = 0, which will have two solutions
