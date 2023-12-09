@@ -9,7 +9,7 @@ def get_full_history(history):
     full_history = [history]
     seq = history
     while True:
-        next_seq = [pair[1] - pair[0] for pair in itertools.pairwise(seq)]
+        next_seq = [curr - prev for prev, curr in itertools.pairwise(seq)]
         full_history.append(next_seq)
         if set(next_seq) == {0}:
             return full_history
