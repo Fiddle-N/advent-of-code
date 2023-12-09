@@ -14,14 +14,14 @@ class WinningRange:
     hold_at_least: int
     hold_at_most: int
 
+    def __len__(self):
+        return self.hold_at_most - self.hold_at_least + 1
 
-def quad_formula_divmod(a, b, c, mode):
+
+def quad_formula(a, b, c, mode):
     assert mode in ('plus', 'minus')
     op = operator.add if mode == 'plus' else operator.sub
-    return divmod(
-        op(-b, (b ** 2 - 4 * 1 * c) ** 0.5),
-        2 * a
-    )
+    return op(-b, (b ** 2 - 4 * 1 * c) ** 0.5) / 2 * a
 
 
 class Races:
@@ -47,7 +47,7 @@ class Races:
             else [int(dist) for dist in dists]
         )
 
-        self.races = list(Race(*race_detail) for race_detail in zip(times, dists))
+        self.races = [Race(*race_detail) for race_detail in zip(times, dists)]
 
     def winning_ranges(self) -> list[WinningRange]:
         winning_ranges = []
@@ -65,21 +65,20 @@ class Races:
             a = 1
             b = -race.time
             c = race.winning_dist
-            lower_bound = quad_formula_divmod(a, b, c, mode='minus')
-            upper_bound = quad_formula_divmod(a, b, c, mode='plus')
+            lower_bound = quad_formula(a, b, c, mode='minus')
+            upper_bound = quad_formula(a, b, c, mode='plus')
 
-            # the least time to hold is always one higher than the lower bound
-            # which is always the quotient
-            # regardless of whether the lower bound is an integer or not
-            lower_bound_quot, _ = lower_bound
-            hold_at_least = int(lower_bound_quot) + 1
+            # the least time to hold is always the nearest integer higher than the lower bound
+            # e.g.
+            # least time to hold is 11 if lower bound is 10 to 10.999...
+            # but 12 if lower bound is exactly 11
+            hold_at_least = math.floor(lower_bound) + 1
 
-            # the most time to hold is one lower than the upper bound
-            # which is the quotient only if the upper bound isn't an integer
-            # if it is an int, we need to subtract 1 one more time
-            upper_bound_quot, upper_bound_rem = upper_bound
-            upper_bound_quot = int(upper_bound_quot)
-            hold_at_most = (upper_bound_quot - 1) if upper_bound_rem == 0 else upper_bound_quot
+            # the most time to hold is always the nearest integer lower than the upper bound
+            # e.g.
+            # most time to hold is 10 if lower bound is 10.000...1 to 11
+            # but 9 if lower bound is exactly 10
+            hold_at_most = math.ceil(upper_bound) - 1
 
             winning_ranges.append(WinningRange(hold_at_least, hold_at_most))
 
@@ -93,7 +92,7 @@ def read_file() -> str:
 
 def num_of_winning_distances(races: Races) -> list[int]:
     winning_distances_nums = [
-        len(range(winning_range.hold_at_least, winning_range.hold_at_most + 1))
+        len(winning_range)
         for winning_range in races.winning_ranges()
     ]
     return winning_distances_nums
