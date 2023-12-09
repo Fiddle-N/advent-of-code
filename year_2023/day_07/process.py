@@ -1,5 +1,6 @@
 import collections
 import enum
+import functools
 import operator
 from dataclasses import dataclass
 
@@ -90,11 +91,12 @@ class Hand:
             'J': CardWithJokerRule.JOKER if joker_rule else Card.JACK
         }
         self.cards = tuple(card_mapping[card] for card in cards_str)
+        self.type = self._calculate_type()
 
     def __repr__(self):
         return repr(self.cards)
 
-    def type(self):
+    def _calculate_type(self):
         card_count = collections.Counter(self.cards)
 
         if self.joker_rule:
@@ -133,8 +135,8 @@ class Hand:
     def _comp(self, other, comp_fn):
         return (
             comp_fn(self.cards, other.cards)
-            if self.type() == other.type()
-            else comp_fn(self.type(), other.type())
+            if self.type == other.type
+            else comp_fn(self.type, other.type)
         )
 
     def __ge__(self, other):

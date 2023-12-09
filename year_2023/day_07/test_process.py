@@ -17,10 +17,10 @@ def test_hand_comparisons_with_different_types():
     ]
     for stronger_hand_input, weaker_hand_input in itertools.pairwise(hands):
         stronger_hand = process.Hand(stronger_hand_input[0])
-        assert stronger_hand.type() == stronger_hand_input[1]
+        assert stronger_hand.type == stronger_hand_input[1]
 
         weaker_hand = process.Hand(weaker_hand_input[0])
-        assert weaker_hand.type() == weaker_hand_input[1]
+        assert weaker_hand.type == weaker_hand_input[1]
 
         assert stronger_hand != weaker_hand
         assert stronger_hand > weaker_hand
@@ -39,18 +39,18 @@ def test_hand_comparisons_with_different_types():
 def test_hand_comparison_with_same_types(stronger_hand_input, weaker_hand_input, hand_type):
     stronger_hand = process.Hand(stronger_hand_input)
     weaker_hand = process.Hand(weaker_hand_input)
-    assert stronger_hand.type() == weaker_hand.type() == hand_type
+    assert stronger_hand.type == weaker_hand.type == hand_type
     assert stronger_hand > weaker_hand
 
 
 def test_hand_type_with_joker_rule():
     hand = process.Hand('QJJQ2', joker_rule=True)
-    assert hand.type() == process.Type.FOUR_OF_A_KIND
+    assert hand.type == process.Type.FOUR_OF_A_KIND
 
 
 def test_all_joker_hand_type():
     hand = process.Hand('JJJJJ', joker_rule=True)
-    assert hand.type() == process.Type.FIVE_OF_A_KIND
+    assert hand.type == process.Type.FIVE_OF_A_KIND
 
 
 def test_camel_card_game():
