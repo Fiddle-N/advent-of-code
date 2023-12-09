@@ -76,8 +76,8 @@ class Races:
 
             # the most time to hold is always the nearest integer lower than the upper bound
             # e.g.
-            # most time to hold is 10 if lower bound is 10.000...1 to 11
-            # but 9 if lower bound is exactly 10
+            # most time to hold is 10 if upper bound is 10.000...1 to 11
+            # but 9 if upper bound is exactly 10
             hold_at_most = math.ceil(upper_bound) - 1
 
             winning_ranges.append(WinningRange(hold_at_least, hold_at_most))
