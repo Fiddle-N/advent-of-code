@@ -1,17 +1,33 @@
 import collections
 import enum
+import operator
 from dataclasses import dataclass
 
 
-class EnumValueOrderingMixin:
-    def __lt__(self, other):
-        return self.value < other.value
+class OrderedEnum(enum.Enum):
+    """
+    OrderedEnum recipe based on the recipe from python.org
+    """
+
+    def _comp(self, other, comp_fn):
+        if self.__class__ is other.__class__:
+            return comp_fn(self.value, other.value)
+        return NotImplemented
+
+    def __ge__(self, other):
+        return self._comp(other, comp_fn=operator.ge)
+
+    def __gt__(self, other):
+        return self._comp(other, comp_fn=operator.gt)
 
     def __le__(self, other):
-        return self.value <= other.value
+        return self._comp(other, comp_fn=operator.le)
+
+    def __lt__(self, other):
+        return self._comp(other, comp_fn=operator.lt)
 
 
-class Card(EnumValueOrderingMixin, enum.Enum):
+class Card(OrderedEnum):
     ACE = 14
     KING = 13
     QUEEN = 12
@@ -27,7 +43,7 @@ class Card(EnumValueOrderingMixin, enum.Enum):
     TWO = 2
 
 
-class CardWithJokerRule(EnumValueOrderingMixin, enum.Enum):
+class CardWithJokerRule(OrderedEnum):
     ACE = 14
     KING = 13
     QUEEN = 12
@@ -43,7 +59,7 @@ class CardWithJokerRule(EnumValueOrderingMixin, enum.Enum):
     JOKER = 1
 
 
-class Type(EnumValueOrderingMixin, enum.Enum):
+class Type(OrderedEnum):
     HIGH_CARD = enum.auto()
     ONE_PAIR = enum.auto()
     TWO_PAIR = enum.auto()
@@ -114,19 +130,24 @@ class Hand:
     def __eq__(self, other):
         return self.cards == other.cards
 
-    def __lt__(self, other):
+    def _comp(self, other, comp_fn):
         return (
-            self.cards < other.cards
+            comp_fn(self.cards, other.cards)
             if self.type() == other.type()
-            else self.type() < other.type()
+            else comp_fn(self.type(), other.type())
         )
 
+    def __ge__(self, other):
+        return self._comp(other, comp_fn=operator.ge)
+
+    def __gt__(self, other):
+        return self._comp(other, comp_fn=operator.gt)
+
     def __le__(self, other):
-        return (
-            self.cards <= other.cards
-            if self.type() == other.type()
-            else self.type() <= other.type()
-        )
+        return self._comp(other, comp_fn=operator.le)
+
+    def __lt__(self, other):
+        return self._comp(other, comp_fn=operator.lt)
 
 
 @dataclass(frozen=True)
