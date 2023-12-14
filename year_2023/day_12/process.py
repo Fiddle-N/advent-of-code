@@ -2,7 +2,7 @@ import functools
 import dataclasses
 import re
 
-# spring strings and patterns
+# spring patterns
 OPERATIONAL = r'\.'
 DAMAGED = '#'
 UNKNOWN = r'\?'
@@ -12,10 +12,10 @@ MAYBE_DAMAGED = f'[{DAMAGED}{UNKNOWN}]'
 
 
 @functools.cache
-def arrangements(condition_record: str, damaged_springs: tuple[int, ...]):
-    END_OF_CONDITION_RECORD = (len(damaged_springs) == 1)
+def arrangements(condition_record: str, damaged_springs: tuple[int, ...]) -> int:
+    end_of_condition_record = (len(damaged_springs) == 1)
 
-    if END_OF_CONDITION_RECORD and '?' not in condition_record:
+    if end_of_condition_record and '?' not in condition_record:
         # match on exact number of damaged springs
         # optionally surrounded by operational springs
         pattern = (
@@ -30,7 +30,7 @@ def arrangements(condition_record: str, damaged_springs: tuple[int, ...]):
     # option 1 - try an exact number of damaged springs at the beginning
     # flipping any unknowns if necessary
     # At least one operational spring afterwards is needed
-    if END_OF_CONDITION_RECORD:
+    if end_of_condition_record:
         # if at the end
         # all springs afterwards must be operational, not just one
         pattern = (
