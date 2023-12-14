@@ -1,6 +1,8 @@
 import dataclasses
 import itertools
 
+GALAXY = '#'
+
 
 @dataclasses.dataclass(frozen=True)
 class Coords:
@@ -22,7 +24,7 @@ class Universe:
         galaxy_no = 0
         for y, row in enumerate(universe):
             for x, px in enumerate(row):
-                if px != '#':
+                if px != GALAXY:
                     continue
                 galaxy_no += 1
                 self.galaxies[galaxy_no] = Coords(x, y)
@@ -30,7 +32,7 @@ class Universe:
     def _calc_empty_rows(self, universe):
         empty_rows = set()
         for row_num, row in enumerate(universe):
-            if all(px == '.' for px in row):
+            if GALAXY not in row:
                 empty_rows.add(row_num)
         return empty_rows
 
