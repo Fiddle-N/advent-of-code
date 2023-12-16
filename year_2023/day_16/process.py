@@ -1,6 +1,7 @@
 import collections
 import dataclasses
 import enum
+import functools
 from typing import Self
 
 
@@ -76,6 +77,45 @@ class Contraption:
     def _is_valid_coord(self, coord):
         return (0 <= coord.x < self.width) and (0 <= coord.y < self.height)
 
+    @functools.cache
+    def _get_next_beam_states(self, beam_state):
+        direction = beam_state.direction
+        location = beam_state.location + OFFSET_COORDS[direction]
+        if not self._is_valid_coord(location):
+            return []
+        space = self.contraption[location]
+
+        match (space, direction):
+            case (
+                (ContraptionSpace.EMPTY_SPACE, _)
+                | (ContraptionSpace.HORIZONTAL_SPLITTER, (Direction.LEFTWARDS | Direction.RIGHTWARDS))
+                | (ContraptionSpace.VERTICAL_SPLITTER, (Direction.UPWARDS | Direction.DOWNWARDS))
+            ):
+                # beam passes through as normal
+                return [
+                    BeamState(location=location, direction=direction)
+                ]
+            case ContraptionSpace.HORIZONTAL_SPLITTER, (Direction.UPWARDS | Direction.DOWNWARDS):
+                return [
+                    BeamState(location=location, direction=next_direction)
+                    for next_direction in (Direction.LEFTWARDS, Direction.RIGHTWARDS)
+                ]
+            case ContraptionSpace.VERTICAL_SPLITTER, (Direction.LEFTWARDS | Direction.RIGHTWARDS):
+                return [
+                    BeamState(location=location, direction=next_direction)
+                    for next_direction in (Direction.UPWARDS, Direction.DOWNWARDS)
+                ]
+            case ContraptionSpace.FORWARDS_DIAGONAL_MIRROR, _:
+                return [
+                    BeamState(location=location, direction=FORWARDS_DIAGONAL_DIRECTIONS[direction])
+                ]
+            case ContraptionSpace.BACKWARDS_DIAGONAL_MIRROR, _:
+                return [
+                    BeamState(location=location, direction=BACKWARDS_DIAGONAL_DIRECTIONS[direction])
+                ]
+            case _:
+                raise ValueError('Unhandled space/direction case')
+
     def simulate_beam(self, init_location=Coords(-1, 0), init_direction=Direction.RIGHTWARDS):
         # init locations do not exist on the grid
         # but is used to model where the beam is originating from
@@ -86,48 +126,13 @@ class Contraption:
         beam_states = collections.deque([init_beam_state])
         while beam_states:
             beam_state = beam_states.pop()
-            direction = beam_state.direction
-            location = beam_state.location + OFFSET_COORDS[direction]
-            if not self._is_valid_coord(location):
-                continue
-            space = self.contraption[location]
-
-            match (space, direction):
-                case (
-                    (ContraptionSpace.EMPTY_SPACE, _)
-                    | (ContraptionSpace.HORIZONTAL_SPLITTER, (Direction.LEFTWARDS | Direction.RIGHTWARDS))
-                    | (ContraptionSpace.VERTICAL_SPLITTER, (Direction.UPWARDS | Direction.DOWNWARDS))
-                ):
-                    # beam passes through as normal
-                    next_beam_states = [
-                        BeamState(location=location, direction=direction)
-                    ]
-                case ContraptionSpace.HORIZONTAL_SPLITTER, (Direction.UPWARDS | Direction.DOWNWARDS):
-                    next_beam_states = [
-                        BeamState(location=location, direction=next_direction)
-                        for next_direction in (Direction.LEFTWARDS, Direction.RIGHTWARDS)
-                    ]
-                case ContraptionSpace.VERTICAL_SPLITTER, (Direction.LEFTWARDS | Direction.RIGHTWARDS):
-                    next_beam_states = [
-                        BeamState(location=location, direction=next_direction)
-                        for next_direction in (Direction.UPWARDS, Direction.DOWNWARDS)
-                    ]
-                case ContraptionSpace.FORWARDS_DIAGONAL_MIRROR, _:
-                    next_beam_states = [
-                        BeamState(location=location, direction=FORWARDS_DIAGONAL_DIRECTIONS[direction])
-                    ]
-                case ContraptionSpace.BACKWARDS_DIAGONAL_MIRROR, _:
-                    next_beam_states = [
-                        BeamState(location=location, direction=BACKWARDS_DIAGONAL_DIRECTIONS[direction])
-                    ]
-                case _:
-                    raise ValueError('Unhandled space/direction case')
+            next_beam_states = self._get_next_beam_states(beam_state)
 
             for next_beam_state in next_beam_states:
-                if next_beam_state.direction in energised_spaces[location]:
+                if next_beam_state.direction in energised_spaces[next_beam_state.location]:
                     # we've been here before
                     continue
-                energised_spaces[location].add(next_beam_state.direction)
+                energised_spaces[next_beam_state.location].add(next_beam_state.direction)
                 beam_states.appendleft(next_beam_state)
         return energised_spaces
 
