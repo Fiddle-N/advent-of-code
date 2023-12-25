@@ -12,6 +12,9 @@ class Coords:
     def __add__(self, other: Self) -> Self:
         return Coords(self.x + other.x, self.y + other.y)
 
+    def __mul__(self, other: int) -> Self:
+        return Coords(self.x * other, self.y * other)
+
 
 class Direction(enum.Enum):
     UPWARDS = enum.auto()
@@ -20,71 +23,43 @@ class Direction(enum.Enum):
     LEFTWARDS = enum.auto()
 
 
-STRAIGHT_ON_OFFSETS = {
-    Direction.UPWARDS: (Coords(0, -1), Direction.UPWARDS),
-    Direction.RIGHTWARDS: (Coords(1, 0), Direction.RIGHTWARDS),
-    Direction.DOWNWARDS: (Coords(0, 1), Direction.DOWNWARDS),
-    Direction.LEFTWARDS: (Coords(-1, 0), Direction.LEFTWARDS),
-}
-
-LEFT_RIGHT_OFFSETS = {
-    Direction.UPWARDS: (
+OFFSETS = {
+    Direction.UPWARDS: [
         (Coords(-1, 0), Direction.LEFTWARDS),
-        (Coords(1, 0), Direction.RIGHTWARDS),
-    ),
-    Direction.RIGHTWARDS: (
         (Coords(0, -1), Direction.UPWARDS),
+        (Coords(1, 0), Direction.RIGHTWARDS),
+    ],
+    Direction.RIGHTWARDS: [
+        (Coords(0, -1), Direction.UPWARDS),
+        (Coords(1, 0), Direction.RIGHTWARDS),
         (Coords(0, 1), Direction.DOWNWARDS),
-    ),
-    Direction.DOWNWARDS: (
+    ],
+    Direction.DOWNWARDS: [
         (Coords(-1, 0), Direction.LEFTWARDS),
-        (Coords(1, 0), Direction.RIGHTWARDS),
-    ),
-    Direction.LEFTWARDS: (
-        (Coords(0, -1), Direction.UPWARDS),
         (Coords(0, 1), Direction.DOWNWARDS),
-    ),
+        (Coords(1, 0), Direction.RIGHTWARDS),
+    ],
+    Direction.LEFTWARDS: [
+        (Coords(0, -1), Direction.UPWARDS),
+        (Coords(-1, 0), Direction.LEFTWARDS),
+        (Coords(0, 1), Direction.DOWNWARDS),
+    ],
 }
-
-
-MAX_STEPS = 3
-
-
-def _subsequent_steps(direction_history: list[Direction]) -> int:
-    steps = 0
-    last_step = None
-    for step in reversed(direction_history):
-        if last_step is None:
-            last_step = step
-        elif step != last_step:
-            break
-        steps += 1
-    if steps > MAX_STEPS:
-        raise ValueError('Invalid path')
-    return steps
-
-
-@dataclasses.dataclass(frozen=True, order=True)
-class PrioritisedItem:
-    total_heat_loss: int
-    location: Coords = dataclasses.field(compare=False)
-    direction_history: list[Direction] = dataclasses.field(compare=False)
-
-    def direction(self) -> Direction | None:
-        return self.direction_history[-1] if self.direction_history else None
-
-    def subsequent_steps(self) -> int:
-        return _subsequent_steps(self.direction_history)
-
-    def is_restricted(self) -> bool:
-        return self.subsequent_steps() == MAX_STEPS
 
 
 @dataclasses.dataclass(frozen=True)
-class VisitedLocation:
+class LocationState:
     location: Coords
     direction: Direction | None
-    subsequent_steps: int
+    straight_steps: int
+
+
+@dataclasses.dataclass(frozen=True, order=True)
+class LocationStateWithHeatLoss:
+    heat_loss: int
+    location: Coords = dataclasses.field(compare=False)
+    direction: Direction | None = dataclasses.field(compare=False)
+    straight_steps: int = dataclasses.field(compare=False)
 
 
 class City:
@@ -94,8 +69,6 @@ class City:
         city_lines = city_input.splitlines()
         self.width = len(city_lines[0])
         self.height = len(city_lines)
-        self.start = Coords(0, 0)
-        self.end = Coords(self.width - 1, self.height - 1)
         for y, row in enumerate(city_lines):
             for x, heat_loss in enumerate(row):
                 self.city[Coords(x, y)] = int(heat_loss)
@@ -105,105 +78,162 @@ class City:
         with open("input.txt") as f:
             return cls(f.read().strip())
 
-    def _get_neighbours(self, item):
+
+class _HeatLossMinimiser:
+
+    def __init__(self, city, min_consec_steps, max_consec_steps):
+        self.city = city
+        assert min_consec_steps > 0
+        assert max_consec_steps >= min_consec_steps
+        self.min_consec_steps = min_consec_steps
+        self.max_consec_steps = max_consec_steps
+
+        self.start = Coords(0, 0)
+        self.end = Coords(self.city.width - 1, self.city.height - 1)
+
+        self.visited: set[LocationState] = set()
+        self.costs: dict[LocationState, int] = {
+            LocationState(location=self.start, direction=None, straight_steps=0): 0
+        }
+        self.q: list[LocationStateWithHeatLoss] = []
+        heapq.heappush(
+            self.q,
+            LocationStateWithHeatLoss(
+                heat_loss=0,
+                location=self.start,
+                direction=None,
+                straight_steps=0
+            )
+        )
+
+    def _is_valid_coord(self, coord: Coords):
+        return (0 <= coord.x < self.city.width) and (0 <= coord.y < self.city.height)
+
+    def _traverse_city(self, start: Coords, offset: Coords, step_change: int) -> tuple[Coords, int] | None:
+        destination = start
+        heat_loss = 0
+        for _ in range(step_change):
+            destination += offset
+            if not self._is_valid_coord(destination):
+                return None
+            heat_loss += self.city.city[destination]
+        return destination, heat_loss
+
+    def _get_neighbours(self, item) -> list[LocationStateWithHeatLoss]:
         neighbours = []
-        direction = item.direction()
+        direction = item.direction
 
         if direction is None:
             # currently at start - pretend direction is down (down or right would work)
             direction = Direction.RIGHTWARDS
 
-        offsets = list(LEFT_RIGHT_OFFSETS[direction])
-        if not item.is_restricted():
-            offsets.append(STRAIGHT_ON_OFFSETS[direction])
+        offsets = OFFSETS[direction]
 
         for offset_coord, offset_dir in offsets:
-            neighbour_coord = item.location + offset_coord
-            if 0 <= neighbour_coord.x < self.width and 0 <= neighbour_coord.y < self.height:
-                neighbours.append((neighbour_coord, offset_dir))
+            if direction == offset_dir:
+                if item.straight_steps == self.max_consec_steps:
+                    continue
+                step_change = 1
+                offset_straight_steps = (item.straight_steps + step_change)
+            else:
+                step_change = self.min_consec_steps
+                offset_straight_steps = step_change
+
+            traversal_results = self._traverse_city(
+                start=item.location, offset=offset_coord, step_change=step_change
+            )
+            if traversal_results is None:
+                continue
+            neighbour_coord, heat_loss = traversal_results
+
+            neighbours.append(
+                LocationStateWithHeatLoss(
+                    heat_loss=heat_loss,
+                    location=neighbour_coord,
+                    direction=offset_dir,
+                    straight_steps=offset_straight_steps
+                )
+            )
         return neighbours
 
-    def dijkstra(self):
-        visited: set[VisitedLocation] = set()
-        costs: dict[VisitedLocation, int] = {
-            VisitedLocation(location=self.start, direction=None, subsequent_steps=0): 0
-        }
-        q: list[PrioritisedItem] = []
+    def _process_next_state(self) -> int | None:
+        item: LocationStateWithHeatLoss = heapq.heappop(self.q)
+        if item.location == self.end:
+            return item.heat_loss
 
-        heapq.heappush(q, PrioritisedItem(0, self.start, direction_history=[]))
+        current_visited_state = LocationState(
+            location=item.location,
+            direction=item.direction,
+            straight_steps=item.straight_steps
+        )
+        if current_visited_state in self.visited:
+            return None
 
-        while q:
-            item: PrioritisedItem = heapq.heappop(q)
-            location = item.location
-            direction = item.direction()
-            subsequent_steps = item.subsequent_steps()
-
-            current_visited_state = VisitedLocation(
-                location=location,
-                direction=direction,
-                subsequent_steps=subsequent_steps
+        for steps in range(item.straight_steps, self.max_consec_steps + 1):
+            self.visited.add(
+                LocationState(
+                    location=item.location, direction=item.direction, straight_steps=steps
+                )
             )
 
-            if current_visited_state in visited:
+        for neighbour_visited_state in self._get_neighbours(item):
+            if neighbour_visited_state in self.visited:
                 continue
 
-            for steps in range(subsequent_steps, MAX_STEPS + 1):
-                visited.add(
-                    VisitedLocation(location=location, direction=direction, subsequent_steps=steps)
+            state = LocationState(
+                location=neighbour_visited_state.location,
+                direction=neighbour_visited_state.direction,
+                straight_steps=neighbour_visited_state.straight_steps
+            )
+
+            old_cost = self.costs.get(state)
+            new_cost = self.costs.get(current_visited_state) + neighbour_visited_state.heat_loss
+            if old_cost is not None and new_cost >= old_cost:
+                continue
+
+            heapq.heappush(
+                self.q,
+                LocationStateWithHeatLoss(
+                    heat_loss=new_cost,
+                    location=neighbour_visited_state.location,
+                    direction=neighbour_visited_state.direction,
+                    straight_steps=neighbour_visited_state.straight_steps
                 )
+            )
+            self.costs[state] = new_cost
 
-            current_visited_states = []
-            for steps in range(subsequent_steps + 1):
-                current_visited_states.append(
-                    VisitedLocation(location=location, direction=direction, subsequent_steps=steps)
-                )
+        return None
 
-            if location == self.end:
-                return item.total_heat_loss
+    def minimise_heat_loss(self):
+        while self.q:
+            result = self._process_next_state()
+            if result is not None:
+                return result
 
-            for neighbour_coord, neighbour_dir in self._get_neighbours(item):
-                next_direction_history = item.direction_history.copy()
-                next_direction_history.append(neighbour_dir)
 
-                next_subsequent_steps = _subsequent_steps(next_direction_history)
+def crucible_minimal_heat_loss(city):
+    heat_loss_minimiser = _HeatLossMinimiser(
+        city=city, min_consec_steps=1, max_consec_steps=3
+    )
+    return heat_loss_minimiser.minimise_heat_loss()
 
-                neighbour_visited_state = VisitedLocation(
-                    location=neighbour_coord,
-                    direction=neighbour_dir,
-                    subsequent_steps=next_subsequent_steps
-                )
 
-                if neighbour_visited_state in visited:
-                    continue
-
-                heat_loss = self.city[neighbour_coord]
-
-                current_costs = [costs.get(state) for state in current_visited_states]
-                current_costs = [cost for cost in current_costs if cost is not None]
-                current_cost = min(current_costs)
-
-                neighbour_visited_states = []
-                for steps in range(next_subsequent_steps, MAX_STEPS + 1):
-                    neighbour_visited_states.append(
-                        VisitedLocation(location=neighbour_coord, direction=neighbour_dir, subsequent_steps=steps)
-                    )
-
-                for state in neighbour_visited_states:
-                    old_cost = costs.get(state)
-                    new_cost = current_cost + heat_loss
-
-                    if old_cost is None or new_cost < old_cost:
-                        heapq.heappush(q, PrioritisedItem(new_cost, neighbour_coord, next_direction_history))
-                        for steps in range(next_subsequent_steps, MAX_STEPS + 1):
-                            costs[state] = new_cost
+def ultra_crucible_minimal_heat_loss(city):
+    heat_loss_minimiser = _HeatLossMinimiser(
+        city=city, min_consec_steps=4, max_consec_steps=10
+    )
+    return heat_loss_minimiser.minimise_heat_loss()
 
 
 def main() -> None:
     city = City.read_file()
-    best_heat_loss = city.dijkstra()
     print(
-        "Least heat loss incurred:",
-        best_heat_loss
+        "Least heat loss incurred by crucible directed from lava pool to machine parts factory:",
+        crucible_minimal_heat_loss(city)
+    )
+    print(
+        "Least heat loss incurred by ultra crucible directed from lava pool to machine parts factory:",
+        ultra_crucible_minimal_heat_loss(city)
     )
 
 
