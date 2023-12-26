@@ -1,4 +1,3 @@
-import collections
 import dataclasses
 import enum
 import itertools
@@ -62,15 +61,6 @@ DIRECTION_TO_COORDS = {
     Direction.WEST: Coords(-1, 0),
 }
 
-DIRECTION_COORDS = DIRECTION_TO_COORDS.values()
-
-DIRECTION_COORDS_INCLUDING_DIAGONALS = list(DIRECTION_COORDS) + [
-    Coords(1, -1),
-    Coords(1, 1),
-    Coords(-1, 1),
-    Coords(-1, -1),
-]
-
 
 def _is_valid_coord(coord, max_x, max_y):
     return (0 <= coord.x <= max_x) and (0 <= coord.y <= max_y)
@@ -91,9 +81,6 @@ class Field:
 
         self.max_x = x
         self.max_y = y
-
-        self.x_len = self.max_x + 1
-        self.y_len = self.max_y + 1
 
         # calculate start tile
         start_tile = None
@@ -149,140 +136,49 @@ class Field:
         return path, length
 
 
+def enclosed_num_of_tiles(field: Field):
+    # Given a list of loop vertices
+    # we can find the full area of the enclosing space
+    # using shoelace formula
+    # where (x, y) -> (x', y') denotes an edge of the loop
+    # A = abs(0.5 * (sum of all (x' - x) * (y' + y)))
+    #
+    # However, as the field is modelled as tiles
+    # what we really need is the number of interior points
+    # Pick's theorem gives the area
+    # given the number of interior and boundary points
+    # A = i + b/2 - 1
+    # we can rearrange this to give us the number of interior points
+    # given the full area
+    # and the number of boundary points (which is just the loop length)
+    # i = A - b/2 + 1
+    loop_verts = field.loop_verts.copy()
+    loop_verts.append(loop_verts[0])    # repeat start point to go back to the beginning
+    pairwise_loop_points = itertools.pairwise(loop_verts)
 
-#
-# def furthest_steps_from_start(field_path):
-#     """
-#     Simply count path length and divide by 2 to get the furthest number of steps away
-#     """
-#     quot, rem = divmod(len(field_path), 2)
-#     assert rem == 0
-#     return quot
-#
-#
-# def _is_coord_in_original_grid(coord):
-#     return (coord.x % 2 == 0) and (coord.y % 2 == 0)
-#
-#
-# def area_enclosed_within_the_loop(field):
-#     # enlarge graph by a factor of 2 in order to allow modelling space between pipes
-#     # fill in the extra space with ground for now
-#     enlarged_max_x = field.max_x * 2
-#     enlarged_max_y = field.max_y * 2
-#     enlarged_x_len = enlarged_max_x + 1
-#     enlarged_y_len = enlarged_max_y + 1
-#
-#     enlarged_grid = {}
-#     for y in range(enlarged_y_len):
-#         for x in range(enlarged_x_len):
-#             enlarged_coord = Coords(x, y)
-#             enlarged_grid[enlarged_coord] = (
-#                 field.grid[Coords(x // 2, y // 2)]
-#                 if _is_coord_in_original_grid(enlarged_coord)
-#                 else Tile.GROUND
-#             )
-#
-#     # calculate enlarged loop
-#     # follow loop through and fill in gaps with their actual pipe tile
-#     enlarged_loop = []
-#     loop_pairs = itertools.pairwise(field.loop + field.loop[:1])     # add start element again to loop back to the beginning
-#     for coord_1, coord_2 in loop_pairs:
-#         coord_1_enlarged_x = coord_1.x * 2
-#         coord_1_enlarged_y = coord_1.y * 2
-#         coord_2_enlarged_x = coord_2.x * 2
-#         coord_2_enlarged_y = coord_2.y * 2
-#
-#         is_x_equal = (coord_1_enlarged_x == coord_2_enlarged_x)
-#         is_y_equal = (coord_1_enlarged_y == coord_2_enlarged_y)
-#         assert is_x_equal != is_y_equal
-#
-#         in_between_coord = (
-#             Coords(coord_1_enlarged_x, (coord_1_enlarged_y + coord_2_enlarged_y) // 2)
-#             if is_x_equal
-#             else Coords((coord_1_enlarged_x + coord_2_enlarged_x) // 2, coord_1_enlarged_y)
-#         )
-#         tile = Tile.VERTICAL_PIPE if is_x_equal else Tile.HORIZONTAL_PIPE
-#
-#         enlarged_grid[in_between_coord] = tile
-#         enlarged_loop.extend([Coords(coord_1_enlarged_x, coord_1_enlarged_y), in_between_coord])
-#
-#     # flood fill from inside to get all enclosed points
-#     # start from free points around the first part in the loop
-#     # at least one is guaranteed to be enclosed
-#     # the others are unenclosed if a flood fill hits a border
-#
-#     def _is_border_point(point):
-#         return (
-#             (point.x in (0, enlarged_max_x))
-#             or (point.y in (0, enlarged_max_y))
-#         )
-#
-#     enlarged_possibly_enclosed_start_points = []
-#     start_point = enlarged_loop[0]
-#     enlarged_loop_set = set(enlarged_loop)
-#
-#     for dir_ in DIRECTION_COORDS_INCLUDING_DIAGONALS:
-#         surrounding_point = start_point + dir_
-#         if (
-#                 _is_valid_coord(
-#                     surrounding_point, enlarged_max_x, enlarged_max_y
-#                 )
-#                 and not _is_border_point(surrounding_point)
-#                 and surrounding_point not in enlarged_loop_set
-#         ):
-#             enlarged_possibly_enclosed_start_points.append(surrounding_point)
-#
-#     # initiate flood fill
-#     # flood stops when it meets a place in the loop
-#     def _flood_fill(start):
-#         points = {start}
-#         points_to_check = collections.deque(points)
-#         while points_to_check:
-#             point = points_to_check.pop()
-#             for dir_coord in DIRECTION_COORDS:
-#                 next_point = point + dir_coord
-#                 if not _is_valid_coord(next_point, enlarged_max_x, enlarged_max_y):
-#                     continue
-#                 if next_point in enlarged_loop_set:
-#                     continue
-#                 if next_point in points:
-#                     continue
-#                 if _is_border_point(next_point):
-#                     # the start point is ultimately part of an unenclosed area
-#                     return None
-#                 points.add(next_point)
-#                 points_to_check.appendleft(next_point)
-#         # no border points encountered - start point is part of an enclosed area
-#         return points
-#
-#     enlarged_enclosed_points = None
-#     for flood_fill_start in enlarged_possibly_enclosed_start_points:
-#         flood_fill_result = _flood_fill(flood_fill_start)
-#         if flood_fill_result:
-#             enlarged_enclosed_points = flood_fill_result
-#             break
-#     assert enlarged_enclosed_points is not None
-#
-#     # convert enclosed points back to original grid points
-#     enclosed_points = {
-#         Coords(point.x // 2, point.y // 2)
-#         for point in enlarged_enclosed_points
-#         if _is_coord_in_original_grid(point)
-#     }
-#
-#     return enclosed_points
-#
-#
+    # shoelace formula
+    area = abs(
+        sum(
+            [(p1.x - p2.x) * (p1.y + p2.y) for p1, p2 in pairwise_loop_points]
+        ) // 2
+    )
+
+    # Pick's theorem in reverse
+    interior_points = area - (field.loop_length // 2) + 1
+
+    return interior_points
+
+
 def main() -> None:
     field = Field.read_file()
     print(
         "Steps along loop to get to farthest position from starting position:",
         field.loop_length // 2,
     )
-    # print(
-    #     "Number of tiles enclosed by the loop:",
-    #     len(area_enclosed_within_the_loop(field)),
-    # )
+    print(
+        "Number of tiles enclosed by the loop:",
+        enclosed_num_of_tiles(field),
+    )
 
 
 if __name__ == "__main__":
