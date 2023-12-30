@@ -72,7 +72,7 @@ def falling_bricks(bricks: list[Brick]):
 
                     # brick is resting on another brick
                     or any(
-                (coord + ONE_LEVEL_BELOW) in final_brick_coords
+                        (coord + ONE_LEVEL_BELOW) in final_brick_coords
                         for coord in dropping_brick_coords
                     )
             ):
@@ -113,7 +113,14 @@ def brick_dependency_hierarchy(bricks, bricks_coords):
     return hierarchy
 
 
-def hierarchical_dependent_count(hierarchy, dependent_count):
+def calculate_dependent_count(hierarchy):
+    count = collections.Counter()
+    for bricks in hierarchy.values():
+        count.update(bricks)
+    return count
+
+
+def calculate_hierarchy_dependent_count(hierarchy, dependent_count):
     hierarchy_dependent_count = {}
     for brick, dependents in hierarchy.items():
         brick_dependent_count = [
@@ -124,12 +131,8 @@ def hierarchical_dependent_count(hierarchy, dependent_count):
     return hierarchy_dependent_count
 
 
-def disintegrable_bricks(hierarchy):
-    dependent_count = collections.Counter()
-    for bricks in hierarchy.values():
-        dependent_count.update(bricks)
-
-    hierarchy_dependent_count = hierarchical_dependent_count(
+def disintegrable_bricks(hierarchy, dependent_count):
+    hierarchy_dependent_count = calculate_hierarchy_dependent_count(
         hierarchy, dependent_count
     )
 
@@ -151,17 +154,59 @@ def disintegrable_bricks(hierarchy):
     return disintegrable, not_disintegrable
 
 
+def _chain_reaction_for_brick(hierarchy, dependent_count, brick):
+    dependent_count = dependent_count.copy()
+    fallen_bricks = set()
+    q = collections.deque([brick])
+    while q:
+        current_brick = q.pop()
+        dependent_bricks = hierarchy[current_brick]
+        for dependent_brick in dependent_bricks:
+            dependent_count[dependent_brick] -= 1
+            count = dependent_count[dependent_brick]
+            if count == 0:
+                fallen_bricks.add(dependent_brick)
+                q.appendleft(dependent_brick)
+
+    return fallen_bricks
+
+
+def chain_reaction(hierarchy, dependent_count, structural_bricks):
+    chain_reaction_fallen_bricks = {
+        brick: _chain_reaction_for_brick(hierarchy, dependent_count, brick)
+        for brick in structural_bricks
+    }
+    return chain_reaction_fallen_bricks
+
+
+def sum_chain_reaction_fallen_bricks(chain_reaction_fallen_bricks):
+    return sum(
+        len(fallen_bricks)
+        for fallen_bricks in chain_reaction_fallen_bricks.values()
+    )
+
+
 def main():
     input_ = read_file()
 
     bricks = parse(input_)
     fallen_bricks, fallen_brick_coords = falling_bricks(bricks)
     hierarchy = brick_dependency_hierarchy(fallen_bricks, fallen_brick_coords)
-    disintegrable, not_disintegrable = disintegrable_bricks(hierarchy)
+    dependent_count = calculate_dependent_count(hierarchy)
+    disintegrable, not_disintegrable = disintegrable_bricks(hierarchy, dependent_count)
 
     print(
         f"Number of safely disintegrable bricks:",
         len(disintegrable),
+    )
+
+    chain_reaction_fallen_bricks = chain_reaction(
+        hierarchy, dependent_count, structural_bricks=not_disintegrable
+    )
+
+    print(
+        f"Sum of number of other bricks that would fall, for each structural brick:",
+        sum_chain_reaction_fallen_bricks(chain_reaction_fallen_bricks),
     )
 
 
