@@ -1,3 +1,5 @@
+import pytest
+
 from year_2023.day_22 import process
 
 
@@ -43,9 +45,20 @@ from year_2023.day_22 import process
 #         ),
 #     ]
 
-
-def test_input_in_muddled_order():
-    input_ = """\
+@pytest.mark.parametrize(
+    'brick_input',
+    [
+        # pre-sorted input
+        """\
+1,0,1~1,2,1
+0,0,2~2,0,2
+0,2,3~2,2,3
+0,0,4~0,2,4
+2,0,5~2,2,5
+0,1,6~2,1,6
+1,1,8~1,1,9"""
+        ,
+        """\
 2,0,5~2,2,5
 0,0,2~2,0,2
 0,0,4~0,2,4
@@ -53,7 +66,11 @@ def test_input_in_muddled_order():
 0,2,3~2,2,3
 1,0,1~1,2,1
 1,1,8~1,1,9"""
-    bricks = process.parse(input_)
+        ,
+    ]
+)
+def test_falling_bricks(brick_input):
+    bricks = process.parse(brick_input)
     fallen_bricks, fallen_brick_coords = process.falling_bricks(bricks)
     assert fallen_bricks == [
         process.Brick(
