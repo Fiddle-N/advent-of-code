@@ -143,8 +143,8 @@ def disintegrable_bricks(hierarchy, dependent_count):
                 # no bricks are dependent on this brick
                 not counts
 
-                # TODO add test where changing all to any would fail test
-                # all bricks are dependent on more than one brick
+                # all dependent bricks are dependent
+                # on more than one underlying brick
                 or all(count > 1 for count in counts)
         ):
             disintegrable.append(brick)
