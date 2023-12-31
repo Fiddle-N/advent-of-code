@@ -180,30 +180,46 @@ def generate_graph(hiking_trails: HikingTrails):
 
 
 def resolve_all_paths(graph, start, end):
-    all_paths = {}
+    all_paths = []
     path_stack = [
-        ([start], 0)
+        (start, {start}, 0)
     ]
     while path_stack:
         path_state = path_stack.pop()
-        path = path_state[0]
-        path_dist = path_state[1]
-        path_frontier = path[-1]
+        path_frontier = path_state[0]
+        path = path_state[1]
+        path_dist = path_state[2]
         next_sections = graph[path_frontier]
         for dest, section_dist in next_sections.items():
+            if dest in path:
+                continue
             next_path = path.copy()
-            next_path.append(dest)
+            next_path.add(dest)
             new_dist = path_dist + section_dist
             if dest == end:
-                all_paths[tuple(next_path)] = new_dist
+                all_paths.append(new_dist)
             else:
-                path_stack.append((next_path, new_dist))
+                path_stack.append((dest, next_path, new_dist))
     return all_paths
 
 
-def find_largest_path(paths):
-    max_path_info = max(paths.items(), key=lambda path: path[1])
-    return max_path_info
+def find_largest_path(path_vals):
+    return max(path_vals)
+
+
+def di_to_undi_graph(di_graph, start, end):
+    # graph will still be directed
+    # from start to first node
+    # and last node to end
+    # all other paths will be undirected
+    undi_graph = collections.defaultdict(dict)
+    for node_1, dest_nodes in di_graph.items():
+        for node_2, dist in dest_nodes.items():
+            undi_graph[node_1][node_2] = dist
+            if node_1 == start or node_2 == end:
+                continue
+            undi_graph[node_2][node_1] = dist
+    return undi_graph
 
 
 def read_file() -> str:
@@ -214,17 +230,33 @@ def read_file() -> str:
 def main():
     hiking_trail_input = read_file()
     hiking_trails = HikingTrails(hiking_trail_input)
-    graph = generate_graph(hiking_trails)
+    di_graph = generate_graph(hiking_trails)
     paths = resolve_all_paths(
-        graph,
+        di_graph,
         start=hiking_trails.start,
         end=hiking_trails.end
     )
-    largest_path_info = find_largest_path(paths)
-    _, largest_path_dist = largest_path_info
+    largest_path_dist = find_largest_path(paths)
     print(
         f"Longest hike length:",
         largest_path_dist,
+    )
+
+    undi_graph = di_to_undi_graph(
+        di_graph,
+        start=hiking_trails.start,
+        end=hiking_trails.end
+    )
+    undi_paths = resolve_all_paths(
+        undi_graph,
+        start=hiking_trails.start,
+        end=hiking_trails.end
+    )
+    largest_undi_path_dist = find_largest_path(undi_paths)
+
+    print(
+        f"Longest hike length where all slopes are normal paths:",
+        largest_undi_path_dist,
     )
 
 

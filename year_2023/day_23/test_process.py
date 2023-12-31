@@ -1,8 +1,8 @@
 from year_2023.day_23 import process
 
 
-def test_input():
-    input_ = """\
+def test_hiking_trail():
+    hiking_trail_input = """\
 #.#####################
 #.......#########...###
 #######.#########.#.###
@@ -26,25 +26,29 @@ def test_input():
 #.###.###.#.###.#.#v###
 #.....###...###...#...#
 #####################.#"""
-    hiking_trails = process.HikingTrails(input_)
-    graph = process.generate_graph(hiking_trails)
-    paths = process.resolve_all_paths(
-        graph,
+    hiking_trails = process.HikingTrails(hiking_trail_input)
+
+    di_graph = process.generate_graph(hiking_trails)
+    di_paths = process.resolve_all_paths(
+        di_graph,
         start=hiking_trails.start,
         end=hiking_trails.end
     )
-    assert sorted(paths.values()) == [
+    assert sorted(di_paths) == [
         74, 82, 82, 86, 90, 94
     ]
-    largest_path_info = process.find_largest_path(paths)
-    largest_path, largest_path_dist = largest_path_info
-    assert largest_path == (
-        process.Coords(1, 0),
-        process.Coords(3, 5),
-        process.Coords(11, 3),
-        process.Coords(13, 13),
-        process.Coords(21, 11),
-        process.Coords(19, 19),
-        process.Coords(21, 22),
-    )
+    largest_path_dist = process.find_largest_path(di_paths)
     assert largest_path_dist == 94
+
+    undi_graph = process.di_to_undi_graph(
+        di_graph,
+        start=hiking_trails.start,
+        end=hiking_trails.end
+    )
+    undi_paths = process.resolve_all_paths(
+        undi_graph,
+        start=hiking_trails.start,
+        end=hiking_trails.end
+    )
+    largest_undi_path_dist = process.find_largest_path(undi_paths)
+    assert largest_undi_path_dist == 154
