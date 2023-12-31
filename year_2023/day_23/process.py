@@ -210,13 +210,23 @@ def find_largest_path(path_vals):
 def di_to_undi_graph(di_graph, start, end):
     # graph will still be directed
     # from start to first node
-    # and last node to end
+    # from last node to end
+    # and any paths to the penultimate node
+    # since there is only one and so when it's reached you go to the end
     # all other paths will be undirected
+    penults = []
+    for source, dest_nodes in di_graph.items():
+        if end in dest_nodes:
+            penults.append(source)
+
+    assert len(penults) == 1
+    penult, = penults
+
     undi_graph = collections.defaultdict(dict)
     for node_1, dest_nodes in di_graph.items():
         for node_2, dist in dest_nodes.items():
             undi_graph[node_1][node_2] = dist
-            if node_1 == start or node_2 == end:
+            if node_1 == start or node_2 == end or node_2 == penult:
                 continue
             undi_graph[node_2][node_1] = dist
     return undi_graph
