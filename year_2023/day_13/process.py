@@ -239,7 +239,7 @@ def find_sym_lines(grids: list[list[list[str]]]) -> tuple[list[SymmetryLine], li
     orig_sym_lines = []
     for grid in grids:
         sym_lines = find_grid_sym_lines(grid, break_on_first_sym_line=True)
-        sym_line, = sym_lines       # exactly one orig line of symmetry is present
+        sym_line = sym_lines[0]       # exactly one orig line of symmetry is present
         orig_sym_lines.append(sym_line)
 
     # part 2
@@ -256,7 +256,7 @@ def find_sym_lines(grids: list[list[list[str]]]) -> tuple[list[SymmetryLine], li
                 continue
 
             # new sym line found
-            sym_line, = sym_lines  # exactly one orig line of symmetry is present
+            sym_line = sym_lines[0]  # exactly one orig line of symmetry is present
             new_sym_lines.append(sym_line)
             break
 
