@@ -91,6 +91,7 @@ import copy
 import dataclasses
 import enum
 from collections.abc import Iterator
+from typing import Optional
 
 FILENAME = 'input.txt'
 
@@ -207,11 +208,24 @@ def find_grid_permutations(grid: list[list[str]]) -> Iterator[list[list[str]]]:
     Yield permutations of the grid where one pixel of the grid is changed at
     a time.
     """
+    # This is done mutably for performance reasons
+    # Reuse the same 2D list over and over
+    # But in each iteration, change the previous' iteration pixel change back
+    # before changing the current iteration pixel
+
+    # at least let's not change the original grid
+    grid_copy = copy.deepcopy(grid)
+
+    prev_xy: Optional[tuple[int, int]] = None
+    prev_px: Optional[str] = None
     for y, row in enumerate(grid):
         for x, px in enumerate(row):
-            new_grid = copy.deepcopy(grid)      # fine as grid sizes are small
-            new_grid[y][x] = OPPOSITE_PIXEL[px]
-            yield new_grid
+            if prev_px:
+                grid_copy[prev_xy[1]][prev_xy[0]] = prev_px
+            grid_copy[y][x] = OPPOSITE_PIXEL[px]
+            yield grid_copy
+            prev_xy = (x, y)
+            prev_px = px
 
 
 def find_sym_lines(grids: list[list[list[str]]]) -> tuple[list[SymmetryLine], list[SymmetryLine]]:
