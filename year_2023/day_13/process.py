@@ -95,13 +95,13 @@ from typing import Optional
 
 FILENAME = 'input.txt'
 
-OFF = '.'
-ON = '#'
+OFF_PX = '.'
+ON_PX = '#'
 
 
-OPPOSITE_PIXEL = {
-    OFF: ON,
-    ON: OFF,
+OPPOSITE_PX = {
+    OFF_PX: ON_PX,
+    ON_PX: OFF_PX,
 }
 
 
@@ -222,7 +222,7 @@ def find_grid_permutations(grid: list[list[str]]) -> Iterator[list[list[str]]]:
         for x, px in enumerate(row):
             if prev_px:
                 grid_copy[prev_xy[1]][prev_xy[0]] = prev_px
-            grid_copy[y][x] = OPPOSITE_PIXEL[px]
+            grid_copy[y][x] = OPPOSITE_PX[px]
             yield grid_copy
             prev_xy = (x, y)
             prev_px = px
