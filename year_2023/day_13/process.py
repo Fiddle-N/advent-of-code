@@ -1,3 +1,93 @@
+"""
+Given a file of 2D binary pixel grid like so (separated by double new lines),
+e.g.
+
+#.##..##.
+..#.##.#.
+##......#
+##......#
+..#.##.#.
+..##..##.
+#.#.##.#.
+
+#...##..#
+#....#..#
+..##..###
+#####.##.
+#####.##.
+..##..###
+#....#..#
+
+---
+
+Part 1 - find the only line of symmetry (either horizontal or vertical) in the
+grid. The line of symmetry needn't be perfectly in the middle of the grid, so
+some rows/columns may not be reflected over.
+
+The first grid in the example above has its vertical line of symmetry shown by
+>< :
+
+    ><
+#.##..##.
+..#.##.#.
+##......#
+##......#
+..#.##.#.
+..##..##.
+#.#.##.#.
+    ><
+
+The second grid in the example above has its horizontal line of symmetry shown
+by v^ :
+
+ #...##..#
+ #....#..#
+ ..##..###
+v#####.##.v
+^#####.##.^
+ ..##..###
+ #....#..#
+
+Score each grid as follows:
+* If a horizontal line of symmetry, calculate the number of columns left of the
+line
+* If a vertical line of symmetry, calculate the number of rows above the line
+and multiply by 100.
+
+Sum up all grid scores to get the total grid score, which is the answer to
+part 1.
+
+---
+
+Part 2 - repeat part 1 but find the line of symmetry where a single pixel change
+in the grid (* to # or vice versa) causes a different line of symmetry to
+emerge. Only one pixel change exists such that a new line of symmetry emerges.
+
+The first grid in the example has a new horizontal line of reflection when the
+very first pixel in the top left corner changes from # to . :
+
+ ..##..##.
+ ..#.##.#.
+v##......#v
+^##......#^
+ ..#.##.#.
+ ..##..##.
+ #.#.##.#.
+
+The second grid has a new horizontal line of reflection when row 2 column 5
+changes from . to # :
+
+v#...##..#v
+^#...##..#^
+ ..##..###
+ #####.##.
+ #####.##.
+ ..##..###
+ #....#..#
+
+Score the grids in the same way as part 1 to get the result for part 2.
+"""
+
 import dataclasses
 import enum
 
