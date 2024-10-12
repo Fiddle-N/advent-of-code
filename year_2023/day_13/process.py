@@ -136,8 +136,8 @@ def find_sym_lines_across_axis(
 ) -> list[int]:
     """
     Find the positions of a line of symmetry across one axis. The axis is
-    implicitly decided in whether the list of strs passed in represents rows
-    or columns.
+    implicitly decided in whether the grid list passed in represents a list
+    of rows or a list of columns.
     """
 
     # Scan the grid from top to bottom, trying each possible sym line in turn.
