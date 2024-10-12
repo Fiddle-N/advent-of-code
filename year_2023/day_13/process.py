@@ -50,7 +50,7 @@ v#####.##.v
 
 Score each grid as follows:
 * If a horizontal line of symmetry, calculate the number of columns left of the
-line
+line.
 * If a vertical line of symmetry, calculate the number of rows above the line
 and multiply by 100.
 
@@ -87,130 +87,190 @@ v#...##..#v
 
 Score the grids in the same way as part 1 to get the result for part 2.
 """
-
+import copy
 import dataclasses
 import enum
+from collections.abc import Iterator
+
+FILENAME = 'input.txt'
+
+OFF = '.'
+ON = '#'
 
 
-ASH = '.'
-ROCKS = '#'
-
-TERRAIN_OPPOSITE = {
-    ASH: ROCKS,
-    ROCKS: ASH,
+OPPOSITE_PIXEL = {
+    OFF: ON,
+    ON: OFF,
 }
 
 
-class Orientation(enum.Enum):
+class Direction(enum.Enum):
     HORIZONTAL = enum.auto()
     VERTICAL = enum.auto()
 
 
 @dataclasses.dataclass(frozen=True)
-class Mirror:
-    orientation: Orientation
+class SymmetryLine:
+    direction: Direction
     position: int
 
 
-class Patterns:
+def read_file() -> str:
+    with open(FILENAME) as f:
+        return f.read().strip()
 
-    def __init__(self, pattern_input):
-        self.patterns = pattern_input.split('\n\n')
 
-    @classmethod
-    def read_file(cls):
-        with open("input.txt") as f:
-            return cls(f.read().strip())
+def parse(grid_input: str) -> list[list[list[str]]]:
+    """
+    Parse grid input into a list of 2D grids.
+    """
+    return [
+        [list(line) for line in grid.splitlines()]
+        for grid in grid_input.split('\n\n')
+    ]
 
-    def find_mirrors(self):
-        clean_mirrors = []
-        for pattern in self.patterns:
-            clean_mirrors_for_pattern = self._analyse_pattern([pattern], first_mirror=True)
-            if clean_mirrors_for_pattern is None:
-                raise ValueError('mirror not found')
-            clean_mirror, = clean_mirrors_for_pattern
-            clean_mirrors.append(clean_mirror)
 
-        dirty_mirrors = []
-        for clean_mirror, pattern in zip(clean_mirrors, self.patterns):
-            pattern_instances = self._get_instances(pattern)
-            dirty_mirrors_for_pattern = self._analyse_pattern(pattern_instances, first_mirror=False)
-            assert len(dirty_mirrors_for_pattern) in (1, 2)
-            dirty_mirrors_for_pattern.remove(clean_mirror)
-            assert len(dirty_mirrors_for_pattern) == 1
-            dirty_mirror, = dirty_mirrors_for_pattern
-            dirty_mirrors.append(dirty_mirror)
+def find_sym_lines_across_axis(
+        grid: list[list[str]],
+        break_on_first_sym_line: bool
+) -> list[int]:
+    """
+    Find the positions of a line of symmetry across one axis. The axis is
+    implicitly decided in whether the list of strs passed in represents rows
+    or columns.
+    """
 
-        return clean_mirrors, dirty_mirrors
+    # Scan the grid from top to bottom, trying each possible sym line in turn.
+    # The terms "upper" and "lower" are used, but if columns are passed in
+    # rather than rows, this should be thought of as "left" and "right" in
+    # respect to the original grid.
 
-    def _get_instances(self, pattern):
-        instances = []
-        left_pattern = []
-        right_pattern = list(pattern)
-        while right_pattern:
-            char = right_pattern.pop(0)
-            opposite_char = TERRAIN_OPPOSITE.get(char, char)    # return newline if newline present
-            instance = ''.join(left_pattern) + opposite_char + ''.join(right_pattern)
-            left_pattern.append(char)
-            instances.append(instance)
-        return instances
+    sym_lines = []
+    upper_lines = []
+    lower_lines = grid.copy()
+    while True:
+        upper_lines.append(lower_lines.pop(0))  # grid size is small so popping from the beginning is fine
+        if not lower_lines:
+            # we've reached the very end of the grid - no sym lines were found
+            break
 
-    def _analyse_pattern(self, pattern_instances, first_mirror=True):
-        mirrors = set()
-        for pattern_instance in pattern_instances:
-            pattern_rows = pattern_instance.splitlines()
-            row_mirrors = self._analyse_pattern_instance(pattern_rows, first_mirror)
-            if row_mirrors:
-                for row_mirror in row_mirrors:
-                    mirrors.add(Mirror(orientation=Orientation.HORIZONTAL, position=row_mirror))
-                if first_mirror:
-                    return mirrors
-            pattern_cols = list(list(col) for col in zip(*pattern_rows))
-            col_mirrors = self._analyse_pattern_instance(pattern_cols, first_mirror)
-            if col_mirrors:
-                for col_mirror in col_mirrors:
-                    mirrors.add(Mirror(orientation=Orientation.VERTICAL, position=col_mirror))
-                if first_mirror:
-                    return mirrors
-        return mirrors
+        # this value discards the lines that won't overlap when folded,
+        # since the sym line is not perfectly in the middle
+        num_of_lines_to_check = min(len(upper_lines), len(lower_lines))
 
-    def _analyse_pattern_instance(self, pattern_rows, first_mirror):
-        mirrors = []
-        left_rows = []
-        right_rows = pattern_rows.copy()
-        while True:
-            left_rows.append(right_rows.pop(0))     # potentially slow
-            if not right_rows:
+        # check the overlapping lines for reflection
+        if upper_lines[-num_of_lines_to_check:] == list(reversed(lower_lines[:num_of_lines_to_check])):
+            # sym line found
+            sym_line_position = len(upper_lines)
+            sym_lines.append(sym_line_position)
+            if break_on_first_sym_line or len(sym_lines) == 2:
+                # the max numbers of sym lines in a single grid can only be two
                 break
-            reflected_row_no = min(len(left_rows), len(right_rows))
-            if left_rows[-reflected_row_no:] == list(reversed(right_rows[:reflected_row_no])):
-                mirrors.append(len(left_rows))
-                if first_mirror:
-                    return mirrors
-        return mirrors
+    return sym_lines
 
 
-def summarise(mirrors):
+def find_grid_sym_lines(grid: list[list[str]], break_on_first_sym_line: bool) -> list[SymmetryLine]:
+    """
+    Find the lines of symmetry in a single grid across both axes.
+
+    For part 1, we are guaranteed only one symmetry line per grid, so if
+    we find it, we can break immediately - set break_on_first_sym_line to
+    True to stop searching.
+
+    For part 2, we might search and initially find the same line we found
+    in part 1, so we need to keep searching until we find a second one - set
+    break_on_first_sym_line to False to keep searching.
+    """
+    sym_lines = []
+
+    # find sym lines across rows
+    rows = grid
+    sym_line_positions = find_sym_lines_across_axis(rows, break_on_first_sym_line)
+    for sym_line_pos in sym_line_positions:
+        sym_lines.append(SymmetryLine(direction=Direction.HORIZONTAL, position=sym_line_pos))
+        if break_on_first_sym_line:
+            return sym_lines
+
+    # find sym lines across columns
+    cols = [list(col) for col in zip(*rows)]
+    sym_line_positions = find_sym_lines_across_axis(cols, break_on_first_sym_line)
+    for sym_line_pos in sym_line_positions:
+        sym_lines.append(SymmetryLine(direction=Direction.VERTICAL, position=sym_line_pos))
+        if break_on_first_sym_line:
+            return sym_lines
+
+    return sym_lines
+
+
+def find_grid_permutations(grid: list[list[str]]) -> Iterator[list[list[str]]]:
+    """
+    Yield permutations of the grid where one pixel of the grid is changed at
+    a time.
+    """
+    for y, row in enumerate(grid):
+        for x, px in enumerate(row):
+            new_grid = copy.deepcopy(grid)      # fine as grid sizes are small
+            new_grid[y][x] = OPPOSITE_PIXEL[px]
+            yield new_grid
+
+
+def find_sym_lines(grids: list[list[list[str]]]) -> tuple[list[SymmetryLine], list[SymmetryLine]]:
+    """
+    Find the single line of symmetry in each original grid, as per part 1.
+    Then find the new line of symmetry in each grid when exactly one pixel is
+    changed, as per part 2.
+    """
+
+    # part 1
+    orig_sym_lines = []
+    for grid in grids:
+        sym_lines = find_grid_sym_lines(grid, break_on_first_sym_line=True)
+        sym_line, = sym_lines       # exactly one orig line of symmetry is present
+        orig_sym_lines.append(sym_line)
+
+    # part 2
+    # We need to know the original line of symmetry for each grid in part 1
+    # so that we can find the different line of symmetry when going through
+    # each permutation of changed grids
+    new_sym_lines = []
+    for orig_sym_line, grid in zip(orig_sym_lines, grids):
+        for grid_perm in find_grid_permutations(grid):
+            sym_lines = find_grid_sym_lines(grid_perm, break_on_first_sym_line=False)
+            if orig_sym_line in sym_lines:
+                sym_lines.remove(orig_sym_line)
+            if not sym_lines:
+                continue
+
+            # new sym line found
+            sym_line, = sym_lines  # exactly one orig line of symmetry is present
+            new_sym_lines.append(sym_line)
+            break
+
+    return orig_sym_lines, new_sym_lines
+
+
+def score(sym_lines: list[SymmetryLine]) -> int:
     factor = {
-        Orientation.HORIZONTAL: 100,
-        Orientation.VERTICAL: 1,
+        Direction.HORIZONTAL: 100,
+        Direction.VERTICAL: 1,
     }
     return sum(
-        factor[mirror.orientation] * mirror.position
-        for mirror in mirrors
+        factor[sym_line.direction] * sym_line.position
+        for sym_line in sym_lines
     )
 
 
 def main() -> None:
-    patterns = Patterns.read_file()
-    clean_mirrors, dirty_mirrors = patterns.find_mirrors()
+    grids_input = read_file()
+    grids = parse(grids_input)
+    orig_sym_lines, new_sym_lines = find_sym_lines(grids)
     print(
-        "Summary of patterns:",
-        summarise(clean_mirrors)
+        "Part 1 - summed score for original line of symmetry in grids:",
+        score(orig_sym_lines)
     )
     print(
-        "Summary of patterns for dirty mirrors:",
-        summarise(dirty_mirrors)
+        "Part 2 - summed score for new line of symmetry in grids where exactly one px has changed:",
+        score(new_sym_lines)
     )
 
 
