@@ -196,7 +196,7 @@ def main():
     disintegrable, not_disintegrable = disintegrable_bricks(hierarchy, dependent_count)
 
     print(
-        f"Number of safely disintegrable bricks:",
+        "Number of safely disintegrable bricks:",
         len(disintegrable),
     )
 
@@ -205,7 +205,7 @@ def main():
     )
 
     print(
-        f"Sum of number of other bricks that would fall, for each structural brick:",
+        "Sum of number of other bricks that would fall, for each structural brick:",
         sum_chain_reaction_fallen_bricks(chain_reaction_fallen_bricks),
     )
 

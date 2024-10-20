@@ -72,11 +72,11 @@ def sum_dict_values(dict_: dict[Any: int]) -> int:
 def main() -> None:
     scratchcards = Scratchcards.read_file()
     print(
-        f"Sum of scratchcard points:",
+        "Sum of scratchcard points:",
         sum_dict_values(scratchcards.points()),
     )
     print(
-        f"Total scratchcards:",
+        "Total scratchcards:",
         sum_dict_values(scratchcards.total_scratchcards()),
     )
 

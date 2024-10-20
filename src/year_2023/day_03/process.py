@@ -85,11 +85,11 @@ def calculate_gear_ratios(gear_parts):
 def main() -> None:
     schematic = EngineSchematic.read_file()
     print(
-        f"Sum of all part numbers in engine schematic:",
+        "Sum of all part numbers in engine schematic:",
         sum(schematic.parts),
     )
     print(
-        f"Sum of all gear ratios in engine schematic:",
+        "Sum of all gear ratios in engine schematic:",
         sum(calculate_gear_ratios(schematic.gear_parts)),
     )
 

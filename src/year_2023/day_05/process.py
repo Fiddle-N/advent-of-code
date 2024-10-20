@@ -222,11 +222,11 @@ def min_seed_range_locations(seed_range_details):
 def main() -> None:
     almanac = Almanac.read_file()
     print(
-        f"Lowest location number for any initial seed:",
+        "Lowest location number for any initial seed:",
         min_individual_seed_locations(resolve_individual_seed_details(almanac)),
     )
     print(
-        f"Lowest location number for any initial seed with seed ranges:",
+        "Lowest location number for any initial seed with seed ranges:",
         min_seed_range_locations(resolve_seed_range_details(almanac)),
     )
 

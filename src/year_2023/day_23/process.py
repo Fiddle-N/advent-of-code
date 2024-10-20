@@ -248,7 +248,7 @@ def main():
     )
     largest_path_dist = find_largest_path(paths)
     print(
-        f"Longest hike length:",
+        "Longest hike length:",
         largest_path_dist,
     )
 
@@ -265,7 +265,7 @@ def main():
     largest_undi_path_dist = find_largest_path(undi_paths)
 
     print(
-        f"Longest hike length where all slopes are normal paths:",
+        "Longest hike length where all slopes are normal paths:",
         largest_undi_path_dist,
     )
 

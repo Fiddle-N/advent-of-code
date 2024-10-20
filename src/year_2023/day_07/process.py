@@ -1,6 +1,5 @@
 import collections
 import enum
-import functools
 import operator
 from dataclasses import dataclass
 
@@ -185,12 +184,12 @@ def main() -> None:
     camel_card_input = read_file()
     camel_card_game = CamelCardGame(camel_card_input)
     print(
-        f"Total winnings after ranking every hand:",
+        "Total winnings after ranking every hand:",
         total_winnings(camel_card_game.ranked()),
     )
     camel_card_game_with_joker_rule = CamelCardGame(camel_card_input, joker_rule=True)
     print(
-        f"Total winnings after ranking every hand with joker rule:",
+        "Total winnings after ranking every hand with joker rule:",
         total_winnings(camel_card_game_with_joker_rule.ranked()),
     )
 

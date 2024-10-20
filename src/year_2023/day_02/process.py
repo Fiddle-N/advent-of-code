@@ -88,7 +88,7 @@ def main() -> None:
     )
     min_number_of_cubes_power_level = generate_power_levels(min_number_of_cubes_needed.values())
     print(
-        f"Sum of power of minimum sets of cubes present:",
+        "Sum of power of minimum sets of cubes present:",
         sum(min_number_of_cubes_power_level),
     )
 

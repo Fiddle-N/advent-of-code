@@ -102,12 +102,12 @@ def main() -> None:
     races_info = read_file()
     races = Races(races_info)
     print(
-        f"Number of ways to beat the record for all races, multiplied together:",
+        "Number of ways to beat the record for all races, multiplied together:",
         math.prod(num_of_winning_distances(races)),
     )
     long_race = Races(races_info, long_race=True)
     print(
-        f"Number of ways to beat the record for long race, multiplied together:",
+        "Number of ways to beat the record for long race, multiplied together:",
         math.prod(num_of_winning_distances(long_race)),
     )
 
