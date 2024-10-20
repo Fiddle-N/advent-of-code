@@ -15,7 +15,9 @@ L|-JF"""
         process.Coords(3, 3),
         process.Coords(3, 1),
     ]
-    exp_reverse_loop_verts = exp_forward_loop_verts[:1] + list(reversed(exp_forward_loop_verts[1:]))
+    exp_reverse_loop_verts = exp_forward_loop_verts[:1] + list(
+        reversed(exp_forward_loop_verts[1:])
+    )
     exp_loops_verts = (exp_forward_loop_verts, exp_reverse_loop_verts)
     assert field.loop_verts in exp_loops_verts
     assert field.loop_length == 8
@@ -44,7 +46,9 @@ LJ..."""
         process.Coords(1, 4),
         process.Coords(0, 4),
     ]
-    exp_reverse_loop_verts = exp_forward_loop_verts[:1] + list(reversed(exp_forward_loop_verts[1:]))
+    exp_reverse_loop_verts = exp_forward_loop_verts[:1] + list(
+        reversed(exp_forward_loop_verts[1:])
+    )
     exp_loops_verts = (exp_forward_loop_verts, exp_reverse_loop_verts)
     assert field.loop_verts in exp_loops_verts
     assert field.loop_length == 16

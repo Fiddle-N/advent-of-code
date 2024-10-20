@@ -36,11 +36,11 @@ class BeamState:
 
 
 class ContraptionSpace(enum.Enum):
-    EMPTY_SPACE = '.'
-    FORWARDS_DIAGONAL_MIRROR = '/'
-    BACKWARDS_DIAGONAL_MIRROR = '\\'
-    VERTICAL_SPLITTER = '|'
-    HORIZONTAL_SPLITTER = '-'
+    EMPTY_SPACE = "."
+    FORWARDS_DIAGONAL_MIRROR = "/"
+    BACKWARDS_DIAGONAL_MIRROR = "\\"
+    VERTICAL_SPLITTER = "|"
+    HORIZONTAL_SPLITTER = "-"
 
 
 FORWARDS_DIAGONAL_DIRECTIONS = {
@@ -59,7 +59,6 @@ BACKWARDS_DIAGONAL_DIRECTIONS = {
 
 
 class Contraption:
-
     def __init__(self, contraption_input):
         self.contraption = {}
         contraption_rows = contraption_input.splitlines()
@@ -88,40 +87,56 @@ class Contraption:
         match (space, direction):
             case (
                 (ContraptionSpace.EMPTY_SPACE, _)
-                | (ContraptionSpace.HORIZONTAL_SPLITTER, (Direction.LEFTWARDS | Direction.RIGHTWARDS))
-                | (ContraptionSpace.VERTICAL_SPLITTER, (Direction.UPWARDS | Direction.DOWNWARDS))
+                | (
+                    ContraptionSpace.HORIZONTAL_SPLITTER,
+                    (Direction.LEFTWARDS | Direction.RIGHTWARDS),
+                )
+                | (
+                    ContraptionSpace.VERTICAL_SPLITTER,
+                    (Direction.UPWARDS | Direction.DOWNWARDS),
+                )
             ):
                 # beam passes through as normal
-                return [
-                    BeamState(location=location, direction=direction)
-                ]
-            case ContraptionSpace.HORIZONTAL_SPLITTER, (Direction.UPWARDS | Direction.DOWNWARDS):
+                return [BeamState(location=location, direction=direction)]
+            case ContraptionSpace.HORIZONTAL_SPLITTER, (
+                Direction.UPWARDS
+                | Direction.DOWNWARDS
+            ):
                 return [
                     BeamState(location=location, direction=next_direction)
                     for next_direction in (Direction.LEFTWARDS, Direction.RIGHTWARDS)
                 ]
-            case ContraptionSpace.VERTICAL_SPLITTER, (Direction.LEFTWARDS | Direction.RIGHTWARDS):
+            case ContraptionSpace.VERTICAL_SPLITTER, (
+                Direction.LEFTWARDS
+                | Direction.RIGHTWARDS
+            ):
                 return [
                     BeamState(location=location, direction=next_direction)
                     for next_direction in (Direction.UPWARDS, Direction.DOWNWARDS)
                 ]
             case ContraptionSpace.FORWARDS_DIAGONAL_MIRROR, _:
                 return [
-                    BeamState(location=location, direction=FORWARDS_DIAGONAL_DIRECTIONS[direction])
+                    BeamState(
+                        location=location,
+                        direction=FORWARDS_DIAGONAL_DIRECTIONS[direction],
+                    )
                 ]
             case ContraptionSpace.BACKWARDS_DIAGONAL_MIRROR, _:
                 return [
-                    BeamState(location=location, direction=BACKWARDS_DIAGONAL_DIRECTIONS[direction])
+                    BeamState(
+                        location=location,
+                        direction=BACKWARDS_DIAGONAL_DIRECTIONS[direction],
+                    )
                 ]
             case _:
-                raise ValueError('Unhandled space/direction case')
+                raise ValueError("Unhandled space/direction case")
 
-    def simulate_beam(self, init_location=Coords(-1, 0), init_direction=Direction.RIGHTWARDS):
+    def simulate_beam(
+        self, init_location=Coords(-1, 0), init_direction=Direction.RIGHTWARDS
+    ):
         # init locations do not exist on the grid
         # but is used to model where the beam is originating from
-        init_beam_state = BeamState(
-            location=init_location, direction=init_direction
-        )
+        init_beam_state = BeamState(location=init_location, direction=init_direction)
         energised_spaces: dict[Coords, set[Direction]] = collections.defaultdict(set)
         beam_states = collections.deque([init_beam_state])
         while beam_states:
@@ -129,28 +144,39 @@ class Contraption:
             next_beam_states = self._get_next_beam_states(beam_state)
 
             for next_beam_state in next_beam_states:
-                if next_beam_state.direction in energised_spaces[next_beam_state.location]:
+                if (
+                    next_beam_state.direction
+                    in energised_spaces[next_beam_state.location]
+                ):
                     # we've been here before
                     continue
-                energised_spaces[next_beam_state.location].add(next_beam_state.direction)
+                energised_spaces[next_beam_state.location].add(
+                    next_beam_state.direction
+                )
                 beam_states.appendleft(next_beam_state)
         return energised_spaces
 
     def best_configuration(self):
         left_starting_positions = [
-            {'init_location': Coords(-1, y), 'init_direction': Direction.RIGHTWARDS}
+            {"init_location": Coords(-1, y), "init_direction": Direction.RIGHTWARDS}
             for y in range(self.height)
         ]
         right_starting_positions = [
-            {'init_location': Coords(self.width, y), 'init_direction': Direction.LEFTWARDS}
+            {
+                "init_location": Coords(self.width, y),
+                "init_direction": Direction.LEFTWARDS,
+            }
             for y in range(self.height)
         ]
         top_starting_positions = [
-            {'init_location': Coords(x, -1), 'init_direction': Direction.DOWNWARDS}
+            {"init_location": Coords(x, -1), "init_direction": Direction.DOWNWARDS}
             for x in range(self.width)
         ]
         bottom_starting_positions = [
-            {'init_location': Coords(x, self.height), 'init_direction': Direction.UPWARDS}
+            {
+                "init_location": Coords(x, self.height),
+                "init_direction": Direction.UPWARDS,
+            }
             for x in range(self.width)
         ]
         starting_positions = (
@@ -175,13 +201,13 @@ def main() -> None:
     top_left_tile_num = len(top_left_energised_spaces)
     print(
         "Number of tiles ending up being energised with beam entering from top-left:",
-        top_left_tile_num
+        top_left_tile_num,
     )
     best_config = contraption.best_configuration()
     _, best_tile_num = best_config
     print(
         "Number of tiles ending up being energised with beam entering from any edge:",
-        best_tile_num
+        best_tile_num,
     )
 
 

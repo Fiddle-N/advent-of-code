@@ -33,12 +33,12 @@ def read_file() -> str:
 def generate_games_record(record_str: str) -> dict[int, list[CubeSelection]]:
     record = {}
     for game in record_str.splitlines():
-        label, game_info = game.split(': ')
-        id_ = parse.parse('Game {id:d}', label)['id']
+        label, game_info = game.split(": ")
+        id_ = parse.parse("Game {id:d}", label)["id"]
         record_entry = []
-        for set_info in game_info.split('; '):
+        for set_info in game_info.split("; "):
             cube_selection = {}
-            for colour_set_ in set_info.split(', '):
+            for colour_set_ in set_info.split(", "):
                 no, colour = colour_set_.split()
                 no = int(no)
                 cube_selection[colour] = no
@@ -51,13 +51,13 @@ def calculate_min_no_of_cubes_needed(record) -> dict[int, CubeSelection]:
     possible_games = {}
     for id_, record_entry in record.items():
         cubes_needed_for_game = {}
-        for colour in ['red', 'green', 'blue']:
+        for colour in ["red", "green", "blue"]:
             cubes_needed_for_colour = getattr(
                 max(
                     record_entry,
-                    key=lambda cube_selection: getattr(cube_selection, colour)
+                    key=lambda cube_selection: getattr(cube_selection, colour),
                 ),
-                colour
+                colour,
             )
             cubes_needed_for_game[colour] = cubes_needed_for_colour
         possible_games[id_] = CubeSelection(**cubes_needed_for_game)
@@ -65,8 +65,8 @@ def calculate_min_no_of_cubes_needed(record) -> dict[int, CubeSelection]:
 
 
 def games_possible_with(
-        min_no_of_cubes_needed: dict[int, CubeSelection],
-        possible_cube_selection: CubeSelection
+    min_no_of_cubes_needed: dict[int, CubeSelection],
+    possible_cube_selection: CubeSelection,
 ) -> list[int]:
     possible_games = []
     for id_, max_cube_selection in min_no_of_cubes_needed.items():
@@ -84,9 +84,13 @@ def main() -> None:
     min_number_of_cubes_needed = calculate_min_no_of_cubes_needed(games_record)
     print(
         f"Sum of game IDs possible if bag loaded with {ELF_QUESTION_CUBE_SELECTION}:",
-        sum(games_possible_with(min_number_of_cubes_needed, ELF_QUESTION_CUBE_SELECTION)),
+        sum(
+            games_possible_with(min_number_of_cubes_needed, ELF_QUESTION_CUBE_SELECTION)
+        ),
     )
-    min_number_of_cubes_power_level = generate_power_levels(min_number_of_cubes_needed.values())
+    min_number_of_cubes_power_level = generate_power_levels(
+        min_number_of_cubes_needed.values()
+    )
     print(
         "Sum of power of minimum sets of cubes present:",
         sum(min_number_of_cubes_power_level),

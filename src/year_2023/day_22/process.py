@@ -43,9 +43,9 @@ def read_file() -> str:
 def parse(input_):
     bricks = []
     for brick_input in input_.splitlines():
-        start_input, end_input = brick_input.split('~')
-        start_ints = [int(val) for val in start_input.split(',')]
-        end_ints = [int(val) for val in end_input.split(',')]
+        start_input, end_input = brick_input.split("~")
+        start_ints = [int(val) for val in start_input.split(",")]
+        end_ints = [int(val) for val in end_input.split(",")]
         start = Coords3D(*start_ints)
         end = Coords3D(*end_ints)
         assert start.x <= end.x and start.y <= end.y and start.z <= end.z
@@ -62,25 +62,23 @@ def falling_bricks(bricks: list[Brick]):
     final_brick_coords = {}
 
     for brick in sorted_bricks:
-
         dropping_brick = brick
         while True:
             dropping_brick_coords = dropping_brick.coords()
             if (
-                    # brick is on the ground
-                    dropping_brick.start.z == 1
-
-                    # brick is resting on another brick
-                    or any(
-                        (coord + ONE_LEVEL_BELOW) in final_brick_coords
-                        for coord in dropping_brick_coords
-                    )
+                # brick is on the ground
+                dropping_brick.start.z == 1
+                # brick is resting on another brick
+                or any(
+                    (coord + ONE_LEVEL_BELOW) in final_brick_coords
+                    for coord in dropping_brick_coords
+                )
             ):
                 break
 
             dropping_brick = Brick(
                 dropping_brick.start + ONE_LEVEL_BELOW,
-                dropping_brick.end + ONE_LEVEL_BELOW
+                dropping_brick.end + ONE_LEVEL_BELOW,
             )
 
         final_bricks.append(dropping_brick)
@@ -95,19 +93,10 @@ def brick_dependency_hierarchy(bricks, bricks_coords):
     for brick in bricks:
         coords = brick.coords()
         highest_z = brick.end.z
-        highest_coords = [
-            coord
-            for coord in coords
-            if coord.z == highest_z
-        ]
-        one_level_up = [
-            (coord + ONE_LEVEL_ABOVE)
-            for coord in highest_coords
-        ]
+        highest_coords = [coord for coord in coords if coord.z == highest_z]
+        one_level_up = [(coord + ONE_LEVEL_ABOVE) for coord in highest_coords]
         resting_bricks = {
-            bricks_coords[coord]
-            for coord in one_level_up
-            if coord in bricks_coords
+            bricks_coords[coord] for coord in one_level_up if coord in bricks_coords
         }
         hierarchy[brick] = resting_bricks
     return hierarchy
@@ -123,10 +112,7 @@ def calculate_dependent_count(hierarchy):
 def calculate_hierarchy_dependent_count(hierarchy, dependent_count):
     hierarchy_dependent_count = {}
     for brick, dependents in hierarchy.items():
-        brick_dependent_count = [
-            dependent_count[brick]
-            for brick in dependents
-        ]
+        brick_dependent_count = [dependent_count[brick] for brick in dependents]
         hierarchy_dependent_count[brick] = brick_dependent_count
     return hierarchy_dependent_count
 
@@ -140,12 +126,11 @@ def disintegrable_bricks(hierarchy, dependent_count):
     not_disintegrable = []
     for brick, counts in hierarchy_dependent_count.items():
         if (
-                # no bricks are dependent on this brick
-                not counts
-
-                # all dependent bricks are dependent
-                # on more than one underlying brick
-                or all(count > 1 for count in counts)
+            # no bricks are dependent on this brick
+            not counts
+            # all dependent bricks are dependent
+            # on more than one underlying brick
+            or all(count > 1 for count in counts)
         ):
             disintegrable.append(brick)
         else:
@@ -181,8 +166,7 @@ def chain_reaction(hierarchy, dependent_count, structural_bricks):
 
 def sum_chain_reaction_fallen_bricks(chain_reaction_fallen_bricks):
     return sum(
-        len(fallen_bricks)
-        for fallen_bricks in chain_reaction_fallen_bricks.values()
+        len(fallen_bricks) for fallen_bricks in chain_reaction_fallen_bricks.values()
     )
 
 

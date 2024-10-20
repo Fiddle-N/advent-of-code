@@ -87,16 +87,17 @@ v#...##..#v
 
 Score the grids in the same way as part 1 to get the result for part 2.
 """
+
 import copy
 import dataclasses
 import enum
 from collections.abc import Iterator
 from typing import Optional
 
-FILENAME = 'input.txt'
+FILENAME = "input.txt"
 
-OFF_PX = '.'
-ON_PX = '#'
+OFF_PX = "."
+ON_PX = "#"
 
 
 OPPOSITE_PX = {
@@ -126,14 +127,12 @@ def parse(grid_input: str) -> list[list[list[str]]]:
     Parse grid input into a list of 2D grids.
     """
     return [
-        [list(line) for line in grid.splitlines()]
-        for grid in grid_input.split('\n\n')
+        [list(line) for line in grid.splitlines()] for grid in grid_input.split("\n\n")
     ]
 
 
 def find_sym_lines_across_axis(
-        grid: list[list[str]],
-        break_on_first_sym_line: bool
+    grid: list[list[str]], break_on_first_sym_line: bool
 ) -> list[int]:
     """
     Find the positions of a line of symmetry across one axis. The axis is
@@ -150,7 +149,9 @@ def find_sym_lines_across_axis(
     upper_lines = []
     lower_lines = grid.copy()
     while True:
-        upper_lines.append(lower_lines.pop(0))  # grid size is small so popping from the beginning is fine
+        upper_lines.append(
+            lower_lines.pop(0)
+        )  # grid size is small so popping from the beginning is fine
         if not lower_lines:
             # we've reached the very end of the grid - no sym lines were found
             break
@@ -160,7 +161,9 @@ def find_sym_lines_across_axis(
         num_of_lines_to_check = min(len(upper_lines), len(lower_lines))
 
         # check the overlapping lines for reflection
-        if upper_lines[-num_of_lines_to_check:] == list(reversed(lower_lines[:num_of_lines_to_check])):
+        if upper_lines[-num_of_lines_to_check:] == list(
+            reversed(lower_lines[:num_of_lines_to_check])
+        ):
             # sym line found
             sym_line_position = len(upper_lines)
             sym_lines.append(sym_line_position)
@@ -170,7 +173,9 @@ def find_sym_lines_across_axis(
     return sym_lines
 
 
-def find_grid_sym_lines(grid: list[list[str]], break_on_first_sym_line: bool) -> list[SymmetryLine]:
+def find_grid_sym_lines(
+    grid: list[list[str]], break_on_first_sym_line: bool
+) -> list[SymmetryLine]:
     """
     Find the lines of symmetry in a single grid across both axes.
 
@@ -188,7 +193,9 @@ def find_grid_sym_lines(grid: list[list[str]], break_on_first_sym_line: bool) ->
     rows = grid
     sym_line_positions = find_sym_lines_across_axis(rows, break_on_first_sym_line)
     for sym_line_pos in sym_line_positions:
-        sym_lines.append(SymmetryLine(direction=Direction.HORIZONTAL, position=sym_line_pos))
+        sym_lines.append(
+            SymmetryLine(direction=Direction.HORIZONTAL, position=sym_line_pos)
+        )
         if break_on_first_sym_line:
             return sym_lines
 
@@ -196,7 +203,9 @@ def find_grid_sym_lines(grid: list[list[str]], break_on_first_sym_line: bool) ->
     cols = [list(col) for col in zip(*rows)]
     sym_line_positions = find_sym_lines_across_axis(cols, break_on_first_sym_line)
     for sym_line_pos in sym_line_positions:
-        sym_lines.append(SymmetryLine(direction=Direction.VERTICAL, position=sym_line_pos))
+        sym_lines.append(
+            SymmetryLine(direction=Direction.VERTICAL, position=sym_line_pos)
+        )
         if break_on_first_sym_line:
             return sym_lines
 
@@ -228,7 +237,9 @@ def find_grid_permutations(grid: list[list[str]]) -> Iterator[list[list[str]]]:
             prev_px = px
 
 
-def find_sym_lines(grids: list[list[list[str]]]) -> tuple[list[SymmetryLine], list[SymmetryLine]]:
+def find_sym_lines(
+    grids: list[list[list[str]]],
+) -> tuple[list[SymmetryLine], list[SymmetryLine]]:
     """
     Find the single line of symmetry in each original grid, as per part 1.
     Then find the new line of symmetry in each grid when exactly one pixel is
@@ -239,7 +250,7 @@ def find_sym_lines(grids: list[list[list[str]]]) -> tuple[list[SymmetryLine], li
     orig_sym_lines = []
     for grid in grids:
         sym_lines = find_grid_sym_lines(grid, break_on_first_sym_line=True)
-        sym_line = sym_lines[0]       # exactly one orig line of symmetry is present
+        sym_line = sym_lines[0]  # exactly one orig line of symmetry is present
         orig_sym_lines.append(sym_line)
 
     # part 2
@@ -268,10 +279,7 @@ def score(sym_lines: list[SymmetryLine]) -> int:
         Direction.HORIZONTAL: 100,
         Direction.VERTICAL: 1,
     }
-    return sum(
-        factor[sym_line.direction] * sym_line.position
-        for sym_line in sym_lines
-    )
+    return sum(factor[sym_line.direction] * sym_line.position for sym_line in sym_lines)
 
 
 def main() -> None:
@@ -280,11 +288,11 @@ def main() -> None:
     orig_sym_lines, new_sym_lines = find_sym_lines(grids)
     print(
         "Part 1 - summed score for original line of symmetry in grids:",
-        score(orig_sym_lines)
+        score(orig_sym_lines),
     )
     print(
         "Part 2 - summed score for new line of symmetry in grids where exactly one px has changed:",
-        score(new_sym_lines)
+        score(new_sym_lines),
     )
 
 

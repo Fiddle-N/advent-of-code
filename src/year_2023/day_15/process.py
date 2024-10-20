@@ -53,7 +53,7 @@ class Box:
         elif isinstance(step, BoxRemove):
             self._remove(step.label)
         else:
-            raise TypeError('Unrecognised step')
+            raise TypeError("Unrecognised step")
 
     def _add(self, label, focal_length):
         if label in self.box:
@@ -80,13 +80,9 @@ class Box:
         next_lens = self.box.get(next_label)
 
         if prev_lens:
-            prev_lens.next_ = (
-                next_label if label != self.last_label else None
-            )
+            prev_lens.next_ = next_label if label != self.last_label else None
         if next_lens:
-            next_lens.prev = (
-                prev_label if label != self.first_label else None
-            )
+            next_lens.prev = prev_label if label != self.first_label else None
 
         if label == self.first_label:
             self.first_label = next_label
@@ -95,23 +91,20 @@ class Box:
 
 
 class LensInstall:
-
     def __init__(self, init_seq):
         self.init_seq = []
         for step in init_seq:
             if match := re.fullmatch(BOX_ADD_PATTERN, step):
                 self.init_seq.append(
                     BoxAdd(
-                        label=match.group('label'),
-                        focal_length=int(match.group('focal_length'))
+                        label=match.group("label"),
+                        focal_length=int(match.group("focal_length")),
                     )
                 )
             elif match := re.fullmatch(BOX_REMOVE_PATTERN, step):
-                self.init_seq.append(
-                    BoxRemove(label=match.group('label'))
-                )
+                self.init_seq.append(BoxRemove(label=match.group("label")))
             else:
-                raise ValueError('Unknown step')
+                raise ValueError("Unknown step")
         self.boxes = collections.defaultdict(Box)
 
     def __iter__(self):
@@ -144,12 +137,9 @@ def read_file():
 
 
 def main() -> None:
-    init_seq = read_file().split(',')
+    init_seq = read_file().split(",")
     hashed_init_seq = [hash_(step) for step in init_seq]
-    print(
-        "Hash of each step of initialisation sequence:",
-        sum(hashed_init_seq)
-    )
+    print("Hash of each step of initialisation sequence:", sum(hashed_init_seq))
     lens_install = LensInstall(init_seq)
     lens_install_iter = iter(lens_install)
     boxes = None
@@ -158,7 +148,7 @@ def main() -> None:
     lens_focusing_power = focusing_power(boxes)
     print(
         "Focus power of lens configuration after initialisation sequence:",
-        sum(lens_focusing_power.values())
+        sum(lens_focusing_power.values()),
     )
 
 

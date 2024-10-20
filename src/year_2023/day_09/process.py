@@ -15,7 +15,7 @@ def get_full_history(history):
             return full_history
         elif len(seq) == 1:
             raise ValueError(
-                'Could not predict history - sequence does not reduce to regular sum'
+                "Could not predict history - sequence does not reduce to regular sum"
             )
         seq = next_seq
 
@@ -52,7 +52,9 @@ def extrapolate_full_history(full_history):
 def get_extrapolated_report(report_input):
     report = [history_from_str(history) for history in report_input.splitlines()]
     full_report = [get_full_history(history) for history in report]
-    extrapolated_report = [extrapolate_full_history(full_history) for full_history in full_report]
+    extrapolated_report = [
+        extrapolate_full_history(full_history) for full_history in full_report
+    ]
     return extrapolated_report
 
 

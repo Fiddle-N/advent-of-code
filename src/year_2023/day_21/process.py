@@ -3,7 +3,7 @@ import enum
 from typing import Self
 
 
-STARTING_POSITION = 'S'
+STARTING_POSITION = "S"
 
 ORIGINAL_ELF_STEP_GOAL = 64
 NEW_ELF_STEP_GOAL = 26501365
@@ -13,8 +13,8 @@ START_TO_GARDEN_EDGE_LENGTH = 65
 
 
 class GardenSpace(enum.Enum):
-    PLOT = '.'
-    ROCK = '#'
+    PLOT = "."
+    ROCK = "#"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -42,7 +42,6 @@ OFFSET_COORDS = [
 
 
 class Garden:
-
     def __init__(self, garden_input):
         garden_rows = garden_input.splitlines()
 
@@ -63,9 +62,7 @@ class Garden:
                 self.garden[coords] = space
 
         self.garden_plots = {
-            coords
-            for coords, space in self.garden.items()
-            if space == GardenSpace.PLOT
+            coords for coords, space in self.garden.items() if space == GardenSpace.PLOT
         }
 
     @classmethod
@@ -81,7 +78,6 @@ def normalise_pos(garden, pos):
 
 
 class ElfStepCalculator:
-
     def __init__(self, garden: Garden, is_infinite=False, include_full_plot_info=False):
         self.garden = garden
         self.is_infinite = is_infinite
@@ -90,9 +86,7 @@ class ElfStepCalculator:
     def _new_positions(self, positions):
         next_positions = set()
         for pos in positions:
-            new_positions = [
-                (pos + offset) for offset in OFFSET_COORDS
-            ]
+            new_positions = [(pos + offset) for offset in OFFSET_COORDS]
             valid_new_positions = []
             for new_pos in new_positions:
                 normalised_pos = new_pos
@@ -108,7 +102,7 @@ class ElfStepCalculator:
         last_output = ElfStepResult(
             new_plots={self.garden.start},
             all_plots={self.garden.start} if self.include_full_plot_info else None,
-            plots_reached=1
+            plots_reached=1,
         )
 
         while True:
@@ -117,14 +111,16 @@ class ElfStepCalculator:
                 output = ElfStepResult(
                     new_plots=positions,
                     all_plots=positions if self.include_full_plot_info else None,
-                    plots_reached=len(positions)
+                    plots_reached=len(positions),
                 )
             else:
                 new_positions = positions - penult_output.new_plots
                 output = ElfStepResult(
                     new_plots=new_positions,
-                    all_plots=(positions | penult_output.all_plots) if self.include_full_plot_info else None,
-                    plots_reached=penult_output.plots_reached + len(new_positions)
+                    all_plots=(positions | penult_output.all_plots)
+                    if self.include_full_plot_info
+                    else None,
+                    plots_reached=penult_output.plots_reached + len(new_positions),
                 )
 
             yield output
@@ -180,17 +176,27 @@ def total_corner_plots(visited_plot_locations):
     return corner_plots
 
 
-def equation(odd_full_garden_plots, even_full_garden_plots, odd_corner_plots, even_corner_plots, n):
+def equation(
+    odd_full_garden_plots,
+    even_full_garden_plots,
+    odd_corner_plots,
+    even_corner_plots,
+    n,
+):
     return (
-            (n ** 2) * odd_full_garden_plots
-            + ((n - 1) ** 2) * even_full_garden_plots
-            - n * odd_corner_plots
-            + (n - 1) * even_corner_plots
+        (n**2) * odd_full_garden_plots
+        + ((n - 1) ** 2) * even_full_garden_plots
+        - n * odd_corner_plots
+        + (n - 1) * even_corner_plots
     )
 
 
 def iteration_vs_equation_solution_test(
-        garden, odd_full_garden_plots, even_full_garden_plots, odd_corner_plots, even_corner_plots
+    garden,
+    odd_full_garden_plots,
+    even_full_garden_plots,
+    odd_corner_plots,
+    even_corner_plots,
 ):
     # n = 1 test
     elf_step_calculator = ElfStepCalculator(garden, is_infinite=True)
@@ -199,7 +205,13 @@ def iteration_vs_equation_solution_test(
         result = next(elf_step_iter)
     n_1_iter_result = result.plots_reached
 
-    n_1_eq_result = equation(odd_full_garden_plots, even_full_garden_plots, odd_corner_plots, even_corner_plots, 1)
+    n_1_eq_result = equation(
+        odd_full_garden_plots,
+        even_full_garden_plots,
+        odd_corner_plots,
+        even_corner_plots,
+        1,
+    )
 
     assert n_1_iter_result == n_1_eq_result
 
@@ -208,7 +220,13 @@ def iteration_vs_equation_solution_test(
         result = next(elf_step_iter)
     n_2_iter_result = result.plots_reached
 
-    n_2_eq_result = equation(odd_full_garden_plots, even_full_garden_plots, odd_corner_plots, even_corner_plots, 2)
+    n_2_eq_result = equation(
+        odd_full_garden_plots,
+        even_full_garden_plots,
+        odd_corner_plots,
+        even_corner_plots,
+        2,
+    )
 
     assert n_2_iter_result == n_2_eq_result
 
@@ -364,7 +382,9 @@ def garden_plots_reachable_with_new_step_goal(garden, test_equation_solution=Fal
     # Set test_equation_solution to True to assert equation solution against iteration solution for correctness
     # Set test_equation_solution to False for performance
     #
-    elf_step_calculator = ElfStepCalculator(garden, is_infinite=False, include_full_plot_info=True)
+    elf_step_calculator = ElfStepCalculator(
+        garden, is_infinite=False, include_full_plot_info=True
+    )
     elf_step_iter = iter(elf_step_calculator)
 
     for _ in range(GARDEN_LENGTH - 2):
@@ -383,11 +403,21 @@ def garden_plots_reachable_with_new_step_goal(garden, test_equation_solution=Fal
 
     if test_equation_solution:
         iteration_vs_equation_solution_test(
-            garden, odd_full_garden_plots, even_full_garden_plots, odd_corner_plots, even_corner_plots
+            garden,
+            odd_full_garden_plots,
+            even_full_garden_plots,
+            odd_corner_plots,
+            even_corner_plots,
         )
 
     n = (NEW_ELF_STEP_GOAL - START_TO_GARDEN_EDGE_LENGTH) // GARDEN_LENGTH + 1
-    result = equation(odd_full_garden_plots, even_full_garden_plots, odd_corner_plots, even_corner_plots, n)
+    result = equation(
+        odd_full_garden_plots,
+        even_full_garden_plots,
+        odd_corner_plots,
+        even_corner_plots,
+        n,
+    )
     return result
 
 

@@ -5,12 +5,12 @@ import dataclasses
 import math
 
 
-BUTTON = 'button'
-BROADCASTER = 'broadcaster'
-FINAL_MACHINE = 'rx'
+BUTTON = "button"
+BROADCASTER = "broadcaster"
+FINAL_MACHINE = "rx"
 
-FLIP_FLOP_SYMBOL = '%'
-CONJUNCTION_SYMBOL = '&'
+FLIP_FLOP_SYMBOL = "%"
+CONJUNCTION_SYMBOL = "&"
 
 CABLE_WARM_UP_NUMBER = 1000
 
@@ -40,7 +40,6 @@ class PulseMsg:
 
 
 class Module(abc.ABC):
-
     @abc.abstractmethod
     def output(self, input_: PulseMsg) -> list[PulseMsg] | None:
         pass
@@ -64,10 +63,7 @@ class FlipFlopModule(Module):
     dests: list[str]
     state: ModuleState = ModuleState.OFF
 
-    PULSE_MAP = {
-        ModuleState.ON: Pulse.HIGH,
-        ModuleState.OFF: Pulse.LOW
-    }
+    PULSE_MAP = {ModuleState.ON: Pulse.HIGH, ModuleState.OFF: Pulse.LOW}
 
     def output(self, input_: PulseMsg) -> list[PulseMsg] | None:
         if input_.pulse == Pulse.HIGH:
@@ -85,7 +81,7 @@ class FlipFlopModule(Module):
 class ConjunctionModule(Module):
     name: str
     dests: list[str]
-    pulse_history: dict[str: Pulse]
+    pulse_history: dict[str:Pulse]
 
     def output(self, input_: PulseMsg) -> list[PulseMsg]:
         self.pulse_history[input_.source] = input_.pulse
@@ -100,13 +96,12 @@ class ConjunctionModule(Module):
 
 
 class PulseRunner:
-
     def __init__(self, module_config):
         self.modules = {}
         self.conjunction_mods = {}
         for module_info in module_config.splitlines():
-            name, dests_str = module_info.split(' -> ')
-            dests = dests_str.split(', ')
+            name, dests_str = module_info.split(" -> ")
+            dests = dests_str.split(", ")
             if name == BROADCASTER:
                 self.modules[name] = BroadcasterModule(name=BROADCASTER, dests=dests)
             elif name.startswith(FLIP_FLOP_SYMBOL):
@@ -116,10 +111,12 @@ class PulseRunner:
                 name = name[1:]
                 # pulse history cannot be established until the whole input is parsed
                 # so default to empty for now
-                self.modules[name] = ConjunctionModule(name=name, dests=dests, pulse_history={})
+                self.modules[name] = ConjunctionModule(
+                    name=name, dests=dests, pulse_history={}
+                )
                 self.conjunction_mods[name] = []
             else:
-                raise ValueError('Unrecognised module type')
+                raise ValueError("Unrecognised module type")
 
         # locate all conjunction mod inputs
         for module in self.modules.values():
@@ -177,8 +174,10 @@ class PulseRunner:
             return False
 
         # assertion 2
-        top_level_conjunction_module, = top_level_conjunction_modules
-        second_level_conjunction_modules = self.conjunction_mods[top_level_conjunction_module]
+        (top_level_conjunction_module,) = top_level_conjunction_modules
+        second_level_conjunction_modules = self.conjunction_mods[
+            top_level_conjunction_module
+        ]
         for module in second_level_conjunction_modules:
             if module not in self.conjunction_mods:
                 return False
@@ -189,7 +188,7 @@ class PulseRunner:
             third_level_conjunction_module = self.conjunction_mods[module]
             if len(third_level_conjunction_module) != 1:
                 return False
-            third_level_conjunction_module, = third_level_conjunction_module
+            (third_level_conjunction_module,) = third_level_conjunction_module
             third_level_conjunction_modules.append(third_level_conjunction_module)
 
         # assertion 4
@@ -205,49 +204,44 @@ class PulseRunner:
             + second_level_conjunction_modules
             + third_level_conjunction_modules
         )
-        self.is_special_input = (
-            len(conjunction_modules) == len(self.conjunction_mods)
-            and set(conjunction_modules) == set(self.conjunction_mods)
-        )
+        self.is_special_input = len(conjunction_modules) == len(
+            self.conjunction_mods
+        ) and set(conjunction_modules) == set(self.conjunction_mods)
 
         if self.is_special_input:
             self.special_conjunction_mods = third_level_conjunction_modules
             self.special_conjunction_mod_cycle_1 = {
-                mod: None
-                for mod in self.special_conjunction_mods
+                mod: None for mod in self.special_conjunction_mods
             }
             self.special_conjunction_mod_cycle_2 = {
-                mod: None
-                for mod in self.special_conjunction_mods
+                mod: None for mod in self.special_conjunction_mods
             }
 
     def _find_special_conjunction_mod_periodicity(
-            self,
-            input_msg,
+        self,
+        input_msg,
     ):
         if (
-                input_msg.source in self.special_conjunction_mods
-                and input_msg.pulse == Pulse.LOW
+            input_msg.source in self.special_conjunction_mods
+            and input_msg.pulse == Pulse.LOW
         ):
             if (
-                    (
-                            current_result := self.special_conjunction_mod_cycle_1.get(input_msg.source)
-                    ) is None
-                    or current_result == self.btn_count
-            ):
+                current_result := self.special_conjunction_mod_cycle_1.get(
+                    input_msg.source
+                )
+            ) is None or current_result == self.btn_count:
                 self.special_conjunction_mod_cycle_1[input_msg.source] = self.btn_count
             else:
                 self.special_conjunction_mod_cycle_2[input_msg.source] = self.btn_count
 
     def _attempt_calc_of_button_presses_to_turn_on_sand_machine(self):
         if all(
-                count is not None
-                for count in self.special_conjunction_mod_cycle_2.values()
+            count is not None for count in self.special_conjunction_mod_cycle_2.values()
         ):
             for mod in self.special_conjunction_mods:
                 assert divmod(
                     self.special_conjunction_mod_cycle_2[mod],
-                    self.special_conjunction_mod_cycle_1[mod]
+                    self.special_conjunction_mod_cycle_1[mod],
                 ) == (2, 0)
             return math.lcm(*self.special_conjunction_mod_cycle_1.values())
         return None

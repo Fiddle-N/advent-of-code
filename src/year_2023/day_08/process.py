@@ -5,15 +5,15 @@ import math
 
 import parse
 
-START_ELEMENT = 'AAA'
-END_ELEMENT = 'ZZZ'
-START_NODES_LETTER = 'A'
-END_NODES_LETTER = 'Z'
+START_ELEMENT = "AAA"
+END_ELEMENT = "ZZZ"
+START_NODES_LETTER = "A"
+END_NODES_LETTER = "Z"
 
 
 class Direction(enum.Enum):
-    LEFT = 'L'
-    RIGHT = 'R'
+    LEFT = "L"
+    RIGHT = "R"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -23,14 +23,15 @@ class Node:
 
 
 class Navigation:
-
     def __init__(self, nav_input):
-        instrs, network = nav_input.split('\n\n')
+        instrs, network = nav_input.split("\n\n")
         self.instrs = [Direction(dir_) for dir_ in instrs]
         self.network = {}
         for node in network.splitlines():
-            parsed_node = parse.parse('{input_ele} = ({left_ele}, {right_ele})', node)
-            self.network[parsed_node['input_ele']] = Node(parsed_node['left_ele'], parsed_node['right_ele'])
+            parsed_node = parse.parse("{input_ele} = ({left_ele}, {right_ele})", node)
+            self.network[parsed_node["input_ele"]] = Node(
+                parsed_node["left_ele"], parsed_node["right_ele"]
+            )
 
     @classmethod
     def read_file(cls):
@@ -39,7 +40,7 @@ class Navigation:
 
 
 def navigate(nav: Navigation, ele=START_ELEMENT, end=True):
-    instr_map = {Direction.LEFT: 'left', Direction.RIGHT: 'right'}
+    instr_map = {Direction.LEFT: "left", Direction.RIGHT: "right"}
     for step_no, instr in enumerate(itertools.cycle(nav.instrs), start=1):
         node = nav.network[ele]
         ele = getattr(node, instr_map[instr])
@@ -66,9 +67,11 @@ def navigate_simultaneously(nav):
                 break
         end_node_1, end_node_2 = end_nodes
         if end_node_1[0] != end_node_2[0]:
-            raise ValueError('More than one end element visited')
+            raise ValueError("More than one end element visited")
         if divmod(end_node_2[1], end_node_1[1]) != (2, 0):
-            raise ValueError('Path to end element does not follow a loop with zero offset')
+            raise ValueError(
+                "Path to end element does not follow a loop with zero offset"
+            )
         end_ele_steps.append(end_node_1[1])
     return math.lcm(*end_ele_steps)
 
@@ -87,9 +90,9 @@ def main() -> None:
         steps,
     )
     print(
-        f'Total number of steps required to end on a {END_NODES_LETTER} element '
-        f'starting from a {START_NODES_LETTER} element simultaneously:',
-        navigate_simultaneously(nav)
+        f"Total number of steps required to end on a {END_NODES_LETTER} element "
+        f"starting from a {START_NODES_LETTER} element simultaneously:",
+        navigate_simultaneously(nav),
     )
 
 

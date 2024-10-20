@@ -1,9 +1,9 @@
 import enum
 import itertools
 
-ROUNDED_ROCKS = 'O'
-CUBE_ROCKS = '#'
-EMPTY_SPACE = '.'
+ROUNDED_ROCKS = "O"
+CUBE_ROCKS = "#"
+EMPTY_SPACE = "."
 
 
 class Direction(enum.Enum):
@@ -25,18 +25,16 @@ def _tilt_section(section, direction):
     rocks = [ROUNDED_ROCKS] * rock_no
     empty_spaces = [EMPTY_SPACE] * empty_space_no
     tilted_spaces = (
-        rocks + empty_spaces
-        if direction in LEFT_TILTS
-        else empty_spaces + rocks
+        rocks + empty_spaces if direction in LEFT_TILTS else empty_spaces + rocks
     )
-    tilted_section = ''.join(tilted_spaces)
+    tilted_section = "".join(tilted_spaces)
     return tilted_section
 
 
 def tilt(platform, direction=Direction.NORTH):
     platform_lines = platform.splitlines()
     if direction in VERTICAL_TILTS:
-        platform_lines = list(''.join(col) for col in zip(*platform_lines))
+        platform_lines = list("".join(col) for col in zip(*platform_lines))
     tilted_lines = []
     for line in platform_lines:
         sections = line.split(CUBE_ROCKS)
@@ -44,8 +42,8 @@ def tilt(platform, direction=Direction.NORTH):
         tilted_line = CUBE_ROCKS.join(tilted_sections)
         tilted_lines.append(tilted_line)
     if direction in VERTICAL_TILTS:
-        tilted_lines = list(''.join(col) for col in zip(*tilted_lines))
-    tilted_platform = '\n'.join(tilted_lines)
+        tilted_lines = list("".join(col) for col in zip(*tilted_lines))
+    tilted_platform = "\n".join(tilted_lines)
     return tilted_platform
 
 
@@ -71,7 +69,7 @@ def calculate_load(platform):
     for row_no, row in enumerate(platform_rows):
         load_per_rock = len(platform_rows) - row_no
         rock_no = len([space for space in row if space == ROUNDED_ROCKS])
-        load += (load_per_rock * rock_no)
+        load += load_per_rock * rock_no
     return load
 
 
@@ -85,10 +83,7 @@ def main() -> None:
 
     tilted_platform = tilt(platform_input)
     load = calculate_load(tilted_platform)
-    print(
-        "Total load on north support beams:",
-        load
-    )
+    print("Total load on north support beams:", load)
 
     many_cycles_no = 1_000_000_000
     cycle_iter = cycle(platform_input, total_cycles=1_000_000_000)
@@ -101,7 +96,7 @@ def main() -> None:
     load_after_many_cycles = calculate_load(titled_platform_after_many_cycles)
     print(
         f"Total load on north support beams after {many_cycles_no}:",
-        load_after_many_cycles
+        load_after_many_cycles,
     )
 
 

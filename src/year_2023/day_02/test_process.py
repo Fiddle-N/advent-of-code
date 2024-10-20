@@ -20,8 +20,7 @@ Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"""
     }
 
     games_possible_with_result = process.games_possible_with(
-        min_no_of_cubes_needed,
-        process.ELF_QUESTION_CUBE_SELECTION
+        min_no_of_cubes_needed, process.ELF_QUESTION_CUBE_SELECTION
     )
     assert games_possible_with_result == [1, 2, 5]
     assert sum(games_possible_with_result) == 8

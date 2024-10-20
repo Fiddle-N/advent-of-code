@@ -17,8 +17,8 @@ ZZZ = (ZZZ, ZZZ)"""
     nav = process.Navigation(nav_input)
 
     nav_iter = process.navigate(nav)
-    assert next(nav_iter) == 'CCC'
-    assert next(nav_iter) == 'ZZZ'
+    assert next(nav_iter) == "CCC"
+    assert next(nav_iter) == "ZZZ"
 
     try:
         next(nav_iter)
@@ -40,7 +40,7 @@ ZZZ = (ZZZ, ZZZ)"""
     nav = process.Navigation(nav_input)
 
     nav_iter = process.navigate(nav)
-    exp_elements = ['BBB', 'AAA', 'BBB', 'AAA', 'BBB', 'ZZZ']
+    exp_elements = ["BBB", "AAA", "BBB", "AAA", "BBB", "ZZZ"]
     for ele in exp_elements:
         assert next(nav_iter) == ele
 
@@ -83,7 +83,7 @@ LR
 XXX = (XXX, XXX)"""
     nav = process.Navigation(nav_input)
 
-    with pytest.raises(ValueError, match='More than one end element visited'):
+    with pytest.raises(ValueError, match="More than one end element visited"):
         process.navigate_simultaneously(nav)
 
 
@@ -104,5 +104,7 @@ LR
 XXX = (XXX, XXX)"""
     nav = process.Navigation(nav_input)
 
-    with pytest.raises(ValueError, match='Path to end element does not follow a loop with zero offset'):
+    with pytest.raises(
+        ValueError, match="Path to end element does not follow a loop with zero offset"
+    ):
         process.navigate_simultaneously(nav)

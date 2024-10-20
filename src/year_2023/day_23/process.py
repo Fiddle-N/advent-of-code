@@ -13,12 +13,12 @@ class Coords:
 
 
 class TrailTile(enum.Enum):
-    PATH = '.'
-    FOREST = '#'
-    NORTHWARDS_SLOPE = '^'
-    EASTWARDS_SLOPE = '>'
-    SOUTHWARDS_SLOPE = 'v'
-    WESTWARDS_SLOPE = '<'
+    PATH = "."
+    FOREST = "#"
+    NORTHWARDS_SLOPE = "^"
+    EASTWARDS_SLOPE = ">"
+    SOUTHWARDS_SLOPE = "v"
+    WESTWARDS_SLOPE = "<"
 
 
 class Directions(enum.Enum):
@@ -54,7 +54,6 @@ OFFSET_COORDS = {
 
 
 class HikingTrails:
-
     def __init__(self, hiking_trail_input):
         trail_rows = hiking_trail_input.splitlines()
 
@@ -121,15 +120,14 @@ def generate_graph(hiking_trails: HikingTrails):
             next_locations = []
 
             for dir_, coord in OFFSET_COORDS.items():
-                surrounding_location = (location + coord)
-                if (new_space := hiking_trails.map[surrounding_location]) != TrailTile.FOREST:
+                surrounding_location = location + coord
+                if (
+                    new_space := hiking_trails.map[surrounding_location]
+                ) != TrailTile.FOREST:
                     surrounding_locations.append(surrounding_location)
-                    if (
-                            surrounding_location != path_frontier.prev_location
-                            and (
-                                new_space not in TRAIL_TILE_SLOPES
-                                or TRAIL_TILE_SLOPES[new_space] == dir_
-                            )
+                    if surrounding_location != path_frontier.prev_location and (
+                        new_space not in TRAIL_TILE_SLOPES
+                        or TRAIL_TILE_SLOPES[new_space] == dir_
                     ):
                         next_locations.append(surrounding_location)
 
@@ -139,17 +137,17 @@ def generate_graph(hiking_trails: HikingTrails):
             )
 
             if len(next_locations) > 1 and not is_junction:
-                raise ValueError('Unexpected trail')
+                raise ValueError("Unexpected trail")
 
             if is_junction:
                 # we are at a directional_junction
                 # ensure we are not going around in a loop
                 # where one junction feeds back to a previous one
                 if (
-                        location in visited_junctions
-                        and visited_junctions[location] != path_frontier.section_distance
+                    location in visited_junctions
+                    and visited_junctions[location] != path_frontier.section_distance
                 ):
-                    raise Exception('Loop paths not handled')
+                    raise Exception("Loop paths not handled")
                 visited_junctions[location] = path_frontier.section_distance
 
                 # save current path
@@ -181,9 +179,7 @@ def generate_graph(hiking_trails: HikingTrails):
 
 def resolve_all_paths(graph, start, end):
     all_paths = []
-    path_stack = [
-        (start, {start}, 0)
-    ]
+    path_stack = [(start, {start}, 0)]
     while path_stack:
         path_state = path_stack.pop()
         path_frontier = path_state[0]
@@ -220,7 +216,7 @@ def di_to_undi_graph(di_graph, start, end):
             penults.append(source)
 
     assert len(penults) == 1
-    penult, = penults
+    (penult,) = penults
 
     undi_graph = collections.defaultdict(dict)
     for node_1, dest_nodes in di_graph.items():
@@ -242,9 +238,7 @@ def main():
     hiking_trails = HikingTrails(hiking_trail_input)
     di_graph = generate_graph(hiking_trails)
     paths = resolve_all_paths(
-        di_graph,
-        start=hiking_trails.start,
-        end=hiking_trails.end
+        di_graph, start=hiking_trails.start, end=hiking_trails.end
     )
     largest_path_dist = find_largest_path(paths)
     print(
@@ -253,14 +247,10 @@ def main():
     )
 
     undi_graph = di_to_undi_graph(
-        di_graph,
-        start=hiking_trails.start,
-        end=hiking_trails.end
+        di_graph, start=hiking_trails.start, end=hiking_trails.end
     )
     undi_paths = resolve_all_paths(
-        undi_graph,
-        start=hiking_trails.start,
-        end=hiking_trails.end
+        undi_graph, start=hiking_trails.start, end=hiking_trails.end
     )
     largest_undi_path_dist = find_largest_path(undi_paths)
 
@@ -274,8 +264,3 @@ if __name__ == "__main__":
     import timeit
 
     print(timeit.timeit(main, number=1))
-
-
-
-
-

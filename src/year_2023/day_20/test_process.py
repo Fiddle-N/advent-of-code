@@ -10,18 +10,18 @@ broadcaster -> a, b, c
 &inv -> a"""
     pulse_runner = process.PulseRunner(mod_config)
     assert next(pulse_runner) == [
-        process.PulseMsg(pulse=process.Pulse.LOW, source='button', dest='broadcaster'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='broadcaster', dest='a'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='broadcaster', dest='b'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='broadcaster', dest='c'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='a', dest='b'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='b', dest='c'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='c', dest='inv'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='inv', dest='a'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='a', dest='b'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='b', dest='c'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='c', dest='inv'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='inv', dest='a'),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="button", dest="broadcaster"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="broadcaster", dest="a"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="broadcaster", dest="b"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="broadcaster", dest="c"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="a", dest="b"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="b", dest="c"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="c", dest="inv"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="inv", dest="a"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="a", dest="b"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="b", dest="c"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="c", dest="inv"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="inv", dest="a"),
     ]
 
 
@@ -49,40 +49,40 @@ broadcaster -> a
 &con -> output"""
     pulse_runner = process.PulseRunner(mod_config)
     assert next(pulse_runner) == [
-        process.PulseMsg(pulse=process.Pulse.LOW, source='button', dest='broadcaster'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='broadcaster', dest='a'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='a', dest='inv'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='a', dest='con'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='inv', dest='b'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='con', dest='output'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='b', dest='con'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='con', dest='output'),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="button", dest="broadcaster"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="broadcaster", dest="a"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="a", dest="inv"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="a", dest="con"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="inv", dest="b"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="con", dest="output"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="b", dest="con"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="con", dest="output"),
     ]
     assert next(pulse_runner) == [
-        process.PulseMsg(pulse=process.Pulse.LOW, source='button', dest='broadcaster'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='broadcaster', dest='a'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='a', dest='inv'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='a', dest='con'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='inv', dest='b'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='con', dest='output'),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="button", dest="broadcaster"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="broadcaster", dest="a"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="a", dest="inv"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="a", dest="con"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="inv", dest="b"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="con", dest="output"),
     ]
     assert next(pulse_runner) == [
-        process.PulseMsg(pulse=process.Pulse.LOW, source='button', dest='broadcaster'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='broadcaster', dest='a'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='a', dest='inv'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='a', dest='con'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='inv', dest='b'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='con', dest='output'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='b', dest='con'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='con', dest='output'),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="button", dest="broadcaster"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="broadcaster", dest="a"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="a", dest="inv"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="a", dest="con"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="inv", dest="b"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="con", dest="output"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="b", dest="con"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="con", dest="output"),
     ]
     assert next(pulse_runner) == [
-        process.PulseMsg(pulse=process.Pulse.LOW, source='button', dest='broadcaster'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='broadcaster', dest='a'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='a', dest='inv'),
-        process.PulseMsg(pulse=process.Pulse.LOW, source='a', dest='con'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='inv', dest='b'),
-        process.PulseMsg(pulse=process.Pulse.HIGH, source='con', dest='output'),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="button", dest="broadcaster"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="broadcaster", dest="a"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="a", dest="inv"),
+        process.PulseMsg(pulse=process.Pulse.LOW, source="a", dest="con"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="inv", dest="b"),
+        process.PulseMsg(pulse=process.Pulse.HIGH, source="con", dest="output"),
     ]
 
 

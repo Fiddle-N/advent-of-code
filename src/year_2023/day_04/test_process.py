@@ -37,8 +37,7 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11"""
         6: set(),
     }
     your_winning_numbers = {
-        id_: card.your_winning_numbers
-        for id_, card in scratchcards.cards.items()
+        id_: card.your_winning_numbers for id_, card in scratchcards.cards.items()
     }
     assert your_winning_numbers == expected_your_winning_numbers
 

@@ -1,7 +1,7 @@
 import dataclasses
 import itertools
 
-GALAXY = '#'
+GALAXY = "#"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -11,14 +11,13 @@ class Coords:
 
 
 class Universe:
-
     def __init__(self, universe_input):
         universe = universe_input.splitlines()
 
         empty_ys = self._calc_empty_rows(universe)
         universe_transposed = [list(col) for col in zip(*universe)]
         empty_xs = self._calc_empty_rows(universe_transposed)
-        self.empty_axes = {'x': empty_xs, 'y': empty_ys}
+        self.empty_axes = {"x": empty_xs, "y": empty_ys}
 
         self.galaxies = {}
         galaxy_no = 0
@@ -41,7 +40,9 @@ class Universe:
         with open("input.txt") as f:
             return cls(f.read().strip())
 
-    def _manhatten_distance_single_axis(self, coords_1, coords_2, expansion_factor, axis):
+    def _manhatten_distance_single_axis(
+        self, coords_1, coords_2, expansion_factor, axis
+    ):
         pos_0, pos_1 = sorted([getattr(coords_1, axis), getattr(coords_2, axis)])
         inbetween_lines = len(
             [line for line in self.empty_axes[axis] if (pos_0 <= line <= pos_1)]
@@ -53,8 +54,12 @@ class Universe:
         return dist
 
     def _manhatten_distance(self, coords_1, coords_2, expansion_factor):
-        x_dist = self._manhatten_distance_single_axis(coords_1, coords_2, expansion_factor, axis='x')
-        y_dist = self._manhatten_distance_single_axis(coords_1, coords_2, expansion_factor, axis='y')
+        x_dist = self._manhatten_distance_single_axis(
+            coords_1, coords_2, expansion_factor, axis="x"
+        )
+        y_dist = self._manhatten_distance_single_axis(
+            coords_1, coords_2, expansion_factor, axis="y"
+        )
         return x_dist + y_dist
 
     def galaxy_paths(self, expansion_factor=2):
@@ -62,10 +67,10 @@ class Universe:
         for galaxy_1, galaxy_2 in itertools.combinations(self.galaxies.items(), 2):
             galaxy_1_id, galaxy_1_coords = galaxy_1
             galaxy_2_id, galaxy_2_coords = galaxy_2
-            distance = self._manhatten_distance(galaxy_1_coords, galaxy_2_coords, expansion_factor)
-            galaxy_paths[
-                frozenset([galaxy_1_id, galaxy_2_id])
-            ] = distance
+            distance = self._manhatten_distance(
+                galaxy_1_coords, galaxy_2_coords, expansion_factor
+            )
+            galaxy_paths[frozenset([galaxy_1_id, galaxy_2_id])] = distance
         return galaxy_paths
 
 

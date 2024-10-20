@@ -14,7 +14,9 @@ O.#..O.#.#
 #....###..
 #OO..#...."""
     tilted_platform = process.tilt(platform_input)
-    assert tilted_platform == """\
+    assert (
+        tilted_platform
+        == """\
 OOOO.#.O..
 OO..#....#
 OO..O##..O
@@ -25,6 +27,7 @@ O..#.OO...
 ..O.......
 #....###..
 #....#...."""
+    )
     assert process.calculate_load(tilted_platform) == 136
 
 
@@ -41,7 +44,9 @@ O.#..O.#.#
 #....###..
 #OO..#...."""
     cycle_iter = process.cycle(platform_input, total_cycles=1_000_000_000)
-    assert next(cycle_iter) == """\
+    assert (
+        next(cycle_iter)
+        == """\
 .....#....
 ....#...O#
 ...OO##...
@@ -52,7 +57,10 @@ O.#..O.#.#
 ......OOOO
 #...O###..
 #..OO#...."""
-    assert next(cycle_iter) == """\
+    )
+    assert (
+        next(cycle_iter)
+        == """\
 .....#....
 ....#...O#
 .....##...
@@ -63,7 +71,10 @@ O.#..O.#.#
 .......OOO
 #..OO###..
 #.OOO#...O"""
-    assert next(cycle_iter) == """\
+    )
+    assert (
+        next(cycle_iter)
+        == """\
 .....#....
 ....#...O#
 .....##...
@@ -74,6 +85,7 @@ O.#..O.#.#
 .......OOO
 #...O###.O
 #.OOO#...O"""
+    )
     while True:
         try:
             next(cycle_iter)

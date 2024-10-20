@@ -24,26 +24,27 @@ OFFSET_COORDS = [
     Coords(1, 1),
 ]
 
-GEAR = '*'
+GEAR = "*"
 
 
 class EngineSchematic:
-
     def __init__(self, schematic_text):
         # parse text into number and symbol locations
         self.numbers = {}
         self.symbols = {}
         for line_no, line in enumerate(schematic_text.splitlines()):
-            numbers_match = re.finditer(r'\d+', line)
+            numbers_match = re.finditer(r"\d+", line)
             for number_match in numbers_match:
                 number_coords_range = (
                     Coords(line_no, number_match.start()),
                     Coords(line_no, number_match.end()),
                 )
                 self.numbers[number_coords_range] = int(number_match.group())
-            symbols_match = re.finditer(r'[^\d.]', line)
+            symbols_match = re.finditer(r"[^\d.]", line)
             for symbol_match in symbols_match:
-                self.symbols[Coords(line_no, symbol_match.start())] = symbol_match.group()
+                self.symbols[Coords(line_no, symbol_match.start())] = (
+                    symbol_match.group()
+                )
 
         # for convenience, expand coord ranges into individual coords with a map to their range
         # to allow for easier lookup of numbers
@@ -58,7 +59,9 @@ class EngineSchematic:
         self.parts = []
         self.gear_parts = []
         for symbol_coord, symbol in self.symbols.items():
-            surrounding_num_ranges = set()  # use a set to ensure we don't count a number more than once
+            surrounding_num_ranges = (
+                set()
+            )  # use a set to ensure we don't count a number more than once
             for offset_coord in OFFSET_COORDS:
                 adjacent_coord = symbol_coord + offset_coord
                 if adjacent_coord in self._expanded_coord_range:
@@ -69,7 +72,9 @@ class EngineSchematic:
                 self.parts.append(part)
             if symbol == GEAR and len(surrounding_num_ranges) == 2:
                 self.gear_parts.append(
-                    tuple(self.numbers[num_range] for num_range in surrounding_num_ranges)
+                    tuple(
+                        self.numbers[num_range] for num_range in surrounding_num_ranges
+                    )
                 )
 
     @classmethod

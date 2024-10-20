@@ -59,25 +59,25 @@ class SeedRangeDetail:
 
 
 class Almanac:
-
     def __init__(self, almanac_input):
-        seed_input, *maps_input = almanac_input.split('\n\n')
-        seed_label, seeds = seed_input.split(': ')
+        seed_input, *maps_input = almanac_input.split("\n\n")
+        seed_label, seeds = seed_input.split(": ")
         self.seeds = [int(seed) for seed in seeds.strip().split()]
 
         self.category_map = {}
         self.maps = {}
         for map_ in maps_input:
-            map_label, *map_nums = map_.split('\n')
+            map_label, *map_nums = map_.split("\n")
 
-            parsed_label = parse.parse('{source_category}-to-{dest_category} map:', map_label)
-            source_category = parsed_label['source_category']
-            dest_category = parsed_label['dest_category']
+            parsed_label = parse.parse(
+                "{source_category}-to-{dest_category} map:", map_label
+            )
+            source_category = parsed_label["source_category"]
+            dest_category = parsed_label["dest_category"]
             self.category_map[source_category] = dest_category
 
             self.maps[(source_category, dest_category)] = [
-                Map(*[int(num) for num in nums.split()])
-                for nums in map_nums
+                Map(*[int(num) for num in nums.split()]) for nums in map_nums
             ]
 
     @classmethod
@@ -99,7 +99,7 @@ def _calculate_dest_val(category_map, source_val):
 def resolve_individual_seed_details(almanac):
     all_seed_details = []
     for seed in almanac.seeds:
-        source_category = 'seed'
+        source_category = "seed"
         source_category_val = seed
         seed_details = {source_category: source_category_val}
 
@@ -130,7 +130,9 @@ def _calculate_dest_ranges(category_map, source_ranges):
     for map_line in category_map:
         ranges_after_map = []
         for range_ in ranges_before_map:
-            is_overlap = (range_.start <= map_line.source_end) and (map_line.source_start <= range_.end)
+            is_overlap = (range_.start <= map_line.source_end) and (
+                map_line.source_start <= range_.end
+            )
 
             if not is_overlap:
                 # if no overlap found, carry range over to the next map range
@@ -141,17 +143,18 @@ def _calculate_dest_ranges(category_map, source_ranges):
             # calculate overlap
             overlap = (
                 max(range_.start, map_line.source_start),
-                min(range_.end, map_line.source_end)
+                min(range_.end, map_line.source_end),
             )
 
             # convert overlap to dest range in start-end format
             dest_overlap = tuple(
-                val + map_line.source_to_dest_overlap
-                for val in overlap
+                val + map_line.source_to_dest_overlap for val in overlap
             )
 
             # convert dest range to start + range format
-            dest_range = CategoryRange(start=dest_overlap[0], range_=dest_overlap[1] - dest_overlap[0] + 1)
+            dest_range = CategoryRange(
+                start=dest_overlap[0], range_=dest_overlap[1] - dest_overlap[0] + 1
+            )
 
             dest_ranges.add(dest_range)
 
@@ -183,14 +186,13 @@ def _calculate_dest_ranges(category_map, source_ranges):
 def resolve_seed_range_details(almanac):
     # generate seed range pairs
     seed_ranges = [
-        CategoryRange(*list(pair))
-        for pair in itertools.batched(almanac.seeds, 2)
+        CategoryRange(*list(pair)) for pair in itertools.batched(almanac.seeds, 2)
     ]
 
     seed_range_details = []
 
     for seed_range in seed_ranges:
-        source_category = 'seed'
+        source_category = "seed"
         source_category_ranges = {seed_range}
         seed_details = {source_category: source_category_ranges}
 

@@ -63,7 +63,6 @@ class LocationStateWithHeatLoss:
 
 
 class City:
-
     def __init__(self, city_input):
         self.city = {}
         city_lines = city_input.splitlines()
@@ -80,7 +79,6 @@ class City:
 
 
 class _HeatLossMinimiser:
-
     def __init__(self, city, min_consec_steps, max_consec_steps):
         self.city = city
         assert min_consec_steps > 0
@@ -99,17 +97,16 @@ class _HeatLossMinimiser:
         heapq.heappush(
             self.q,
             LocationStateWithHeatLoss(
-                heat_loss=0,
-                location=self.start,
-                direction=None,
-                straight_steps=0
-            )
+                heat_loss=0, location=self.start, direction=None, straight_steps=0
+            ),
         )
 
     def _is_valid_coord(self, coord: Coords):
         return (0 <= coord.x < self.city.width) and (0 <= coord.y < self.city.height)
 
-    def _traverse_city(self, start: Coords, offset: Coords, step_change: int) -> tuple[Coords, int] | None:
+    def _traverse_city(
+        self, start: Coords, offset: Coords, step_change: int
+    ) -> tuple[Coords, int] | None:
         destination = start
         heat_loss = 0
         for _ in range(step_change):
@@ -134,7 +131,7 @@ class _HeatLossMinimiser:
                 if item.straight_steps == self.max_consec_steps:
                     continue
                 step_change = 1
-                offset_straight_steps = (item.straight_steps + step_change)
+                offset_straight_steps = item.straight_steps + step_change
             else:
                 step_change = self.min_consec_steps
                 offset_straight_steps = step_change
@@ -151,7 +148,7 @@ class _HeatLossMinimiser:
                     heat_loss=heat_loss,
                     location=neighbour_coord,
                     direction=offset_dir,
-                    straight_steps=offset_straight_steps
+                    straight_steps=offset_straight_steps,
                 )
             )
         return neighbours
@@ -164,7 +161,7 @@ class _HeatLossMinimiser:
         current_visited_state = LocationState(
             location=item.location,
             direction=item.direction,
-            straight_steps=item.straight_steps
+            straight_steps=item.straight_steps,
         )
         if current_visited_state in self.visited:
             return None
@@ -172,7 +169,9 @@ class _HeatLossMinimiser:
         for steps in range(item.straight_steps, self.max_consec_steps + 1):
             self.visited.add(
                 LocationState(
-                    location=item.location, direction=item.direction, straight_steps=steps
+                    location=item.location,
+                    direction=item.direction,
+                    straight_steps=steps,
                 )
             )
 
@@ -183,11 +182,14 @@ class _HeatLossMinimiser:
             state = LocationState(
                 location=neighbour_visited_state.location,
                 direction=neighbour_visited_state.direction,
-                straight_steps=neighbour_visited_state.straight_steps
+                straight_steps=neighbour_visited_state.straight_steps,
             )
 
             old_cost = self.costs.get(state)
-            new_cost = self.costs.get(current_visited_state) + neighbour_visited_state.heat_loss
+            new_cost = (
+                self.costs.get(current_visited_state)
+                + neighbour_visited_state.heat_loss
+            )
             if old_cost is not None and new_cost >= old_cost:
                 continue
 
@@ -197,8 +199,8 @@ class _HeatLossMinimiser:
                     heat_loss=new_cost,
                     location=neighbour_visited_state.location,
                     direction=neighbour_visited_state.direction,
-                    straight_steps=neighbour_visited_state.straight_steps
-                )
+                    straight_steps=neighbour_visited_state.straight_steps,
+                ),
             )
             self.costs[state] = new_cost
 
@@ -229,11 +231,11 @@ def main() -> None:
     city = City.read_file()
     print(
         "Least heat loss incurred by crucible directed from lava pool to machine parts factory:",
-        crucible_minimal_heat_loss(city)
+        crucible_minimal_heat_loss(city),
     )
     print(
         "Least heat loss incurred by ultra crucible directed from lava pool to machine parts factory:",
-        ultra_crucible_minimal_heat_loss(city)
+        ultra_crucible_minimal_heat_loss(city),
     )
 
 

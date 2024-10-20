@@ -7,27 +7,27 @@ from typing import Literal, Self
 import parse
 
 
-START_NAME = 'in'
+START_NAME = "in"
 
 MIN_VALUE = 1
 MAX_VALUE = 4000
 
 OPERATORS = {
-    '>': operator.gt,
-    '<': operator.lt,
+    ">": operator.gt,
+    "<": operator.lt,
 }
 
 OPPOSITE_OPS = {
-    '>': '<=',
-    '>=': '<',
-    '<': '>=',
-    '<=': '>',
+    ">": "<=",
+    ">=": "<",
+    "<": ">=",
+    "<=": ">",
 }
 
 
 class Result(enum.Enum):
-    ACCEPTED = 'A'
-    REJECTED = 'R'
+    ACCEPTED = "A"
+    REJECTED = "R"
 
 
 @dataclasses.dataclass(frozen=True)
@@ -40,14 +40,12 @@ class Part:
 
 @dataclasses.dataclass(frozen=True)
 class Condition:
-    attr: Literal['x', 'm', 'a', 's']
-    op: Literal['<', '<=', '>', '>=']
+    attr: Literal["x", "m", "a", "s"]
+    op: Literal["<", "<=", ">", ">="]
     value: int
 
     def opposite(self) -> Self:
-        return Condition(
-            attr=self.attr, op=OPPOSITE_OPS[self.op], value=self.value
-        )
+        return Condition(attr=self.attr, op=OPPOSITE_OPS[self.op], value=self.value)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -85,45 +83,38 @@ def _parse_outcome(outcome_str: str) -> Result | str:
 
 
 def parse_input(input_: str) -> tuple[dict[str, Workflow], list[Part]]:
-    workflow_input, part_rating_input = input_.split('\n\n')
+    workflow_input, part_rating_input = input_.split("\n\n")
 
     workflows = {}
     for workflow in workflow_input.splitlines():
-        parsed_workflow = parse.parse(
-            '{name}{{{rules}}}',
-            workflow
-        )
-        rules_input = parsed_workflow['rules']
-        rules_list = [rule for rule in rules_input.split(',')]
+        parsed_workflow = parse.parse("{name}{{{rules}}}", workflow)
+        rules_input = parsed_workflow["rules"]
+        rules_list = [rule for rule in rules_input.split(",")]
         *condition_rules_list, final_rule_str = rules_list
 
         condition_rules = []
         for condition_rule_str in condition_rules_list:
             parsed_condition = parse.parse(
-                '{attr}{op}{value:d}:{if_true}',
-                condition_rule_str
+                "{attr}{op}{value:d}:{if_true}", condition_rule_str
             )
             condition_rule = ConditionRule(
                 condition=Condition(
-                    attr=parsed_condition['attr'],
-                    op=parsed_condition['op'],
-                    value=parsed_condition['value']
+                    attr=parsed_condition["attr"],
+                    op=parsed_condition["op"],
+                    value=parsed_condition["value"],
                 ),
-                if_true=_parse_outcome(parsed_condition['if_true'])
+                if_true=_parse_outcome(parsed_condition["if_true"]),
             )
             condition_rules.append(condition_rule)
 
         final_rule = _parse_outcome(final_rule_str)
-        workflows[parsed_workflow['name']] = Workflow(
+        workflows[parsed_workflow["name"]] = Workflow(
             condition_rules=condition_rules, final_rule=final_rule
         )
 
     parts = []
     for part_str in part_rating_input.splitlines():
-        parsed_part = parse.parse(
-            '{{x={x:d},m={m:d},a={a:d},s={s:d}}',
-            part_str
-        )
+        parsed_part = parse.parse("{{x={x:d},m={m:d},a={a:d},s={s:d}}", part_str)
         part = Part(**parsed_part.named)
         parts.append(part)
 
@@ -159,33 +150,22 @@ def sort_through_parts(workflows: dict[str, Workflow], parts: list[Part]) -> lis
 
 
 def sum_parts(parts: list[Part]) -> int:
-    return sum(
-        [(part.x + part.m + part.a + part.s) for part in parts]
-    )
+    return sum([(part.x + part.m + part.a + part.s) for part in parts])
 
 
 class _WalkAcceptedPaths:
-
     def __init__(self, workflows: dict[str, Workflow]) -> None:
         self.workflows = workflows
         self.accepted_paths = []
 
-    def _process_outcome(
-            self,
-            outcome: Result | str,
-            path: list[Condition]
-    ) -> None:
+    def _process_outcome(self, outcome: Result | str, path: list[Condition]) -> None:
         if isinstance(outcome, Result):
             if outcome == Result.ACCEPTED:
                 self.accepted_paths.append(path)
         else:
             self.walk(path, outcome)
 
-    def walk(
-            self,
-            path: list[Condition] | None = None,
-            name: str = START_NAME
-    ) -> None:
+    def walk(self, path: list[Condition] | None = None, name: str = START_NAME) -> None:
         if path is None:
             path = []
 
@@ -197,17 +177,13 @@ class _WalkAcceptedPaths:
             # if true
             true_path = path.copy()
             true_path.append(condition)
-            self._process_outcome(
-                outcome=condition_rule.if_true, path=true_path
-            )
+            self._process_outcome(outcome=condition_rule.if_true, path=true_path)
 
             # if false
             opposite_condition = condition.opposite()
             path.append(opposite_condition)
 
-        self._process_outcome(
-            outcome=workflow.final_rule, path=path
-        )
+        self._process_outcome(outcome=workflow.final_rule, path=path)
 
 
 def _walk_accepted_paths(workflows: dict[str, Workflow]) -> list[Condition]:
@@ -218,20 +194,20 @@ def _walk_accepted_paths(workflows: dict[str, Workflow]) -> list[Condition]:
 
 def _condition_to_range(condition: Condition) -> CategoryRange:
     match condition.op:
-        case '<':
+        case "<":
             start = MIN_VALUE
             end = condition.value - 1
-        case '<=':
+        case "<=":
             start = MIN_VALUE
             end = condition.value
-        case '>':
+        case ">":
             start = condition.value + 1
             end = MAX_VALUE
-        case '>=':
+        case ">=":
             start = condition.value
             end = MAX_VALUE
         case _:
-            raise ValueError('Unexpected operator')
+            raise ValueError("Unexpected operator")
     return CategoryRange(start, end)
 
 
@@ -257,16 +233,16 @@ def _reduce_paths(paths) -> list[PartRanges]:
     return ranges
 
 
-def _sum_combinations(
-        part_ranges: list[PartRanges]
-) -> int:
-    return sum([
-        math.prod(
-            range_.end - range_.start + 1
-            for range_ in (part.x, part.m, part.a, part.s)
-        )
-        for part in part_ranges
-    ])
+def _sum_combinations(part_ranges: list[PartRanges]) -> int:
+    return sum(
+        [
+            math.prod(
+                range_.end - range_.start + 1
+                for range_ in (part.x, part.m, part.a, part.s)
+            )
+            for part in part_ranges
+        ]
+    )
 
 
 def distinct_combinations(workflows):

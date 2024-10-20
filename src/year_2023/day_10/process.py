@@ -13,14 +13,14 @@ class Coords:
 
 
 class Tile(enum.Enum):
-    VERTICAL_PIPE = '|'
-    HORIZONTAL_PIPE = '-'
-    NORTH_EAST_90_DEGREE_BEND = 'L'
-    NORTH_WEST_90_DEGREE_BEND = 'J'
-    SOUTH_WEST_90_DEGREE_BEND = '7'
-    SOUTH_EAST_90_DEGREE_BEND = 'F'
-    GROUND = '.'
-    STARTING_POSITION = 'S'
+    VERTICAL_PIPE = "|"
+    HORIZONTAL_PIPE = "-"
+    NORTH_EAST_90_DEGREE_BEND = "L"
+    NORTH_WEST_90_DEGREE_BEND = "J"
+    SOUTH_WEST_90_DEGREE_BEND = "7"
+    SOUTH_EAST_90_DEGREE_BEND = "F"
+    GROUND = "."
+    STARTING_POSITION = "S"
 
 
 class Direction(enum.Enum):
@@ -67,7 +67,6 @@ def _is_valid_coord(coord, max_x, max_y):
 
 
 class Field:
-
     def __init__(self, field_input):
         self.start_coord = None
         self.grid = {}
@@ -123,7 +122,9 @@ class Field:
         pos_coord = self.start_coord
         path = [self.start_coord]
         start_tile = self.grid[pos_coord]
-        dir_ = list(TILE_OUTBOUND_DIRS[start_tile])[0]        # arbitrarily choose any direction from start tile
+        dir_ = list(TILE_OUTBOUND_DIRS[start_tile])[
+            0
+        ]  # arbitrarily choose any direction from start tile
         for length in itertools.count(start=1):
             dir_coords = DIRECTION_TO_COORDS[dir_]
             pos_coord += dir_coords
@@ -153,14 +154,12 @@ def enclosed_num_of_tiles(field: Field):
     # and the number of boundary points (which is just the loop length)
     # i = A - b/2 + 1
     loop_verts = field.loop_verts.copy()
-    loop_verts.append(loop_verts[0])    # repeat start point to go back to the beginning
+    loop_verts.append(loop_verts[0])  # repeat start point to go back to the beginning
     pairwise_loop_points = itertools.pairwise(loop_verts)
 
     # shoelace formula
     area = abs(
-        sum(
-            [(p1.x - p2.x) * (p1.y + p2.y) for p1, p2 in pairwise_loop_points]
-        ) // 2
+        sum([(p1.x - p2.x) * (p1.y + p2.y) for p1, p2 in pairwise_loop_points]) // 2
     )
 
     # Pick's theorem in reverse

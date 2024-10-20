@@ -18,7 +18,7 @@ class WinningRange:
 
 
 def quad_formula(a, b, c):
-    sqrt_b2_4ac = (b ** 2 - 4 * a * c) ** 0.5
+    sqrt_b2_4ac = (b**2 - 4 * a * c) ** 0.5
     denominator_2a = 2 * a
     plus_case = (-b + sqrt_b2_4ac) / denominator_2a
     minus_case = (-b - sqrt_b2_4ac) / denominator_2a
@@ -26,27 +26,18 @@ def quad_formula(a, b, c):
 
 
 class Races:
-
     def __init__(self, race_input: str, long_race=False) -> None:
         race_info = race_input.splitlines()
 
         time_info = race_info[0]
         time_label, *times = time_info.strip().split()
-        assert time_label == 'Time:'
-        times = (
-            [int(''.join(times))]
-            if long_race
-            else [int(time) for time in times]
-        )
+        assert time_label == "Time:"
+        times = [int("".join(times))] if long_race else [int(time) for time in times]
 
         dist_info = race_info[1]
         dist_label, *dists = dist_info.strip().split()
-        assert dist_label == 'Distance:'
-        dists = (
-            [int(''.join(dists))]
-            if long_race
-            else [int(dist) for dist in dists]
-        )
+        assert dist_label == "Distance:"
+        dists = [int("".join(dists))] if long_race else [int(dist) for dist in dists]
 
         self.races = [Race(*race_detail) for race_detail in zip(times, dists)]
 
@@ -92,8 +83,7 @@ def read_file() -> str:
 
 def num_of_winning_distances(races: Races) -> list[int]:
     winning_distances_nums = [
-        len(winning_range)
-        for winning_range in races.winning_ranges()
+        len(winning_range) for winning_range in races.winning_ranges()
     ]
     return winning_distances_nums
 

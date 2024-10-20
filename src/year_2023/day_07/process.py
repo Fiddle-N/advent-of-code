@@ -70,24 +70,23 @@ class Type(OrderedEnum):
 
 
 class Hand:
-
     def __init__(self, cards_str, joker_rule=False) -> None:
         self.joker_rule = joker_rule
         card_cls = CardWithJokerRule if joker_rule else Card
         card_mapping = {
-            'A': card_cls.ACE,
-            'K': card_cls.KING,
-            'Q': card_cls.QUEEN,
-            'T': card_cls.TEN,
-            '9': card_cls.NINE,
-            '8': card_cls.EIGHT,
-            '7': card_cls.SEVEN,
-            '6': card_cls.SIX,
-            '5': card_cls.FIVE,
-            '4': card_cls.FOUR,
-            '3': card_cls.THREE,
-            '2': card_cls.TWO,
-            'J': CardWithJokerRule.JOKER if joker_rule else Card.JACK
+            "A": card_cls.ACE,
+            "K": card_cls.KING,
+            "Q": card_cls.QUEEN,
+            "T": card_cls.TEN,
+            "9": card_cls.NINE,
+            "8": card_cls.EIGHT,
+            "7": card_cls.SEVEN,
+            "6": card_cls.SIX,
+            "5": card_cls.FIVE,
+            "4": card_cls.FOUR,
+            "3": card_cls.THREE,
+            "2": card_cls.TWO,
+            "J": CardWithJokerRule.JOKER if joker_rule else Card.JACK,
         }
         self.cards = tuple(card_mapping[card] for card in cards_str)
         self.type = self._calculate_type()
@@ -101,10 +100,14 @@ class Hand:
         if self.joker_rule:
             joker_count = card_count[CardWithJokerRule.JOKER]
             card_count_without_joker = {
-                card: count for card, count in card_count.items() if card != CardWithJokerRule.JOKER
+                card: count
+                for card, count in card_count.items()
+                if card != CardWithJokerRule.JOKER
             }
             if card_count_without_joker:
-                max_card_count = max(card_count_without_joker.items(), key=lambda entry: entry[1])
+                max_card_count = max(
+                    card_count_without_joker.items(), key=lambda entry: entry[1]
+                )
                 card_count_without_joker[max_card_count[0]] += joker_count
                 card_count = card_count_without_joker
 
@@ -126,7 +129,7 @@ class Hand:
             case [1, 1, 1, 1, 1]:
                 return Type.HIGH_CARD
             case _:
-                raise ValueError('No types fit the hand')
+                raise ValueError("No types fit the hand")
 
     def __eq__(self, other):
         return self.cards == other.cards
@@ -158,7 +161,6 @@ class HandBid:
 
 
 class CamelCardGame:
-
     def __init__(self, card_input, joker_rule=False):
         self.hand_bids = []
         for hand_bid in card_input.splitlines():

@@ -4,16 +4,16 @@ from year_2023.day_12 import process
 
 
 @pytest.mark.parametrize(
-    'condition_record, damaged_springs, arrangements',
+    "condition_record, damaged_springs, arrangements",
     [
-        ('#', (1,), 1),
-        ('.', (1,), 0),
-        ('?', (1,), 1),
-        ('#.', (1,), 1),
-        ('.#', (1,), 1),
-        ('##', (1,), 0),
-        ('..', (1,), 0),
-    ]
+        ("#", (1,), 1),
+        (".", (1,), 0),
+        ("?", (1,), 1),
+        ("#.", (1,), 1),
+        (".#", (1,), 1),
+        ("##", (1,), 0),
+        ("..", (1,), 0),
+    ],
 )
 def test_condition_simple_base_cases(condition_record, damaged_springs, arrangements):
     assert process.arrangements(condition_record, damaged_springs) == arrangements

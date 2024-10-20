@@ -26,10 +26,10 @@ class Direction(enum.Enum):
 
 
 DIR_STR_MAPPING = {
-    'U': Direction.UP,
-    'D': Direction.DOWN,
-    'L': Direction.LEFT,
-    'R': Direction.RIGHT,
+    "U": Direction.UP,
+    "D": Direction.DOWN,
+    "L": Direction.LEFT,
+    "R": Direction.RIGHT,
 }
 
 
@@ -47,22 +47,21 @@ class DigInstruct:
     num: int
 
 
-def parse_plan(plan_input: str, extract_data_from_hex: bool = False) -> list[DigInstruct]:
+def parse_plan(
+    plan_input: str, extract_data_from_hex: bool = False
+) -> list[DigInstruct]:
     plan = []
     for instruct_input in plan_input.splitlines():
-        parsed_instruct = parse.parse(
-            '{dir} {num:d} ({hex})',
-            instruct_input
-        )
+        parsed_instruct = parse.parse("{dir} {num:d} ({hex})", instruct_input)
         if extract_data_from_hex:
-            hex = parsed_instruct['hex']
+            hex = parsed_instruct["hex"]
             hex_num = hex[1:-1]
             hex_dir = hex[-1]
             num = int(hex_num, 16)
             dir_ = Direction(int(hex_dir))
         else:
-            dir_ = DIR_STR_MAPPING[parsed_instruct['dir']]
-            num = parsed_instruct['num']
+            dir_ = DIR_STR_MAPPING[parsed_instruct["dir"]]
+            num = parsed_instruct["num"]
 
         plan.append(
             DigInstruct(
@@ -80,7 +79,7 @@ def capacity(plan: list[DigInstruct]) -> int:
     path_verts = [start]
     path_length = 0
     for instr in plan:
-        pos += (OFFSET_COORDS[instr.dir_] * instr.num)
+        pos += OFFSET_COORDS[instr.dir_] * instr.num
         path_verts.append(pos)
         path_length += instr.num
     assert pos == start
@@ -91,7 +90,8 @@ def capacity(plan: list[DigInstruct]) -> int:
     area = abs(
         sum(
             [(p1.x - p2.x) * (p1.y + p2.y) for p1, p2 in itertools.pairwise(path_verts)]
-        ) // 2
+        )
+        // 2
     )
     interior_points = area - (path_length // 2) + 1
 

@@ -14,14 +14,15 @@ class Card:
 
 
 class Scratchcards:
-
     def __init__(self, scratchcard_input: str) -> None:
         self.cards = {}
         for card in scratchcard_input.splitlines():
-            label, numbers = card.split(': ')
+            label, numbers = card.split(": ")
             id_ = int(label.split()[1])
-            winning_number_seq, your_number_seq = numbers.split('|')
-            winning_numbers = set(int(num) for num in winning_number_seq.strip().split())
+            winning_number_seq, your_number_seq = numbers.split("|")
+            winning_numbers = set(
+                int(num) for num in winning_number_seq.strip().split()
+            )
             your_numbers = set(int(num) for num in your_number_seq.strip().split())
             self.cards[id_] = Card(winning_numbers, your_numbers)
 
@@ -65,7 +66,7 @@ class Scratchcards:
         return total_scratchcards
 
 
-def sum_dict_values(dict_: dict[Any: int]) -> int:
+def sum_dict_values(dict_: dict[Any:int]) -> int:
     return sum(dict_.values())
 
 
