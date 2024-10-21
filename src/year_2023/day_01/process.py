@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 import regex
 
 WORD_LETTERS = {
@@ -28,11 +29,11 @@ def _get_cal_val(line: str, include_word_numbers: bool) -> int:
     return int(mapped_digits[0] + mapped_digits[-1])
 
 
-def get_cal_vals(cal_doc: list[str], include_word_numbers: bool) -> list[int]:
+def get_cal_vals(cal_doc: Sequence[str], include_word_numbers: bool) -> list[int]:
     return [_get_cal_val(line, include_word_numbers) for line in cal_doc]
 
 
-def sum_cal_vals(cal_doc: list[str], include_word_numbers: bool) -> int:
+def sum_cal_vals(cal_doc: Sequence[str], include_word_numbers: bool) -> int:
     return sum(get_cal_vals(cal_doc, include_word_numbers))
 
 
