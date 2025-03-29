@@ -29,7 +29,7 @@ fold along x=5"""
 
     next(to)
 
-    assert str(to) == """\
+    assert str(transparent_origami) == """\
 #.##..#..#.
 #...#......
 ......#...#
@@ -37,19 +37,19 @@ fold along x=5"""
 .#.#..#.###
 ...........
 ..........."""
-#     assert len(transparent_origami.dots) == 17
-#
-#     while True:
-#         try:
-#             next(to)
-#         except StopIteration:
-#             break
-#
-#     assert str(transparent_origami) == """\
-# #####
-# #...#
-# #...#
-# #...#
-# #####
-# .....
-# ....."""
+    assert len(transparent_origami.dots) == 17
+
+    while True:
+        try:
+            next(to)
+        except StopIteration:
+            break
+
+    assert str(transparent_origami) == """\
+#####
+#...#
+#...#
+#...#
+#####
+.....
+....."""
