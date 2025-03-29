@@ -5,7 +5,16 @@ description = "Advent of Code Repo"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "lark>=1.2.2",
+    "more-itertools>=10.6.0",
+    "networkx>=3.4.2",
+    "numpy>=2.2.4",
     "parse>=1.20.2",
     "pytest>=8.3.3",
     "regex>=2024.9.11",
+    "sortedcontainers>=2.4.0",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
