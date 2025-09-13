@@ -57,7 +57,9 @@ class CathodeRayTube:
         self.watched_cycles: dict[Cycle, int] = {}
 
         self.screen = ""
-        self.px_cls: Type[Pixel | VisiblePixel] = VisiblePixel if high_contrast else Pixel
+        self.px_cls: Type[Pixel | VisiblePixel] = (
+            VisiblePixel if high_contrast else Pixel
+        )
 
     @classmethod
     def read_file(

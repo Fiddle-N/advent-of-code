@@ -1,6 +1,6 @@
 import dataclasses
 import operator
-import parse    # type: ignore
+import parse  # type: ignore
 from typing import Callable
 
 
@@ -105,7 +105,6 @@ def sum_positions_without_beacon(readings: list[Reading], y_axis: int) -> int:
 def _do_missing_beacon_search_for_row(
     sensor_ranges: list[list[int]], start_x: int, end_x: int
 ) -> int | None:
-
     beacon_surrounding_ranges = []
     sensor_range_it = iter(sensor_ranges)
     for range in sensor_range_it:
@@ -158,7 +157,7 @@ def main() -> None:
     )
 
     print(
-        f"Missing beacon tuning frequency:",
+        "Missing beacon tuning frequency:",
         missing_beacon_tuning_freq(readings, start=0, end=4_000_000),
     )
 

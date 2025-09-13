@@ -26,11 +26,9 @@ OFFSETS = [
 
 
 class Chiton:
-
     def __init__(self, chiton_map, let_the_expansion_begin=False):
         self._chiton_map = [
-            [int(risk) for risk in row]
-            for row in chiton_map.split('\n')
+            [int(risk) for risk in row] for row in chiton_map.split("\n")
         ]
 
         if let_the_expansion_begin:
@@ -74,14 +72,17 @@ class Chiton:
 
     @classmethod
     def read_file(cls, let_the_expansion_begin=False):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls(f.read().strip(), let_the_expansion_begin)
 
     def _get_neighbours(self, coord):
         neighbour_coords = []
         for offset in OFFSETS:
             neighbour_coord = coord + offset
-            if 0 <= neighbour_coord.x < self._width and 0 <= neighbour_coord.y < self._height:
+            if (
+                0 <= neighbour_coord.x < self._width
+                and 0 <= neighbour_coord.y < self._height
+            ):
                 neighbour_coords.append(neighbour_coord)
         return neighbour_coords
 
@@ -114,11 +115,12 @@ class Chiton:
 
 def main():
     chiton = Chiton.read_file()
-    print('Lowest risk level:', chiton.shortest_path_length())
+    print("Lowest risk level:", chiton.shortest_path_length())
     chiton_exp = Chiton.read_file(let_the_expansion_begin=True)
-    print('Lowest risk level:', chiton_exp.shortest_path_length())
+    print("Lowest risk level:", chiton_exp.shortest_path_length())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
+
     print(timeit.timeit(main, number=1))

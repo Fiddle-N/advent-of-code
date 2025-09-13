@@ -12,7 +12,7 @@ def twos_complement(x, num_bits):
 def power_rating(report):
     numbers = report.splitlines()
     numbers_t = zip(*numbers)
-    gamma_str = ''.join(statistics.mode(pos) for pos in numbers_t)
+    gamma_str = "".join(statistics.mode(pos) for pos in numbers_t)
     gamma = int(gamma_str, base=2)
     epsilon = twos_complement(~gamma, len(gamma_str))
     return gamma * epsilon
@@ -30,41 +30,43 @@ def rating_search(numbers, bit_criteria: Ratings):
         bit_values = statistics.multimode(numbers_t[pos])
         if len(bit_values) == 2:
             if bit_criteria == Ratings.OXYGEN_GENERATOR:
-                bit_value = '1'
+                bit_value = "1"
             elif bit_criteria == Ratings.CO2_SCRUBBER:
-                bit_value = '0'
+                bit_value = "0"
             else:
                 raise Exception
         elif len(bit_values) == 1:
-            raw_bit_value, = bit_values
+            (raw_bit_value,) = bit_values
             if bit_criteria == Ratings.OXYGEN_GENERATOR:
                 bit_value = raw_bit_value
             elif bit_criteria == Ratings.CO2_SCRUBBER:
-                bit_value = {'0': '1', '1': '0'}[raw_bit_value]
+                bit_value = {"0": "1", "1": "0"}[raw_bit_value]
             else:
                 raise Exception
         else:
             raise Exception
         numbers = [number for number in numbers if number[pos] == bit_value]
         if len(numbers) == 1:
-            result, = numbers
+            (result,) = numbers
             return int(result, base=2)
         pos += 1
 
 
 def life_support_rating(report):
     numbers = report.splitlines()
-    return rating_search(numbers.copy(), Ratings.OXYGEN_GENERATOR) * rating_search(numbers.copy(), Ratings.CO2_SCRUBBER)
+    return rating_search(numbers.copy(), Ratings.OXYGEN_GENERATOR) * rating_search(
+        numbers.copy(), Ratings.CO2_SCRUBBER
+    )
 
 
 def main():
-    with open('input.txt') as f:
+    with open("input.txt") as f:
         report = f.read()
         power = power_rating(report)
-        print(f'{power=}')
+        print(f"{power=}")
         life_support = life_support_rating(report)
-        print(f'{life_support=}')
+        print(f"{life_support=}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(timeit.timeit(main, number=1))

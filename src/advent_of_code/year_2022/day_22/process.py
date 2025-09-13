@@ -4,14 +4,14 @@ import re
 
 
 class Space(enum.Enum):
-    TILE = '.'
-    WALL = '#'
-    EMPTY = ' '
+    TILE = "."
+    WALL = "#"
+    EMPTY = " "
 
 
 class Turn(enum.Enum):
-    COUNTERCLOCKWISE = 'L'
-    CLOCKWISE = 'R'
+    COUNTERCLOCKWISE = "L"
+    CLOCKWISE = "R"
 
 
 class Direction(enum.Enum):
@@ -39,15 +39,15 @@ class Coords:
     x: int
     y: int
 
-    def __add__(self, other: 'Coords') -> 'Coords':
+    def __add__(self, other: "Coords") -> "Coords":
         return Coords(self.x + other.x, self.y + other.y)
 
 
 DIR_STRS = {
-    Direction.RIGHT: '>',
-    Direction.DOWN: 'v',
-    Direction.LEFT: '<',
-    Direction.UP: '^',
+    Direction.RIGHT: ">",
+    Direction.DOWN: "v",
+    Direction.LEFT: "<",
+    Direction.UP: "^",
 }
 
 DIR_COORDS = {
@@ -67,7 +67,6 @@ DIR_COORDS = {
 
 
 class Map(dict):
-
     def _wrap(self, curr: Coords, direction: Direction):
         opp_direction = direction.opposite()
         pos = curr
@@ -80,7 +79,7 @@ class Map(dict):
             else:
                 pos = next_pos
 
-    def move(self, curr: Coords, direction:Direction):
+    def move(self, curr: Coords, direction: Direction):
         if curr not in self:
             return ValueError
         dest = curr + DIR_COORDS[direction]
@@ -93,9 +92,8 @@ class Map(dict):
 
 
 class MonkeyMap:
-
     def __init__(self, notes: str) -> None:
-        map_str, raw_path = notes.rstrip().split('\n\n')
+        map_str, raw_path = notes.rstrip().split("\n\n")
 
         self.map = Map()
 
@@ -117,7 +115,7 @@ class MonkeyMap:
                     if self.max_y is None or y > self.max_y:
                         self.max_y = y
 
-        raw_split_path = re.findall(r'(\d+|[L|R])', raw_path)
+        raw_split_path = re.findall(r"(\d+|[L|R])", raw_path)
         self.path = []
         for instr in raw_split_path:
             try:
@@ -131,11 +129,7 @@ class MonkeyMap:
         self.history = {self.start_pos: self.start_dir}
 
     def _find_start(self):
-        y_1_coords = [
-            coord
-            for coord in self.map
-            if coord.y == 1
-        ]
+        y_1_coords = [coord for coord in self.map if coord.y == 1]
         return min(y_1_coords, key=lambda coord: coord.x)
 
     def __str__(self):
@@ -154,10 +148,7 @@ class MonkeyMap:
                 row.append(val)
             grid.append(row)
 
-        return '\n'.join(
-            ''.join(row)
-            for row in grid
-        )
+        return "\n".join("".join(row) for row in grid)
 
     @classmethod
     def read_file(cls):

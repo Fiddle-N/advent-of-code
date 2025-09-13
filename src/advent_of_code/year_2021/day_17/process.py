@@ -12,16 +12,20 @@ class TargetArea:
 
 
 class TrickShot:
-
     def __init__(self, target_area):
-        result = parse.parse('target area: x={x_start:d}..{x_end:d}, y={y_start:d}..{y_end:d}', target_area)
-        self.target = TargetArea(result['x_start'], result['x_end'], result['y_start'], result['y_end'])
+        result = parse.parse(
+            "target area: x={x_start:d}..{x_end:d}, y={y_start:d}..{y_end:d}",
+            target_area,
+        )
+        self.target = TargetArea(
+            result["x_start"], result["x_end"], result["y_start"], result["y_end"]
+        )
         if self.target.x_start < 0:
-            raise NotImplementedError('not thinking about firing backwards yet')
+            raise NotImplementedError("not thinking about firing backwards yet")
 
     @classmethod
     def read_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls(f.read().strip())
 
     def y_peak(self):
@@ -62,7 +66,10 @@ class TrickShot:
         x_pos = x
         y_pos = y
         while True:
-            if self.target.x_start <= x_pos <= self.target.x_end and self.target.y_start <= y_pos <= self.target.y_end:
+            if (
+                self.target.x_start <= x_pos <= self.target.x_end
+                and self.target.y_start <= y_pos <= self.target.y_end
+            ):
                 return True
             elif x_pos > self.target.x_end or y_pos < self.target.y_start:
                 return False
@@ -75,10 +82,11 @@ class TrickShot:
 
 def main():
     trick_shot = TrickShot.read_file()
-    print('Highest peak:', trick_shot.y_peak())
-    print('Distinct initial velocities:', len(trick_shot.initial_velocities()))
+    print("Highest peak:", trick_shot.y_peak())
+    print("Distinct initial velocities:", len(trick_shot.initial_velocities()))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
+
     print(timeit.timeit(main, number=1))

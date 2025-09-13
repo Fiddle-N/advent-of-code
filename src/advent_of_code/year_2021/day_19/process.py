@@ -216,7 +216,10 @@ def main():
     beacon_scanner = BeaconScanner.read_file()
     beacon_scanner.calibrate_scanners()
     print("Number of beacons:", len(beacon_scanner.relative_beacon_list))
-    print("Largest Manhattan distance between any two scanners:", beacon_scanner.largest_manhattan_distance)
+    print(
+        "Largest Manhattan distance between any two scanners:",
+        beacon_scanner.largest_manhattan_distance,
+    )
 
 
 if __name__ == "__main__":

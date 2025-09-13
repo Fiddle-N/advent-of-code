@@ -109,7 +109,7 @@ move 1 from 1 to 2
                 ["M"],
                 ["P", "D", "N", "Z"],
             ]
-        )
+        ),
     ]
 
     for exp_crate_stack in exp_crate_stacks:

@@ -155,10 +155,7 @@ class UnstableDiffusion:
 
     def sum_empty_ground_tiles(self):
         return sum(
-            [
-                sum(tile == Space.EMPTY_GROUND for tile in row)
-                for row in self.grid()
-            ]
+            [sum(tile == Space.EMPTY_GROUND for tile in row) for row in self.grid()]
         )
 
 
@@ -170,7 +167,10 @@ def main() -> None:
     for _ in range(initial_rounds):
         next(ud_it)
 
-    print(f"No of empty ground tiles after {initial_rounds} rounds:", ud.sum_empty_ground_tiles())
+    print(
+        f"No of empty ground tiles after {initial_rounds} rounds:",
+        ud.sum_empty_ground_tiles(),
+    )
 
     while True:
         try:
@@ -179,7 +179,7 @@ def main() -> None:
             round_no = exc.value
             break
 
-    print(f"Round no where no elf moves:", round_no)
+    print("Round no where no elf moves:", round_no)
 
 
 if __name__ == "__main__":

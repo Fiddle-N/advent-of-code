@@ -72,7 +72,6 @@ class ReactorReboot:
     def process(self):
         previous_cubes = {}
         for current_cube, state in self.cubes:
-
             previous_cubes_copy = previous_cubes.copy()
             for previous_cube, previous_cube_state in previous_cubes.items():
                 x_lower = max(previous_cube.start.x, current_cube.start.x)

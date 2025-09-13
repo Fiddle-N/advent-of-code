@@ -12,7 +12,9 @@ def test_blizzard_basin_simple_map():
 #####.#
 """)
 
-    assert bb.gen_map(0) == """\
+    assert (
+        bb.gen_map(0)
+        == """\
 #.#####
 #.....#
 #>....#
@@ -20,8 +22,11 @@ def test_blizzard_basin_simple_map():
 #...v.#
 #.....#
 #####.#"""
+    )
 
-    assert bb.gen_map(1) == """\
+    assert (
+        bb.gen_map(1)
+        == """\
 #.#####
 #.....#
 #.>...#
@@ -29,8 +34,11 @@ def test_blizzard_basin_simple_map():
 #.....#
 #...v.#
 #####.#"""
+    )
 
-    assert bb.gen_map(2) == """\
+    assert (
+        bb.gen_map(2)
+        == """\
 #.#####
 #...v.#
 #..>..#
@@ -38,8 +46,11 @@ def test_blizzard_basin_simple_map():
 #.....#
 #.....#
 #####.#"""
+    )
 
-    assert bb.gen_map(3) == """\
+    assert (
+        bb.gen_map(3)
+        == """\
 #.#####
 #.....#
 #...2.#
@@ -47,8 +58,11 @@ def test_blizzard_basin_simple_map():
 #.....#
 #.....#
 #####.#"""
+    )
 
-    assert bb.gen_map(4) == """\
+    assert (
+        bb.gen_map(4)
+        == """\
 #.#####
 #.....#
 #....>#
@@ -56,8 +70,11 @@ def test_blizzard_basin_simple_map():
 #.....#
 #.....#
 #####.#"""
+    )
 
-    assert bb.gen_map(4) == """\
+    assert (
+        bb.gen_map(4)
+        == """\
 #.#####
 #.....#
 #....>#
@@ -65,8 +82,11 @@ def test_blizzard_basin_simple_map():
 #.....#
 #.....#
 #####.#"""
+    )
 
-    assert bb.gen_map(5) == """\
+    assert (
+        bb.gen_map(5)
+        == """\
 #.#####
 #.....#
 #>....#
@@ -74,6 +94,7 @@ def test_blizzard_basin_simple_map():
 #...v.#
 #.....#
 #####.#"""
+    )
 
 
 def test_blizzard_basin_complex_map():
@@ -96,10 +117,7 @@ def test_blizzard_basin_complex_map():
 #>2.22.#
 #>v..^<#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -110,10 +128,7 @@ def test_blizzard_basin_complex_map():
 #.>2.^>#
 #.>..<.#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -124,10 +139,7 @@ def test_blizzard_basin_complex_map():
 #><2>..#
 #..><..#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -138,10 +150,7 @@ def test_blizzard_basin_complex_map():
 #<2.>>.#
 #.^22^.#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -152,10 +161,7 @@ def test_blizzard_basin_complex_map():
 #.^>^22#
 #.2..2.#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -166,10 +172,7 @@ def test_blizzard_basin_complex_map():
 #>..>2>#
 #<....>#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -180,10 +183,7 @@ def test_blizzard_basin_complex_map():
 #>>v<>.#
 #>....<#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -194,10 +194,7 @@ def test_blizzard_basin_complex_map():
 #.22..>#
 #.2v^2.#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -208,10 +205,7 @@ def test_blizzard_basin_complex_map():
 #>2>2^.#
 #.v><^.#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -222,10 +216,7 @@ def test_blizzard_basin_complex_map():
 #<>.>2.#
 #..<>..#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -236,10 +227,7 @@ def test_blizzard_basin_complex_map():
 #..2.>2#
 #.<..>.#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -250,10 +238,7 @@ def test_blizzard_basin_complex_map():
 #>v.><>#
 #<^v^^>#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -264,10 +249,7 @@ def test_blizzard_basin_complex_map():
 #>2E22.#
 #>v..^<#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -278,10 +260,7 @@ def test_blizzard_basin_complex_map():
 #.>2E^>#
 #.>..<.#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -292,10 +271,7 @@ def test_blizzard_basin_complex_map():
 #><2>E.#
 #..><..#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -306,10 +282,7 @@ def test_blizzard_basin_complex_map():
 #<2.>>E#
 #.^22^.#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     states, minute = next(bb_it)
 
@@ -320,10 +293,7 @@ def test_blizzard_basin_complex_map():
 #.^>^22#
 #.2..2E#
 ######.#"""
-    assert any(
-        bb.gen_map(minute=minute, exp_pos=state) == exp
-        for state in states
-    )
+    assert any(bb.gen_map(minute=minute, exp_pos=state) == exp for state in states)
 
     try:
         next(bb_it)
@@ -345,14 +315,17 @@ def test_blizzard_basin_complex_map():
 
 
 def test_blizzard_basin_complex_map_round_trip():
-    bb = process.BlizzardBasin("""\
+    bb = process.BlizzardBasin(
+        """\
 #.######
 #>>.<^<#
 #.<..<<#
 #>v.><>#
 #<^v^^>#
 ######.#
-""", round_trip=True)
+""",
+        round_trip=True,
+    )
     bb_it = iter(bb)
 
     while True:
@@ -385,5 +358,6 @@ def test_blizzard_basin_waiting_at_start():
             break
 
     assert minute == 11
+
 
 # todo waiting at end

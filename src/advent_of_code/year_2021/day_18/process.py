@@ -38,7 +38,7 @@ sf_parse = sf_parser.parse
 
 @dataclasses.dataclass(frozen=True)
 class SnailfishElement:
-    no: typing.Union[int , list]
+    no: typing.Union[int, list]
     lvl: int
 
     def __add__(self, other: int):
@@ -47,7 +47,6 @@ class SnailfishElement:
 
 
 class SnailfishNumber:
-
     def __init__(self, number):
         self._number = number
         self._next_number = collections.deque()
@@ -64,7 +63,7 @@ class SnailfishNumber:
                 elif isinstance(element, list):
                     _flatten_lvl(element, level + 1)
                 else:
-                    raise Exception('unexpected element')
+                    raise Exception("unexpected element")
 
         _flatten_lvl(list_, level=0)
         return sf_number
@@ -101,8 +100,12 @@ class SnailfishNumber:
             if self._number[0].no > 9:
                 large = self._number.popleft()
                 assert large.no > 9
-                self._number.appendleft(SnailfishElement(math.ceil(large.no / 2), large.lvl + 1))
-                self._number.appendleft(SnailfishElement(math.floor(large.no / 2), large.lvl + 1))
+                self._number.appendleft(
+                    SnailfishElement(math.ceil(large.no / 2), large.lvl + 1)
+                )
+                self._number.appendleft(
+                    SnailfishElement(math.floor(large.no / 2), large.lvl + 1)
+                )
                 break
             else:
                 self._next_number.append(self._number.popleft())
@@ -132,7 +135,9 @@ class SnailfishNumber:
                 left = number.popleft()
                 right = number.popleft()
                 assert left.lvl == right.lvl
-                number.appendleft(SnailfishElement(no=3 * left.no + 2 * right.no, lvl=left.lvl - 1))
+                number.appendleft(
+                    SnailfishElement(no=3 * left.no + 2 * right.no, lvl=left.lvl - 1)
+                )
                 number = next_number + number
                 next_number = collections.deque()
                 continue
@@ -141,14 +146,14 @@ class SnailfishNumber:
         assert len(number) == 1
         return number[0].no
 
-    def __add__(self, other: 'SnailfishNumber'):
+    def __add__(self, other: "SnailfishNumber"):
         result = collections.deque(
             SnailfishElement(element.no, element.lvl + 1)
             for element in itertools.chain(self._number, other._number)
         )
         return SnailfishNumber(result)
 
-    def __eq__(self, other: 'SnailfishNumber'):
+    def __eq__(self, other: "SnailfishNumber"):
         return self._number == other._number
 
 
@@ -175,7 +180,7 @@ def sf_homework_part_2(homework):
 
 
 def main():
-    with open('input.txt') as f:
+    with open("input.txt") as f:
         homework = f.read().strip()
     sf_homework_gen = sf_homework_part_1(homework)
     while True:
@@ -185,10 +190,11 @@ def main():
             result = e.value
             break
 
-    print('Magnitude of final sum:', result.magnitude())
-    print('Largest magnitude from any 2 numbers:', sf_homework_part_2(homework))
+    print("Magnitude of final sum:", result.magnitude())
+    print("Largest magnitude from any 2 numbers:", sf_homework_part_2(homework))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
+
     print(timeit.timeit(main, number=1))

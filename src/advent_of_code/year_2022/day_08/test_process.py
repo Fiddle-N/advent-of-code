@@ -8,186 +8,186 @@ from advent_of_code.year_2022.day_08 import process
     [
         # four corners - assert visible from beyond edges
         (
-                process.Coords(x=0, y=0),
-                (
+            process.Coords(x=0, y=0),
+            (
                 (process.Direction.LEFT, True),
                 (process.Direction.TOP, True),
             ),
-                True,
+            True,
         ),
         (
-                process.Coords(x=4, y=0),
-                (
+            process.Coords(x=4, y=0),
+            (
                 (process.Direction.RIGHT, True),
                 (process.Direction.TOP, True),
             ),
-                True,
+            True,
         ),
         (
-                process.Coords(x=0, y=4),
-                (
+            process.Coords(x=0, y=4),
+            (
                 (process.Direction.LEFT, True),
                 (process.Direction.BOTTOM, True),
             ),
-                True,
+            True,
         ),
         (
-                process.Coords(x=4, y=4),
-                (
+            process.Coords(x=4, y=4),
+            (
                 (process.Direction.RIGHT, True),
                 (process.Direction.BOTTOM, True),
             ),
-                True,
+            True,
         ),
         # four borders (that are not corners) - assert visible from beyond edge
         ## top
         (
-                process.Coords(x=1, y=0),
-                ((process.Direction.TOP, True),),
-                True,
+            process.Coords(x=1, y=0),
+            ((process.Direction.TOP, True),),
+            True,
         ),
         (
-                process.Coords(x=2, y=0),
-                ((process.Direction.TOP, True),),
-                True,
+            process.Coords(x=2, y=0),
+            ((process.Direction.TOP, True),),
+            True,
         ),
         (
-                process.Coords(x=3, y=0),
-                ((process.Direction.TOP, True),),
-                True,
+            process.Coords(x=3, y=0),
+            ((process.Direction.TOP, True),),
+            True,
         ),
         ## bottom
         (
-                process.Coords(x=1, y=4),
-                ((process.Direction.BOTTOM, True),),
-                True,
+            process.Coords(x=1, y=4),
+            ((process.Direction.BOTTOM, True),),
+            True,
         ),
         (
-                process.Coords(x=2, y=4),
-                ((process.Direction.BOTTOM, True),),
-                True,
+            process.Coords(x=2, y=4),
+            ((process.Direction.BOTTOM, True),),
+            True,
         ),
         (
-                process.Coords(x=3, y=4),
-                ((process.Direction.BOTTOM, True),),
-                True,
+            process.Coords(x=3, y=4),
+            ((process.Direction.BOTTOM, True),),
+            True,
         ),
         ## left
         (
-                process.Coords(x=0, y=1),
-                ((process.Direction.LEFT, True),),
-                True,
+            process.Coords(x=0, y=1),
+            ((process.Direction.LEFT, True),),
+            True,
         ),
         (
-                process.Coords(x=0, y=2),
-                ((process.Direction.LEFT, True),),
-                True,
+            process.Coords(x=0, y=2),
+            ((process.Direction.LEFT, True),),
+            True,
         ),
         (
-                process.Coords(x=0, y=3),
-                ((process.Direction.LEFT, True),),
-                True,
+            process.Coords(x=0, y=3),
+            ((process.Direction.LEFT, True),),
+            True,
         ),
         ## right
         (
-                process.Coords(x=4, y=1),
-                ((process.Direction.RIGHT, True),),
-                True,
+            process.Coords(x=4, y=1),
+            ((process.Direction.RIGHT, True),),
+            True,
         ),
         (
-                process.Coords(x=4, y=2),
-                ((process.Direction.RIGHT, True),),
-                True,
+            process.Coords(x=4, y=2),
+            ((process.Direction.RIGHT, True),),
+            True,
         ),
         (
-                process.Coords(x=4, y=3),
-                ((process.Direction.RIGHT, True),),
-                True,
+            process.Coords(x=4, y=3),
+            ((process.Direction.RIGHT, True),),
+            True,
         ),
         # interior nine trees
         ## top-left
         (
-                process.Coords(x=1, y=1),
-                (
+            process.Coords(x=1, y=1),
+            (
                 (process.Direction.LEFT, True),
                 (process.Direction.RIGHT, False),
                 (process.Direction.TOP, True),
                 (process.Direction.BOTTOM, False),
             ),
-                True,
+            True,
         ),
         ## top-middle
         (
-                process.Coords(x=2, y=1),
-                (
+            process.Coords(x=2, y=1),
+            (
                 (process.Direction.LEFT, False),
                 (process.Direction.RIGHT, True),
                 (process.Direction.TOP, True),
                 (process.Direction.BOTTOM, False),
             ),
-                True,
+            True,
         ),
         ## top-right
         (
-                process.Coords(x=3, y=1),
-                (
+            process.Coords(x=3, y=1),
+            (
                 (process.Direction.LEFT, False),
                 (process.Direction.RIGHT, False),
                 (process.Direction.TOP, False),
                 (process.Direction.BOTTOM, False),
             ),
-                False,
+            False,
         ),
         ## left-middle
         (
-                process.Coords(x=1, y=2),
-                (
+            process.Coords(x=1, y=2),
+            (
                 (process.Direction.LEFT, False),
                 (process.Direction.RIGHT, True),
                 (process.Direction.TOP, False),
                 (process.Direction.BOTTOM, False),
             ),
-                True,
+            True,
         ),
         ## centre
         (
-                process.Coords(x=2, y=2),
-                (
+            process.Coords(x=2, y=2),
+            (
                 (process.Direction.LEFT, False),
                 (process.Direction.RIGHT, False),
                 (process.Direction.TOP, False),
                 (process.Direction.BOTTOM, False),
             ),
-                False,
+            False,
         ),
         ## right-middle
         (
-                process.Coords(x=3, y=2),
-                (
+            process.Coords(x=3, y=2),
+            (
                 (process.Direction.LEFT, False),
                 (process.Direction.RIGHT, True),
                 (process.Direction.TOP, False),
                 (process.Direction.BOTTOM, False),
             ),
-                True,
+            True,
         ),
         ## bottom-left
         (
-                process.Coords(x=1, y=3),
-                (),
-                False,
+            process.Coords(x=1, y=3),
+            (),
+            False,
         ),
         ## bottom-middle
         (
-                process.Coords(x=2, y=3),
-                (),
-                True,
+            process.Coords(x=2, y=3),
+            (),
+            True,
         ),
         ## bottom-right
         (
-                process.Coords(x=3, y=3),
-                (),
-                False,
+            process.Coords(x=3, y=3),
+            (),
+            False,
         ),
     ],
 )
@@ -224,24 +224,24 @@ def test_treetop_tree_house_sum_visible_trees() -> None:
     "coords, directional_assertions, overall_assertion",
     [
         (
-                process.Coords(x=2, y=1),
-                (
+            process.Coords(x=2, y=1),
+            (
                 (process.Direction.LEFT, 1),
                 (process.Direction.RIGHT, 2),
                 (process.Direction.TOP, 1),
                 (process.Direction.BOTTOM, 2),
             ),
-                4,
+            4,
         ),
         (
-                process.Coords(x=2, y=3),
-                (
+            process.Coords(x=2, y=3),
+            (
                 (process.Direction.LEFT, 2),
                 (process.Direction.RIGHT, 2),
                 (process.Direction.TOP, 2),
                 (process.Direction.BOTTOM, 1),
             ),
-                8,
+            8,
         ),
     ],
 )

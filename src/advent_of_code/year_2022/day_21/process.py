@@ -163,8 +163,7 @@ class MonkeyMath:
             op = operations[op_name]
             invert_ops = self._invert(op, operations)
             if len(invert_ops) == 2:
-
-                print('here')
+                print("here")
             for invert_op in invert_ops:
                 new_ops[invert_op.name] = invert_op
             stack.extendleft(op.operands)
@@ -252,12 +251,15 @@ class MonkeyMath:
         human_check = {
             operand: self._check_for_humn(operand) for operand in root_operands
         }
-        assert (len(human_check) == 2) and (
-            set(human_check.values())
-            == {
-                True,
-                False,
-            }
+        assert (
+            (len(human_check) == 2)
+            and (
+                set(human_check.values())
+                == {
+                    True,
+                    False,
+                }
+            )
         )  # humn can only be on one side of the equation for it to be solvable as a linear equation
         operand_with_humn = [
             operand for operand, check in human_check.items() if check
@@ -270,16 +272,17 @@ class MonkeyMath:
             name=operand_without_humn, operations=operations, numbers=self.numbers
         )
 
-        paths = self._find_paths(name=operand_with_humn, target_name=self.human, operations=operations)
+        paths = self._find_paths(
+            name=operand_with_humn, target_name=self.human, operations=operations
+        )
         assert len(paths) == 1
-        path, = paths
+        (path,) = paths
 
         invert_ops = self._invert_for_humn_2(path, operations)
 
         invert_nums = self.numbers.copy()
         invert_nums[operand_with_humn] = target
         invert_nums.pop(self.human)
-
 
         result = self._calculate(
             name=self.human, operations=invert_ops, numbers=invert_nums

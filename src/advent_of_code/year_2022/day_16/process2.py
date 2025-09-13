@@ -31,14 +31,16 @@ class ProboscideaVolcanium:
                     for neighbour in matched_valve.group("raw_neighbours").split(", ")
                 },  # all neighbours start out 1 away
             )
-        self.key_valves = frozenset([
-            valve.name
-            for valve in self.full_graph.values()
-            if valve.name == "AA" or valve.flow_rate != 0
-        ])
+        self.key_valves = frozenset(
+            [
+                valve.name
+                for valve in self.full_graph.values()
+                if valve.name == "AA" or valve.flow_rate != 0
+            ]
+        )
         self.graph = self._prune_graph()
-        self.start_valve = 'AA'
-        self.time = 26      # mins
+        self.start_valve = "AA"
+        self.time = 26  # mins
 
     @classmethod
     def read_file(cls):
@@ -68,11 +70,18 @@ class ProboscideaVolcanium:
         for valve in self.key_valves:
             key_nodes = self._node(valve)
             valve_details = self.full_graph[valve]
-            graph[valve] = Valve(name=valve, flow_rate=valve_details.flow_rate, neighbours=key_nodes)
+            graph[valve] = Valve(
+                name=valve, flow_rate=valve_details.flow_rate, neighbours=key_nodes
+            )
         return graph
 
     def get_max_pressure(self):
-        return self._search((self.start_valve, self.start_valve,))
+        return self._search(
+            (
+                self.start_valve,
+                self.start_valve,
+            )
+        )
 
     def _search(self, valves: tuple[str, ...], dist=(0, 0), pressure=0):
         neighbours = self.key_valves.difference(valves)
@@ -81,42 +90,50 @@ class ProboscideaVolcanium:
 
         pressures = []
         for your_neighbour, elephant_neighbour in itertools.permutations(neighbours, 2):
-
             curr_valves = valves[-2:]
 
             your_valve_details = self.graph[curr_valves[0]]
             next_your_dist = your_valve_details.neighbours[your_neighbour]
-            total_your_dist = dist[0] + next_your_dist + 1       # takes one minute to oven a valve
+            total_your_dist = (
+                dist[0] + next_your_dist + 1
+            )  # takes one minute to oven a valve
             if total_your_dist > self.time:
                 pressures.append(pressure)
                 continue
 
             your_neighbour_details = self.graph[your_neighbour]
-            next_your_pressure = (self.time - total_your_dist) * your_neighbour_details.flow_rate
+            next_your_pressure = (
+                self.time - total_your_dist
+            ) * your_neighbour_details.flow_rate
 
             #
 
             ele_valve_details = self.graph[curr_valves[1]]
             next_ele_dist = ele_valve_details.neighbours[elephant_neighbour]
-            total_ele_dist = dist[1] + next_ele_dist + 1  # takes one minute to oven a valve
+            total_ele_dist = (
+                dist[1] + next_ele_dist + 1
+            )  # takes one minute to oven a valve
             if total_ele_dist > self.time:
                 pressures.append(pressure)
                 continue
 
             ele_neighbour_details = self.graph[elephant_neighbour]
-            next_ele_pressure = (self.time - total_ele_dist) * ele_neighbour_details.flow_rate
-
+            next_ele_pressure = (
+                self.time - total_ele_dist
+            ) * ele_neighbour_details.flow_rate
 
             total_pressure = self._search(
                 valves=valves + (your_neighbour, elephant_neighbour),
                 dist=(total_your_dist, total_ele_dist),
-                pressure = pressure + next_your_pressure + next_ele_pressure,
+                pressure=pressure + next_your_pressure + next_ele_pressure,
             )
             pressures.append(total_pressure)
         return max(pressures) if pressures else 0
 
     @functools.cache
-    def _get_valves_left(self, valves: frozenset[str], valves_visited: frozenset[str]) -> frozenset[str]:
+    def _get_valves_left(
+        self, valves: frozenset[str], valves_visited: frozenset[str]
+    ) -> frozenset[str]:
         return valves - valves_visited
 
     @functools.cache
@@ -138,40 +155,54 @@ class ProboscideaVolcanium:
         return next_pressure, total_dist
 
     @functools.cache
-    def _get_valves_pressure(self, your_valve: str, ele_valve: str, valves: frozenset[str], your_dist=0, ele_dist=0):
+    def _get_valves_pressure(
+        self,
+        your_valve: str,
+        ele_valve: str,
+        valves: frozenset[str],
+        your_dist=0,
+        ele_dist=0,
+    ):
         total_pressures = []
 
         for your_next_valve, ele_next_valve in itertools.permutations(valves, 2):
-
             if your_dist < self.time:
-                your_pressure, your_next_dist = self._get_valve_pair_pressure(your_valve, your_next_valve, your_dist)
+                your_pressure, your_next_dist = self._get_valve_pair_pressure(
+                    your_valve, your_next_valve, your_dist
+                )
                 your_visited_valve = your_next_valve
             else:
                 your_pressure, your_next_dist = None, your_dist
                 your_visited_valve = None
 
             if ele_dist < self.time:
-                ele_pressure, ele_next_dist = self._get_valve_pair_pressure(ele_valve, ele_next_valve, ele_dist)
+                ele_pressure, ele_next_dist = self._get_valve_pair_pressure(
+                    ele_valve, ele_next_valve, ele_dist
+                )
                 ele_visited_valve = ele_next_valve
             else:
                 ele_pressure, ele_next_dist = None, ele_dist
                 ele_visited_valve = None
 
             pressures = [your_pressure, ele_pressure]
-            transformed_pressures = [0 if pressure is None else pressure for pressure in pressures]
+            transformed_pressures = [
+                0 if pressure is None else pressure for pressure in pressures
+            ]
 
             if all(pressure is None for pressure in pressures):
                 total_pressures.append(sum(transformed_pressures))
                 continue
             else:
-                valves_left = self._get_valves_left(valves, frozenset([your_visited_valve, ele_visited_valve]))
+                valves_left = self._get_valves_left(
+                    valves, frozenset([your_visited_valve, ele_visited_valve])
+                )
                 if valves_left:
                     future_pressure = self._get_valves_pressure(
                         your_valve=your_visited_valve,
                         ele_valve=ele_visited_valve,
                         valves=valves_left,
                         your_dist=your_next_dist,
-                        ele_dist=ele_next_dist
+                        ele_dist=ele_next_dist,
                     )
                     total_pressure = sum(transformed_pressures) + future_pressure
                 else:
@@ -194,14 +225,13 @@ def main() -> None:
         "Max pressure:",
         pv.get_max_pressure_2(),
     )
-    print(f'{pv._get_valves_left.cache_info()}')
-    print(f'{pv._get_valve_pressure.cache_info()}')
-    print(f'{pv._get_valve_pair_pressure.cache_info()}')
-    print(f'{pv._get_valves_pressure.cache_info()}')
+    print(f"{pv._get_valves_left.cache_info()}")
+    print(f"{pv._get_valve_pressure.cache_info()}")
+    print(f"{pv._get_valve_pair_pressure.cache_info()}")
+    print(f"{pv._get_valves_pressure.cache_info()}")
 
 
 if __name__ == "__main__":
     import timeit
 
     print(timeit.timeit(main, number=1))
-

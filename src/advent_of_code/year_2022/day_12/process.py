@@ -90,7 +90,7 @@ class HillClimbing:
         )  # neighbour can only be at most 1 higher than curr, and can be lower
 
     @classmethod
-    def read_file(cls) -> 'HillClimbing':
+    def read_file(cls) -> "HillClimbing":
         with open("input.txt") as f:
             return cls(f.read().strip())
 

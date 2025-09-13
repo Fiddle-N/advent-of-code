@@ -11,7 +11,6 @@ class Node:
 
 
 class GrovePositioningSystem:
-
     def __init__(self, grove_data, apply_decryption_key=False, mix_number=1):
         decryption_key = 811589153 if apply_decryption_key else 1
         self.grove_data = [int(num) * decryption_key for num in grove_data.splitlines()]
@@ -67,13 +66,19 @@ def main() -> None:
     gps_it = iter(gps)
     for _ in gps_it:
         pass
-    print("Sum of three numbers that form grove coordinates without decryption key for one mix:", gps.get_key_nos())
+    print(
+        "Sum of three numbers that form grove coordinates without decryption key for one mix:",
+        gps.get_key_nos(),
+    )
 
     gps_2 = GrovePositioningSystem.read_file(apply_decryption_key=True, mix_number=10)
     gps_it_2 = iter(gps_2)
     for _ in gps_it_2:
         pass
-    print("Sum of three numbers that form grove coordinates with decryption key for 10 mixes:", gps_2.get_key_nos())
+    print(
+        "Sum of three numbers that form grove coordinates with decryption key for 10 mixes:",
+        gps_2.get_key_nos(),
+    )
 
 
 if __name__ == "__main__":

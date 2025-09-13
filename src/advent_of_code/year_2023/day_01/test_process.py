@@ -14,7 +14,7 @@ treb7uchet""".splitlines(),
 
 def test_sum_cal_vals_without_word_numbers():
     assert (
-            process.sum_cal_vals(
+        process.sum_cal_vals(
             """\
 1abc2
 pqr3stu8vwx
@@ -22,7 +22,7 @@ a1b2c3d4e5f
 treb7uchet""".splitlines(),
             include_word_numbers=False,
         )
-            == 142
+        == 142
     )
 
 
@@ -42,7 +42,7 @@ zoneight234
 
 def test_sum_cal_vals_with_word_numbers():
     assert (
-            process.sum_cal_vals(
+        process.sum_cal_vals(
             """\
 two1nine
 eightwothree
@@ -53,7 +53,7 @@ zoneight234
 7pqrstsixteen""".splitlines(),
             include_word_numbers=True,
         )
-            == 281
+        == 281
     )
 
 

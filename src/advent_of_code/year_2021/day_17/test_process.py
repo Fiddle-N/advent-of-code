@@ -2,7 +2,7 @@ from advent_of_code.year_2021.day_17 import process
 
 
 def test():
-    target_area = 'target area: x=20..30, y=-10..-5'
+    target_area = "target area: x=20..30, y=-10..-5"
     trick_shot = process.TrickShot(target_area)
 
     assert trick_shot.y_peak() == 45

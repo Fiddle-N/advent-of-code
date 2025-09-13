@@ -44,11 +44,11 @@ from advent_of_code.year_2022.day_13.process import Packet
 def test_packets_different(packets):
     left_packet, right_packet = packets
 
-    assert (left_packet < right_packet) == True
-    assert (right_packet > left_packet) == True
+    assert left_packet < right_packet
+    assert right_packet > left_packet
 
-    assert (left_packet > right_packet) == False
-    assert (right_packet < left_packet) == False
+    assert not (left_packet > right_packet)
+    assert not (right_packet < left_packet)
 
 
 @pytest.mark.parametrize(
@@ -79,11 +79,11 @@ def test_packets_different(packets):
 def test_packets_equal(packets):
     left_packet, right_packet = packets
 
-    assert (left_packet < right_packet) == False
-    assert (right_packet > left_packet) == False
+    assert not (left_packet < right_packet)
+    assert not (right_packet > left_packet)
 
-    assert (left_packet > right_packet) == False
-    assert (right_packet < left_packet) == False
+    assert not (left_packet > right_packet)
+    assert not (right_packet < left_packet)
 
 
 def test_full_distress_signal_valid_pairs():

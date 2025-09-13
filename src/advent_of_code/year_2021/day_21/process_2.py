@@ -57,15 +57,15 @@ def generate_state(p1, p2):
 def dirac_dice(p1, p2):
     start_state = GameState(p1=PlayerState(0, p1), p2=PlayerState(0, p2))
     non_winning_states = collections.Counter([start_state])
-    wins = collections.Counter({'p1': 0, 'p2': 0})
+    wins = collections.Counter({"p1": 0, "p2": 0})
     player = None
 
     while non_winning_states:
         if player is None:
-            player = 'p1'
+            player = "p1"
         else:
-            player = {'p2': 'p1', 'p1': 'p2'}[player]
-        sitter = {'p2': 'p1', 'p1': 'p2'}[player]
+            player = {"p2": "p1", "p1": "p2"}[player]
+        sitter = {"p2": "p1", "p1": "p2"}[player]
         next_non_winning_states = collections.Counter()
         for state, count in non_winning_states.items():
             player_state = getattr(state, player)
@@ -86,19 +86,20 @@ def dirac_dice_from_str(str_):
 Player 1 starting position: {p1:d}
 Player 2 starting position: {p2:d}"""
     parsed = parse.parse(template, str_)
-    return dirac_dice(parsed['p1'], parsed['p2'])
+    return dirac_dice(parsed["p1"], parsed["p2"])
 
 
 def dirac_dice_from_file():
     with open("input.txt") as f:
         wins = dirac_dice_from_str(f.read().strip())
-    print('Player with more wins - number of wins:', max(wins.values()))
+    print("Player with more wins - number of wins:", max(wins.values()))
 
 
 def main():
     dirac_dice_from_file()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
+
     print(timeit.timeit(main, number=1))

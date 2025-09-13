@@ -130,7 +130,6 @@ class ReactorReboot:
                 and y_range == middle_y_range
                 and z_range == middle_z_range
             ):
-
                 # add all cuboids except the middle one
                 x_start, x_end = x_range
                 y_start, y_end = y_range

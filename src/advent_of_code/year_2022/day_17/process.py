@@ -105,8 +105,6 @@ class SettledRocks:
         return False, None, None
 
 
-
-
 class ChamberRocks:
     def __init__(self):
         self.settled_rocks = SettledRocks()
@@ -116,12 +114,16 @@ class ChamberRocks:
     @property
     def highest_settled_y(self):
         if self.settled_rocks.highest_rock_height is None:
-            return -1       # y=-1 represents the floor position
+            return -1  # y=-1 represents the floor position
         return self.settled_rocks.highest_rock_height
 
     @property
     def highest_falling_y(self):
-        return max(self.falling_rocks, key=lambda coord: coord.y).y if self.falling_rocks else 0
+        return (
+            max(self.falling_rocks, key=lambda coord: coord.y).y
+            if self.falling_rocks
+            else 0
+        )
 
     @property
     def highest_y(self):
@@ -139,23 +141,31 @@ class ChamberRocks:
         return Chamber.EMPTY
 
     def __str__(self):
-        chamber_floor = [Chamber.FLOOR_CORNER] + [Chamber.FLOOR] * self.chamber_width + [Chamber.FLOOR_CORNER]
+        chamber_floor = (
+            [Chamber.FLOOR_CORNER]
+            + [Chamber.FLOOR] * self.chamber_width
+            + [Chamber.FLOOR_CORNER]
+        )
         chamber_contents = [
-            [Chamber.WALL] + [self._get_chamber_space(Coords(x, y)) for x in range(self.chamber_width)] + [Chamber.WALL]
+            [Chamber.WALL]
+            + [self._get_chamber_space(Coords(x, y)) for x in range(self.chamber_width)]
+            + [Chamber.WALL]
             for y in range(self.highest_y + 1)
         ]
         chamber = [chamber_floor] + chamber_contents
-        return '\n'.join(reversed([
-            ''.join([chamber_space.value for chamber_space in row])
-            for row in chamber
-        ]))
+        return "\n".join(
+            reversed(
+                [
+                    "".join([chamber_space.value for chamber_space in row])
+                    for row in chamber
+                ]
+            )
+        )
 
     def init_rock(self, rock: Rock):
         # left wall and floor has coordinates -1
         # add one unit to be "against the wall/floor" then add another x units for the offset
-        offset = Coords(
-            x=-1 + 1 + 2, y=self.highest_settled_y + 1 + 3
-        )
+        offset = Coords(x=-1 + 1 + 2, y=self.highest_settled_y + 1 + 3)
         rock_coords = [rock_coord + offset for rock_coord in ROCK_COORDS[rock]]
         self.falling_rocks = rock_coords
 
@@ -174,13 +184,19 @@ class ChamberRocks:
         return True
 
     def move_rocks(self, move: Jet) -> None:
-        putative_coords = [rock_coord + JET_COORDS[move] for rock_coord in self.falling_rocks]
+        putative_coords = [
+            rock_coord + JET_COORDS[move] for rock_coord in self.falling_rocks
+        ]
         if all(self._is_valid_lateral_move(coord) for coord in putative_coords):
             self.falling_rocks = putative_coords
 
     def rock_fall(self) -> bool:
-        putative_coords = [rock_coord + ROCK_FALL_COORD for rock_coord in self.falling_rocks]
-        if did_rocks_fall := all(self._is_valid_vertical_move(coord) for coord in putative_coords):
+        putative_coords = [
+            rock_coord + ROCK_FALL_COORD for rock_coord in self.falling_rocks
+        ]
+        if did_rocks_fall := all(
+            self._is_valid_vertical_move(coord) for coord in putative_coords
+        ):
             self.falling_rocks = putative_coords
         else:
             self.settled_rocks.update(self.falling_rocks)
@@ -242,7 +258,9 @@ class PyroclasticFlow:
         it = iter(self)
         for count in itertools.count(start=1):
             next(it)
-            found_two_groups, group_len, offset_len = self.chamber_rocks.check_for_repeating_groups(group_no=2)
+            found_two_groups, group_len, offset_len = (
+                self.chamber_rocks.check_for_repeating_groups(group_no=2)
+            )
             if found_two_groups:
                 assert offset_len + group_len * 2 == self.tower_height
                 number_of_rocks_after_two_groups = count
@@ -251,7 +269,9 @@ class PyroclasticFlow:
         for count in itertools.count(start=number_of_rocks_after_two_groups + 1):
             next(it)
             if self.tower_height == (tower_height_after_two_groups + group_len):
-                found_three_groups, group_len_double_check, offset_len_double_check = self.chamber_rocks.check_for_repeating_groups(group_no=3)
+                found_three_groups, group_len_double_check, offset_len_double_check = (
+                    self.chamber_rocks.check_for_repeating_groups(group_no=3)
+                )
                 if not found_three_groups:
                     continue
                 assert group_len == group_len_double_check
@@ -262,24 +282,34 @@ class PyroclasticFlow:
 
                 break
             if self.tower_height > (tower_height_after_two_groups + group_len):
-                raise Exception('something badly went wrong')
-        rock_no_per_repeating_group = number_of_rocks_after_three_groups - number_of_rocks_after_two_groups
-        rock_no_for_offset = number_of_rocks_after_three_groups - rock_no_per_repeating_group * 3
+                raise Exception("something badly went wrong")
+        rock_no_per_repeating_group = (
+            number_of_rocks_after_three_groups - number_of_rocks_after_two_groups
+        )
+        rock_no_for_offset = (
+            number_of_rocks_after_three_groups - rock_no_per_repeating_group * 3
+        )
 
         large_value_minus_beginning_offset = large_value - rock_no_for_offset
 
-        repeating_group_no = large_value_minus_beginning_offset // rock_no_per_repeating_group
+        repeating_group_no = (
+            large_value_minus_beginning_offset // rock_no_per_repeating_group
+        )
         repeating_group_total_height = repeating_group_no * group_len
 
         if large_value_minus_beginning_offset % rock_no_per_repeating_group == 0:
             return repeating_group_total_height + offset_len
 
-        rock_no_ending_offset = large_value_minus_beginning_offset - (repeating_group_no * rock_no_per_repeating_group)
+        rock_no_ending_offset = large_value_minus_beginning_offset - (
+            repeating_group_no * rock_no_per_repeating_group
+        )
 
         for _ in range(rock_no_ending_offset):
             next(it)
 
-        rock_no_ending_offset_height = self.tower_height - tower_height_after_three_groups
+        rock_no_ending_offset_height = (
+            self.tower_height - tower_height_after_three_groups
+        )
 
         return repeating_group_total_height + offset_len + rock_no_ending_offset_height
 

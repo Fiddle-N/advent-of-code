@@ -83,7 +83,7 @@ $ ls
 """
     filesystem = process.process_out(terminal_out)
 
-    assert isinstance(filesystem.files['a'], process.Dir)
+    assert isinstance(filesystem.files["a"], process.Dir)
 
     assert process.dirs_below_100k(filesystem) == [
         filesystem.files["a"],

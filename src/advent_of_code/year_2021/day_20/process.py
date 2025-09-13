@@ -25,13 +25,13 @@ class Image:
     pixels: np.ndarray
 
     @classmethod
-    def from_list(cls, l):
-        return cls(np.array(l))
+    def from_list(cls, list_):
+        return cls(np.array(list_))
 
     @classmethod
     def from_str(cls, s):
-        l = [[Pixel(px) for px in row] for row in s.split("\n")]
-        return cls.from_list(l)
+        list_ = [[Pixel(px) for px in row] for row in s.split("\n")]
+        return cls.from_list(list_)
 
     def __eq__(self, other):
         return np.equal(self.pixels, other.pixels).all()

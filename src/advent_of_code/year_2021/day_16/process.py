@@ -23,7 +23,6 @@ class Packet:
         raise NotImplementedError
 
 
-
 @dataclasses.dataclass
 class LiteralPacket(Packet):
     val: int
@@ -83,9 +82,7 @@ class OperatorPacket(Packet):
         raise NotImplementedError
 
 
-
 class PacketDecoder:
-
     def __init__(self, message):
         self.og_message = message
         self.message = collections.deque(self.og_message)
@@ -97,7 +94,7 @@ class PacketDecoder:
 
     @classmethod
     def read_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls.from_hex(f.read().strip())
 
     def _get_raw_bits(self, num):
@@ -106,8 +103,8 @@ class PacketDecoder:
             try:
                 result.append(self.message.popleft())
             except IndexError:
-                break   # try and return as many bits as possible`
-        return ''.join(result) if result else '0'       # if no bits, then return 0
+                break  # try and return as many bits as possible`
+        return "".join(result) if result else "0"  # if no bits, then return 0
 
     @staticmethod
     def _decimalise_raw_bits(result):
@@ -125,7 +122,7 @@ class PacketDecoder:
             lit_list.append(bits)
             if not prefix:
                 break
-        lit_bits = ''.join(lit_list)
+        lit_bits = "".join(lit_list)
         literal = self._decimalise_raw_bits(lit_bits)
         return literal
 
@@ -137,10 +134,10 @@ class PacketDecoder:
                 break
             version = self._get_bits(3)
             packet_id = self._get_bits(3)
-            if packet_id == 4:    # literal packet
+            if packet_id == 4:  # literal packet
                 literal = self._decode_literal()
                 packets.append(LiteralPacket(version, packet_id, val=literal))
-            else:   # operator packet
+            else:  # operator packet
                 length_type_id = self._get_bits(1)
                 if length_type_id == 0:
                     bit_length = self._get_bits(15)
@@ -150,7 +147,7 @@ class PacketDecoder:
                     bit_length = self._get_bits(11)
                     subpackets = self.decode(subpacket=True, run_no=bit_length)
                 else:
-                    raise Exception('Invalid packet')
+                    raise Exception("Invalid packet")
                 packets.append(OperatorPacket(version, packet_id, subpackets))
             if not subpacket:
                 break
@@ -158,7 +155,7 @@ class PacketDecoder:
                 break
 
         if not subpacket:
-            packet, = packets
+            (packet,) = packets
             return packet
         else:
             return packets
@@ -167,10 +164,11 @@ class PacketDecoder:
 def main():
     packet_decoder = PacketDecoder.read_file()
     packet = packet_decoder.decode()
-    print('Packet Version Sum:', packet.version_sum)
-    print('Packet Val:', packet.val)
+    print("Packet Version Sum:", packet.version_sum)
+    print("Packet Val:", packet.val)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
+
     print(timeit.timeit(main, number=1))

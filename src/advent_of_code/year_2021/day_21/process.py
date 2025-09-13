@@ -5,7 +5,6 @@ import parse
 
 
 class DiracDice:
-
     def __init__(self, p1_start, p2_start):
         self.p1_start = p1_start
         self.p2_start = p2_start
@@ -16,7 +15,7 @@ class DiracDice:
 Player 1 starting position: {p1:d}
 Player 2 starting position: {p2:d}"""
         parsed = parse.parse(template, starting_positions)
-        return cls(parsed['p1'], parsed['p2'])
+        return cls(parsed["p1"], parsed["p2"])
 
     @classmethod
     def from_file(cls):
@@ -28,7 +27,10 @@ Player 2 starting position: {p2:d}"""
         p2_pos = self.p2_start
         p1_score = 0
         p2_score = 0
-        die = (sum(roll) for roll in more_itertools.chunked(itertools.cycle(range(1, 101)), 3))
+        die = (
+            sum(roll)
+            for roll in more_itertools.chunked(itertools.cycle(range(1, 101)), 3)
+        )
         die_roll = 0
         while True:
             die_roll += 3
@@ -48,9 +50,10 @@ Player 2 starting position: {p2:d}"""
 
 def main():
     dd = DiracDice.from_file()
-    print('Game result:', dd.play())
+    print("Game result:", dd.play())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
+
     print(timeit.timeit(main, number=1))

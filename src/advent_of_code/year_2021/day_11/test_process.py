@@ -10,19 +10,25 @@ def test_octopus_energy_model_small_example():
 11111"""
     octopus_model = process.OctopusEnergyModel(initial_octopuses)
     next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 34543
 40004
 50005
 40004
 34543"""
+    )
     next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 45654
 51115
 61116
 51115
 45654"""
+    )
 
 
 def test_octopus_energy_model_large_example():
@@ -40,7 +46,9 @@ def test_octopus_energy_model_large_example():
     octopus_model = process.OctopusEnergyModel(initial_octopuses)
 
     next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 6594254334
 3856965822
 6375667284
@@ -51,9 +59,12 @@ def test_octopus_energy_model_large_example():
 7993992245
 5957959665
 6394862637"""
+    )
 
     next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 8807476555
 5089087054
 8597889608
@@ -64,9 +75,12 @@ def test_octopus_energy_model_large_example():
 0000007456
 9000000876
 8700006848"""
+    )
 
     next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 0050900866
 8500800575
 9900000039
@@ -77,9 +91,12 @@ def test_octopus_energy_model_large_example():
 2211130000
 0421125000
 0021119000"""
+    )
 
     next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 2263031977
 0923031697
 0032221150
@@ -90,9 +107,12 @@ def test_octopus_energy_model_large_example():
 5532241122
 1532247211
 1132230211"""
+    )
 
     next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 4484144000
 2044144000
 2253333493
@@ -103,9 +123,12 @@ def test_octopus_energy_model_large_example():
 6643352233
 2643358322
 2243341322"""
+    )
 
     next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 5595255111
 3155255222
 3364444605
@@ -116,9 +139,12 @@ def test_octopus_energy_model_large_example():
 7754463344
 3754469433
 3354452433"""
+    )
 
     next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 6707366222
 4377366333
 4475555827
@@ -129,9 +155,12 @@ def test_octopus_energy_model_large_example():
 8865585555
 4865580644
 4465574644"""
+    )
 
     next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 7818477333
 5488477444
 5697666949
@@ -142,9 +171,12 @@ def test_octopus_energy_model_large_example():
 0000009666
 8000004755
 6800007755"""
+    )
 
     next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 9060000644
 7800000976
 6900000080
@@ -155,9 +187,12 @@ def test_octopus_energy_model_large_example():
 2221130009
 9111128097
 7911119976"""
+    )
 
     next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 0481112976
 0031112009
 0041112504
@@ -168,12 +203,15 @@ def test_octopus_energy_model_large_example():
 5532252350
 0532250600
 0032240000"""
+    )
 
     assert octopus_model.flashes == 204
 
     for _ in range(10):
         next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 3936556452
 5686556806
 4496555690
@@ -184,10 +222,13 @@ def test_octopus_energy_model_large_example():
 0000000344
 6000000364
 4600009543"""
+    )
 
     for _ in range(10):
         next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 0643334118
 4253334611
 3374333458
@@ -198,10 +239,13 @@ def test_octopus_energy_model_large_example():
 5544458511
 9444447111
 7944446119"""
+    )
 
     for _ in range(10):
         next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 6211111981
 0421111119
 0042111115
@@ -212,10 +256,13 @@ def test_octopus_energy_model_large_example():
 3322234597
 2222222976
 2222222762"""
+    )
 
     for _ in range(10):
         next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 9655556447
 4865556805
 4486555690
@@ -226,10 +273,13 @@ def test_octopus_energy_model_large_example():
 8000000533
 6800000633
 5680000538"""
+    )
 
     for _ in range(10):
         next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 2533334200
 2743334640
 2264333458
@@ -240,10 +290,13 @@ def test_octopus_energy_model_large_example():
 1854458611
 1175447111
 1115446111"""
+    )
 
     for _ in range(10):
         next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 8211111164
 0421111166
 0042111114
@@ -254,10 +307,13 @@ def test_octopus_energy_model_large_example():
 7322235117
 5722223475
 4572222754"""
+    )
 
     for _ in range(10):
         next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 1755555697
 5965555609
 4486555680
@@ -268,10 +324,13 @@ def test_octopus_energy_model_large_example():
 0000000990
 0000000800
 0000000000"""
+    )
 
     for _ in range(10):
         next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 7433333522
 2643333522
 2264333458
@@ -282,10 +341,13 @@ def test_octopus_energy_model_large_example():
 4854458333
 3387779333
 3333333333"""
+    )
 
     for _ in range(10):
         next(octopus_model)
-    assert str(octopus_model) == """\
+    assert (
+        str(octopus_model)
+        == """\
 0397666866
 0749766918
 0053976933
@@ -296,13 +358,14 @@ def test_octopus_energy_model_large_example():
 9322228966
 7922286866
 6789998766"""
+    )
 
     assert octopus_model.flashes == 1656
 
     while True:
         try:
             next(octopus_model)
-        except StopIteration as e:
+        except StopIteration:
             break
 
     assert octopus_model.step == 195

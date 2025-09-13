@@ -141,6 +141,7 @@ def test_run():
 
     # todo full tests
 
+
 def test_run_full():
     num_input = """\
 1

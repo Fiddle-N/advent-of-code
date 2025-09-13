@@ -28,7 +28,6 @@ def test_dec_snafu_conversion_brochure_numbers(dec, snafu):
     assert process.snaf_to_dec(snafu) == dec
 
 
-
 @pytest.mark.parametrize(
     "snafu, dec",
     [

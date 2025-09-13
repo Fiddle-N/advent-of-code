@@ -1,10 +1,7 @@
 import dataclasses
 import enum
 import itertools
-import operator
 import timeit
-
-
 
 
 @dataclasses.dataclass(frozen=True)
@@ -12,16 +9,16 @@ class Coords:
     x: int
     y: int
 
-    def __add__(self, other: 'Coords') -> 'Coords':
+    def __add__(self, other: "Coords") -> "Coords":
         return Coords(self.x + other.x, self.y + other.y)
 
 
 class Cave(enum.Enum):
-    AIR = '.'
-    ROCK = '#'
-    SAND_FLOWING = '~'
-    SAND_SETTLED = 'o'
-    SAND_SOURCE = '+'
+    AIR = "."
+    ROCK = "#"
+    SAND_FLOWING = "~"
+    SAND_SETTLED = "o"
+    SAND_SOURCE = "+"
 
 
 class Directions(enum.Enum):
@@ -38,12 +35,11 @@ COORD_DIRECTIONS = {
 
 
 def read_file():
-    with open('input.txt') as f:
+    with open("input.txt") as f:
         return f.read().strip()
 
 
 class RegolithReservoir:
-
     def __init__(self, input_, floor=False):
         self.start = Coords(500, 0)
         self.rock = self._parse_rock_slice(input_)
@@ -56,23 +52,25 @@ class RegolithReservoir:
         return {self.start} | self.rock | self.sand.keys()
 
     def _get_boundary(self, boundary_fn, axis):
-        return getattr(boundary_fn(self.all_points, key=lambda coords: getattr(coords, axis)), axis)
+        return getattr(
+            boundary_fn(self.all_points, key=lambda coords: getattr(coords, axis)), axis
+        )
 
     @property
     def min_x(self):
-        return self._get_boundary(min, 'x')
+        return self._get_boundary(min, "x")
 
     @property
     def max_x(self):
-        return self._get_boundary(max, 'x')
+        return self._get_boundary(max, "x")
 
     @property
     def min_y(self):
-        return self._get_boundary(min, 'y')
+        return self._get_boundary(min, "y")
 
     @property
     def max_y(self):
-        max_y_boundary = self._get_boundary(max, 'y')
+        max_y_boundary = self._get_boundary(max, "y")
         try:
             floor = self.floor
         except AttributeError:
@@ -84,20 +82,28 @@ class RegolithReservoir:
 
     @property
     def resting_sand(self):
-        return len([coord for coord, sand_material in self.sand.items() if sand_material == Cave.SAND_SETTLED])
+        return len(
+            [
+                coord
+                for coord, sand_material in self.sand.items()
+                if sand_material == Cave.SAND_SETTLED
+            ]
+        )
 
     @staticmethod
     def _get_coord_range(start: Coords, end: Coords) -> list[Coords]:
         x_ranges = sorted([start.x, end.x])
         y_ranges = sorted([start.y, end.y])
 
-        is_x_equal = (x_ranges[0] == x_ranges[1])
-        is_y_equal = (y_ranges[0] == y_ranges[1])
+        is_x_equal = x_ranges[0] == x_ranges[1]
+        is_y_equal = y_ranges[0] == y_ranges[1]
 
         if is_x_equal and is_y_equal:
-            return [start]      # start and end is the same
+            return [start]  # start and end is the same
         if not is_x_equal and not is_y_equal:
-            raise ValueError('Start and end coords are not horizontally or vertically aligned')
+            raise ValueError(
+                "Start and end coords are not horizontally or vertically aligned"
+            )
         return [
             Coords(x, y)
             for x in range(x_ranges[0], x_ranges[1] + 1)
@@ -107,10 +113,10 @@ class RegolithReservoir:
     def _parse_rock_slice(self, input_: str) -> set[Coords]:
         rock = set()
         for paths in input_.splitlines():
-            raw_path_points = paths.split(' -> ')
+            raw_path_points = paths.split(" -> ")
             path_points = []
             for raw_point in raw_path_points:
-                raw_point_vals = raw_point.split(',')
+                raw_point_vals = raw_point.split(",")
                 point_vals = [int(val) for val in raw_point_vals]
                 path_points.append(Coords(*point_vals))
             for path_pair in itertools.pairwise(path_points):
@@ -131,8 +137,8 @@ class RegolithReservoir:
                 coord = Coords(x, y)
                 cave_material = self._get_cave_material(coord)
                 map_row.append(cave_material.value)
-            map_list.append(''.join(map_row))
-        map = '\n'.join(map_list)
+            map_list.append("".join(map_row))
+        map = "\n".join(map_list)
         return map
 
     def _get_cave_material(self, coord):
@@ -146,7 +152,7 @@ class RegolithReservoir:
             cave_material = Cave.AIR
         return cave_material
 
-    def _get_dest_coord(self, coord: Coords, direction:Directions) -> Coords:
+    def _get_dest_coord(self, coord: Coords, direction: Directions) -> Coords:
         return coord + COORD_DIRECTIONS[direction]
 
     def __iter__(self):
@@ -203,7 +209,7 @@ def main():
     print("Resting units of sand with floor:", rr2.resting_sand)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
-    print(timeit.timeit(main, number=1))
 
+    print(timeit.timeit(main, number=1))

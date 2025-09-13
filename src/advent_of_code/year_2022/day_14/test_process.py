@@ -4,7 +4,6 @@ from advent_of_code.year_2022.day_14 import process
 
 
 class TestMapGeneration:
-
     def test_map_gen(self):
         input_ = """\
 498,4 -> 498,6 -> 496,6
@@ -49,7 +48,6 @@ class TestMapGeneration:
 
 
 class TestRegolithReservoir:
-
     def test_simple_example(self):
         input_ = """\
 498,4 -> 502,4
@@ -86,7 +84,6 @@ class TestRegolithReservoir:
 #####"""
         act_map = rr.map()
         assert act_map == exp_map
-
 
         next(rr_it)
         exp_map = """\
@@ -237,7 +234,7 @@ class TestRegolithReservoir:
 ..~###ooo#.
 ..~..oooo#.
 .~o.ooooo#.
-~#########."""      # todo show flowing sand forever
+~#########."""  # todo show flowing sand forever
         act_map = rr.map()
         assert act_map == exp_map
 
@@ -245,7 +242,6 @@ class TestRegolithReservoir:
 
 
 class TestRegolithReservoirWithFloor:
-
     def test_simple_example(self):
         input_ = """\
 498,4 -> 502,4
@@ -288,7 +284,6 @@ class TestRegolithReservoirWithFloor:
 #####"""
         act_map = rr.map()
         assert act_map == exp_map
-
 
         next(rr_it)
         exp_map = """\
@@ -661,4 +656,3 @@ ooooo.......ooooooooo
         assert act_map == exp_map
 
         assert rr.resting_sand == 93
-

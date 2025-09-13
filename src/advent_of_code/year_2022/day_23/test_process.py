@@ -13,12 +13,15 @@ def test_elf_fully_surrounded_by_other_elves():
     ud_it = iter(ud)
 
     next(ud_it)
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 #.#
 ...
 .#.
 ...
 #.#"""
+    )
 
 
 def test_small_example():
@@ -31,38 +34,50 @@ def test_small_example():
 .....
 """)
 
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 ##
 #.
 ..
 ##"""
+    )
 
     ud_it = iter(ud)
 
     next(ud_it)
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 ##
 ..
 #.
 .#
 #."""
+    )
 
     next(ud_it)
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 .##.
 #...
 ...#
 ....
 .#.."""
+    )
 
     next(ud_it)
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 ..#..
 ....#
 #....
 ....#
 .....
 ..#.."""
+    )
 
     with pytest.raises(StopIteration):
         next(ud_it)
@@ -79,7 +94,9 @@ def test_large_example():
 .#..#..
 """)
 
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 ....#..
 ..###.#
 #...#.#
@@ -87,11 +104,14 @@ def test_large_example():
 #.###..
 ##.#.##
 .#..#.."""
+    )
 
     ud_it = iter(ud)
 
     next(ud_it)
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 .....#...
 ...#...#.
 .#..#.#..
@@ -101,9 +121,12 @@ def test_large_example():
 #.#.#.##.
 .........
 ..#..#..."""
+    )
 
     next(ud_it)
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 ......#....
 ...#.....#.
 ..#..#.#...
@@ -113,9 +136,12 @@ def test_large_example():
 ...........
 .#.#.#.##..
 ...#..#...."""
+    )
 
     next(ud_it)
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 ......#....
 ....#....#.
 .#..#...#..
@@ -126,9 +152,12 @@ def test_large_example():
 .##.#....#.
 ..#........
 ......#...."""
+    )
 
     next(ud_it)
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 ......#....
 .....#....#
 .#...##....
@@ -139,9 +168,12 @@ def test_large_example():
 ...##....#.
 ...#.......
 ......#...."""
+    )
 
     next(ud_it)
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 ......#....
 ...........
 .#..#.....#
@@ -153,10 +185,13 @@ def test_large_example():
 .#.........
 .........#.
 ...#..#...."""
+    )
 
     for _ in range(5):
         next(ud_it)
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 ......#.....
 ..........#.
 .#.#..#.....
@@ -168,6 +203,7 @@ def test_large_example():
 ...#.#..#...
 ............
 ...#..#..#.."""
+    )
 
     assert ud.sum_empty_ground_tiles() == 110
 
@@ -178,7 +214,9 @@ def test_large_example():
             round_no = exc.value
             break
 
-    assert str(ud) == """\
+    assert (
+        str(ud)
+        == """\
 .......#......
 ....#......#..
 ..#.....#.....
@@ -191,4 +229,5 @@ def test_large_example():
 .........#....
 ....#......#..
 .......#......"""
+    )
     assert round_no == 20

@@ -30,14 +30,16 @@ class ProboscideaVolcanium:
                     for neighbour in matched_valve.group("raw_neighbours").split(", ")
                 },  # all neighbours start out 1 away
             )
-        self.key_valves = frozenset([
-            valve.name
-            for valve in self.full_graph.values()
-            if valve.name == "AA" or valve.flow_rate != 0
-        ])
+        self.key_valves = frozenset(
+            [
+                valve.name
+                for valve in self.full_graph.values()
+                if valve.name == "AA" or valve.flow_rate != 0
+            ]
+        )
         self.graph = self._prune_graph()
-        self.start_valve = 'AA'
-        self.time = 30      # mins
+        self.start_valve = "AA"
+        self.time = 30  # mins
 
     @classmethod
     def read_file(cls):
@@ -67,7 +69,9 @@ class ProboscideaVolcanium:
         for valve in self.key_valves:
             key_nodes = self._node(valve)
             valve_details = self.full_graph[valve]
-            graph[valve] = Valve(name=valve, flow_rate=valve_details.flow_rate, neighbours=key_nodes)
+            graph[valve] = Valve(
+                name=valve, flow_rate=valve_details.flow_rate, neighbours=key_nodes
+            )
         return graph
 
     @functools.cache
@@ -91,19 +95,22 @@ class ProboscideaVolcanium:
             return None, None
         return next_pressure, total_dist
 
-
     @functools.cache
     def _get_valves_pressure(self, curr_valve: str, valves: frozenset[str], dist=0):
         total_pressures = []
         for next_valve in valves:
-            pressure, next_dist = self._get_valve_pair_pressure(curr_valve, next_valve, dist)
+            pressure, next_dist = self._get_valve_pair_pressure(
+                curr_valve, next_valve, dist
+            )
             if pressure is None:
                 total_pressures.append(0)
                 continue
             else:
                 valves_left = self._get_valves_left(valves, next_valve)
                 if valves_left:
-                    future_pressure = self._get_valves_pressure(next_valve, valves_left, next_dist)
+                    future_pressure = self._get_valves_pressure(
+                        next_valve, valves_left, next_dist
+                    )
                     total_pressure = pressure + future_pressure
                 else:
                     total_pressure = pressure

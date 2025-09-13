@@ -4,28 +4,28 @@ import statistics
 import typing
 
 
-START_BRACKETS = {'(', '[', '{', '<'}
+START_BRACKETS = {"(", "[", "{", "<"}
 BRACKET_PAIRS = {
-    '(': ')',
-    '[': ']',
-    '{': '}',
-    '<': '>',
-    ')': '(',
-    ']': '[',
-    '}': '{',
-    '>': '<',
+    "(": ")",
+    "[": "]",
+    "{": "}",
+    "<": ">",
+    ")": "(",
+    "]": "[",
+    "}": "{",
+    ">": "<",
 }
 ILLEGAL_BRACKET_SCORE = {
-    ')': 3,
-    ']': 57,
-    '}': 1197,
-    '>': 25137,
+    ")": 3,
+    "]": 57,
+    "}": 1197,
+    ">": 25137,
 }
 VALID_BRACKET_SCORE = {
-    ')': 1,
-    ']': 2,
-    '}': 3,
-    '>': 4,
+    ")": 1,
+    "]": 2,
+    "}": 3,
+    ">": 4,
 }
 
 
@@ -36,16 +36,12 @@ class ChunkResult:
 
 
 class NavigationSubsystem:
-
     def __init__(self, code):
-        self.code = [
-            row
-            for row in code.split('\n')
-        ]
+        self.code = [row for row in code.split("\n")]
 
     @classmethod
     def read_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls(f.read().strip())
 
     def _is_valid(self, chunk):
@@ -60,11 +56,15 @@ class NavigationSubsystem:
                     match_char = output.pop()
                 except IndexError:
                     # no chars to match
-                    return ChunkResult(is_valid=False, context=ILLEGAL_BRACKET_SCORE[char])
+                    return ChunkResult(
+                        is_valid=False, context=ILLEGAL_BRACKET_SCORE[char]
+                    )
                 if match_char != BRACKET_PAIRS[char]:
                     output.append(match_char)  # put char back
-                    return ChunkResult(is_valid=False, context=ILLEGAL_BRACKET_SCORE[char])
-        return ChunkResult(is_valid=True, context=''.join(output))    # successful chunk
+                    return ChunkResult(
+                        is_valid=False, context=ILLEGAL_BRACKET_SCORE[char]
+                    )
+        return ChunkResult(is_valid=True, context="".join(output))  # successful chunk
 
     def system_error_score(self):
         scores = []
@@ -87,17 +87,20 @@ class NavigationSubsystem:
             result = self._is_valid(chunk)
             if result.is_valid:
                 valid_chunks.append(result.context)
-        completion_str_scores = [self._creation_str_score(chunk) for chunk in valid_chunks]
+        completion_str_scores = [
+            self._creation_str_score(chunk) for chunk in valid_chunks
+        ]
         sorted_completion_scores = sorted(completion_str_scores)
         return statistics.median(sorted_completion_scores)
 
 
 def main():
     nav_subsystem = NavigationSubsystem.read_file()
-    print('System error score:', nav_subsystem.system_error_score())
-    print('Middle score:', nav_subsystem.middle_score())
+    print("System error score:", nav_subsystem.system_error_score())
+    print("Middle score:", nav_subsystem.middle_score())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
+
     print(timeit.timeit(main, number=1))

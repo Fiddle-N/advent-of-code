@@ -1,19 +1,17 @@
-
-
 def snaf_to_dec(snafu: str) -> int:
     dec_digits: list[int] = []
     for snafu_digit in snafu[::-1]:
         try:
             dec_digit = int(snafu_digit)
         except ValueError as exc:
-            if snafu_digit == '-':
+            if snafu_digit == "-":
                 dec_digit = -1
-            elif snafu_digit == '=':
+            elif snafu_digit == "=":
                 dec_digit = -2
             else:
-                raise ValueError('Unknown snafu digit') from exc
+                raise ValueError("Unknown snafu digit") from exc
         dec_digits.append(dec_digit)
-    return sum([digit * 5 ** power for power, digit in enumerate(dec_digits)])
+    return sum([digit * 5**power for power, digit in enumerate(dec_digits)])
 
 
 def dec_to_snaf(dec: int) -> str:
@@ -23,11 +21,11 @@ def dec_to_snaf(dec: int) -> str:
     while True:
         div_quot, div_rem = divmod(dec_operand, 5)
         if div_quot == 0 and div_rem == 0:
-            return ''.join(reversed(snafu_digits))
+            return "".join(reversed(snafu_digits))
         if div_rem in (3, 4):
             div_quot += 1
             div_rem -= 5
-            snaf_digit = {-2: '=', -1: '-'}[div_rem]
+            snaf_digit = {-2: "=", -1: "-"}[div_rem]
         else:
             snaf_digit = str(div_rem)
         snafu_digits.append(snaf_digit)

@@ -173,46 +173,46 @@ def test_magnitude_example_1():
 
 def test_magnitude_example_2():
     assert (
-            process.SnailfishNumber.from_list(
+        process.SnailfishNumber.from_list(
             [[[[0, 7], 4], [[7, 8], [6, 0]]], [8, 1]]
         ).magnitude()
-            == 1384
+        == 1384
     )
 
 
 def test_magnitude_example_3():
     assert (
-            process.SnailfishNumber.from_list(
+        process.SnailfishNumber.from_list(
             [[[[1, 1], [2, 2]], [3, 3]], [4, 4]]
         ).magnitude()
-            == 445
+        == 445
     )
 
 
 def test_magnitude_example_4():
     assert (
-            process.SnailfishNumber.from_list(
+        process.SnailfishNumber.from_list(
             [[[[3, 0], [5, 3]], [4, 4]], [5, 5]]
         ).magnitude()
-            == 791
+        == 791
     )
 
 
 def test_magnitude_example_5():
     assert (
-            process.SnailfishNumber.from_list(
-            [[[[5,0],[7,4]],[5,5]],[6,6]]
+        process.SnailfishNumber.from_list(
+            [[[[5, 0], [7, 4]], [5, 5]], [6, 6]]
         ).magnitude()
-            == 1137
+        == 1137
     )
 
 
 def test_magnitude_example_6():
     assert (
-            process.SnailfishNumber.from_list(
-            [[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]
+        process.SnailfishNumber.from_list(
+            [[[[8, 7], [7, 7]], [[8, 6], [7, 7]]], [[[0, 7], [6, 6]], [8, 7]]]
         ).magnitude()
-            == 3488
+        == 3488
     )
 
 
@@ -237,7 +237,7 @@ def test_homework_final_example():
             break
 
     assert result == process.SnailfishNumber.from_list(
-        [[[[6,6],[7,6]],[[7,7],[7,0]]],[[[7,7],[7,7]],[[7,8],[9,9]]]]
+        [[[[6, 6], [7, 6]], [[7, 7], [7, 0]]], [[[7, 7], [7, 7]], [[7, 8], [9, 9]]]]
     )
 
     assert result.magnitude() == 4140

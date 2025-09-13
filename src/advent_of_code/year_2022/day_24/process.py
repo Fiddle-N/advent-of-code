@@ -206,7 +206,10 @@ class BlizzardBasin:
                     if next_coord == self.start:
                         if state.goal:
                             exp_state = dataclasses.replace(
-                                state, pos=next_coord, start_again=True, start_again_time=minute
+                                state,
+                                pos=next_coord,
+                                start_again=True,
+                                start_again_time=minute,
                             )
                             assert self.round_trip
                         next_states.append(exp_state)
@@ -214,7 +217,10 @@ class BlizzardBasin:
                     elif next_coord == self.dest:
                         if state.start_again:
                             exp_state = dataclasses.replace(
-                                state, pos=next_coord, goal_again=True, goal_again_time=minute
+                                state,
+                                pos=next_coord,
+                                goal_again=True,
+                                goal_again_time=minute,
                             )
                         else:
                             exp_state = dataclasses.replace(
@@ -248,8 +254,7 @@ def main() -> None:
             _, minute = exc.value
             break
 
-    print(f"Fewest number of minutes needed to reach goal:", minute)
-
+    print("Fewest number of minutes needed to reach goal:", minute)
 
     bb_2 = BlizzardBasin.read_file(round_trip=True)
     bb_2_it = iter(bb_2)
@@ -260,8 +265,7 @@ def main() -> None:
             _, minute = exc.value
             break
 
-    print(f"Fewest number of minutes needed to reach goal with round trip:", minute)
-
+    print("Fewest number of minutes needed to reach goal with round trip:", minute)
 
 
 if __name__ == "__main__":

@@ -99,16 +99,14 @@ class Contraption:
                 # beam passes through as normal
                 return [BeamState(location=location, direction=direction)]
             case ContraptionSpace.HORIZONTAL_SPLITTER, (
-                Direction.UPWARDS
-                | Direction.DOWNWARDS
+                Direction.UPWARDS | Direction.DOWNWARDS
             ):
                 return [
                     BeamState(location=location, direction=next_direction)
                     for next_direction in (Direction.LEFTWARDS, Direction.RIGHTWARDS)
                 ]
             case ContraptionSpace.VERTICAL_SPLITTER, (
-                Direction.LEFTWARDS
-                | Direction.RIGHTWARDS
+                Direction.LEFTWARDS | Direction.RIGHTWARDS
             ):
                 return [
                     BeamState(location=location, direction=next_direction)

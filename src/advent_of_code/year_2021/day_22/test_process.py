@@ -1,9 +1,10 @@
 import pytest
 
-from advent_of_code.year_2021.day_22 import process, process_broken, process_2
+from advent_of_code.year_2021.day_22 import process, process_2
 
 # broken tests, broken me
 pytest.skip(allow_module_level=True)
+
 
 # def test_short_example():
 #     steps = """\
@@ -214,7 +215,6 @@ on x=-41..9,y=-7..43,z=-33..15"""
     rr = process.ReactorReboot(steps)
     rr_iter = iter(rr)
 
-
     while True:
         try:
             cubes = next(rr_iter)
@@ -233,7 +233,6 @@ on x=-20..33,y=-21..23,z=-26..28"""
     rr = process.ReactorReboot(steps)
     rr_iter = iter(rr)
 
-
     while True:
         try:
             cubes = next(rr_iter)
@@ -244,13 +243,11 @@ on x=-20..33,y=-21..23,z=-26..28"""
     assert len(cubes) == 210918
 
 
-
 def test_part_2_ex_1():
     steps = """\
 on x=-50..49,y=-50..49,z=-50..49"""
     rr = process_2.ReactorReboot(steps)
     cubes = rr.process()
-
 
     assert cubes == 1_000_000
 
@@ -262,7 +259,6 @@ on x=50..149,y=50..149,z=50..149"""
     rr = process_2.ReactorReboot(steps)
     cubes = rr.process()
 
-
     assert cubes == 2_000_000
 
 
@@ -272,7 +268,6 @@ on x=-50..49,y=-50..49,z=-50..49
 off x=50..149,y=50..149,z=50..149"""
     rr = process_2.ReactorReboot(steps)
     cubes = rr.process()
-
 
     assert cubes == 1_000_000
 
@@ -378,6 +373,7 @@ on x=10..10,y=10..10,z=10..10"""
     cubes = rr.process()
 
     assert cubes == 39
+
 
 # def test_part_2_ex_12_3():
 #     steps = """\
@@ -678,4 +674,3 @@ on x=-41..9,y=-7..43,z=-33..15"""
 #
 #     # assert cubes == 4759573874668344
 #     assert cubes == 1_000_001
-

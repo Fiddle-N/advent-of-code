@@ -18,9 +18,7 @@ def arrangements(condition_record: str, damaged_springs: tuple[int, ...]) -> int
     if end_of_condition_record and "?" not in condition_record:
         # match on exact number of damaged springs
         # optionally surrounded by operational springs
-        pattern = (
-            f"{OPERATIONAL}*" f"{DAMAGED}{{{damaged_springs[0]}}}" f"{OPERATIONAL}*"
-        )
+        pattern = f"{OPERATIONAL}*{DAMAGED}{{{damaged_springs[0]}}}{OPERATIONAL}*"
         return bool(re.fullmatch(pattern, condition_record))
 
     option_1 = option_2 = 0
@@ -31,13 +29,13 @@ def arrangements(condition_record: str, damaged_springs: tuple[int, ...]) -> int
     if end_of_condition_record:
         # if at the end
         # all springs afterwards must be operational, not just one
-        pattern = f"{MAYBE_DAMAGED}{{{damaged_springs[0]}}}" f"{MAYBE_OPERATIONAL}*"
+        pattern = f"{MAYBE_DAMAGED}{{{damaged_springs[0]}}}{MAYBE_OPERATIONAL}*"
         option_1 = bool(re.fullmatch(pattern, condition_record))
     else:
         # if not at the end
         # only one immediate following spring must be operational
         # the rest may make up the rest of the pattern
-        pattern = f"{MAYBE_DAMAGED}{{{damaged_springs[0]}}}" f"{MAYBE_OPERATIONAL}"
+        pattern = f"{MAYBE_DAMAGED}{{{damaged_springs[0]}}}{MAYBE_OPERATIONAL}"
         if re.match(pattern, condition_record):
             option_1 = arrangements(
                 condition_record[damaged_springs[0] + 1 :], damaged_springs[1:]

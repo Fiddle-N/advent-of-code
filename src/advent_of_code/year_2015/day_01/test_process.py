@@ -2,6 +2,7 @@ import pytest
 
 from advent_of_code.year_2015.day_01 import process
 
+
 @pytest.mark.parametrize(
     "directions,floor",
     [

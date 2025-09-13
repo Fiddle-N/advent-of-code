@@ -13,14 +13,18 @@ UNIQUE_SIGNAL_PATTERNS = [1, 4, 7, 8]
 
 
 class SevenSegmentDisplay:
-
     def __init__(self, signal_patterns, output_value):
         self.signal_patterns = signal_patterns
         self.output_value = output_value
 
     def unique_patterns(self):
         return sum(
-            any([len(digit) in [PATTERN_LENGTHS[pattern] for pattern in UNIQUE_SIGNAL_PATTERNS]])
+            any(
+                [
+                    len(digit)
+                    in [PATTERN_LENGTHS[pattern] for pattern in UNIQUE_SIGNAL_PATTERNS]
+                ]
+            )
             for digit in self.output_value
         )
 
@@ -34,7 +38,9 @@ class SevenSegmentDisplay:
                     patterns[digit] = pattern
                     continue
 
-        length_5_patterns = [pattern for pattern in self.signal_patterns if len(pattern) == 5]
+        length_5_patterns = [
+            pattern for pattern in self.signal_patterns if len(pattern) == 5
+        ]
 
         pattern_2_or_5 = []
         for pattern in length_5_patterns:
@@ -43,7 +49,9 @@ class SevenSegmentDisplay:
             else:
                 pattern_2_or_5.append(pattern)
 
-        length_6_patterns = [pattern for pattern in self.signal_patterns if len(pattern) == 6]
+        length_6_patterns = [
+            pattern for pattern in self.signal_patterns if len(pattern) == 6
+        ]
 
         pattern_0_or_9 = []
         for pattern in length_6_patterns:
@@ -52,7 +60,9 @@ class SevenSegmentDisplay:
             else:
                 pattern_0_or_9.append(pattern)
 
-        for length_5_pattern, length_6_pattern in itertools.product(pattern_2_or_5, pattern_0_or_9):
+        for length_5_pattern, length_6_pattern in itertools.product(
+            pattern_2_or_5, pattern_0_or_9
+        ):
             if length_5_pattern < length_6_pattern:
                 patterns[5] = length_5_pattern
                 patterns[9] = length_6_pattern
@@ -75,19 +85,18 @@ class SevenSegmentDisplay:
             if pattern == output_pattern
         ]
 
-        decoded_value = int(''.join(str(value) for value in decoded_values))
+        decoded_value = int("".join(str(value) for value in decoded_values))
         return decoded_value
 
 
 class SevenSegmentSearch:
-
     def __init__(self, segment_data):
         self.segment_info = self._process_segment_data(segment_data)
 
     def _process_segment_data(self, segment_data):
         segment_info = []
-        for entry in segment_data.split('\n'):
-            raw_signal_patterns, raw_output_value = entry.split(' | ')
+        for entry in segment_data.split("\n"):
+            raw_signal_patterns, raw_output_value = entry.split(" | ")
             signal_patterns = [set(pattern) for pattern in raw_signal_patterns.split()]
             output_value = [set(digit) for digit in raw_output_value.split()]
             segment_info.append(SevenSegmentDisplay(signal_patterns, output_value))
@@ -95,7 +104,7 @@ class SevenSegmentSearch:
 
     @classmethod
     def read_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls(f.read().strip())
 
     def unique_patterns(self):
@@ -107,10 +116,11 @@ class SevenSegmentSearch:
 
 def main():
     seven_segment_search = SevenSegmentSearch.read_file()
-    print('Unique patterns:', seven_segment_search.unique_patterns())
-    print('All output values:', seven_segment_search.decode_output())
+    print("Unique patterns:", seven_segment_search.unique_patterns())
+    print("All output values:", seven_segment_search.decode_output())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
+
     print(timeit.timeit(main, number=1))

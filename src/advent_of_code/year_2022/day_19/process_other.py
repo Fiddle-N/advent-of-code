@@ -10,8 +10,6 @@ class MineralState:
     ore: int = 0
 
 
-
-
 @dataclasses.dataclass(frozen=True)
 class MineralRobotState:
     geode: int = 0
@@ -28,8 +26,6 @@ class MineralSet(set[MineralState]):
     #             self.remove(existing)
     #             continue
     #     super().add(item)
-
-
 
 
 def mineral_defaultdict_factory():
@@ -59,7 +55,7 @@ def simulate(mineral_states):
                     ore=robot_state.ore + 1,
                     clay=robot_state.clay,
                     obsidian=robot_state.obsidian,
-                    geode=robot_state.geode
+                    geode=robot_state.geode,
                 )
 
                 next_mineral_state = MineralState(
@@ -76,7 +72,7 @@ def simulate(mineral_states):
                     ore=robot_state.ore,
                     clay=robot_state.clay + 1,
                     obsidian=robot_state.obsidian,
-                    geode=robot_state.geode
+                    geode=robot_state.geode,
                 )
                 next_mineral_state = MineralState(
                     ore=next_ore - 2,
@@ -87,12 +83,14 @@ def simulate(mineral_states):
 
                 new_mineral_states[next_robot_state].add(next_mineral_state)
 
-            if mineral_state.ore >= 3 and mineral_state.clay >= 14:  # base calculation on original ore levels:
+            if (
+                mineral_state.ore >= 3 and mineral_state.clay >= 14
+            ):  # base calculation on original ore levels:
                 next_robot_state = MineralRobotState(
                     ore=robot_state.ore,
                     clay=robot_state.clay,
                     obsidian=robot_state.obsidian + 1,
-                    geode=robot_state.geode
+                    geode=robot_state.geode,
                 )
                 next_mineral_state = MineralState(
                     ore=next_ore - 3,
@@ -103,12 +101,14 @@ def simulate(mineral_states):
 
                 new_mineral_states[next_robot_state].add(next_mineral_state)
 
-            if mineral_state.ore >= 2 and mineral_state.obsidian >= 7:  # base calculation on original ore levels:
+            if (
+                mineral_state.ore >= 2 and mineral_state.obsidian >= 7
+            ):  # base calculation on original ore levels:
                 next_robot_state = MineralRobotState(
                     ore=robot_state.ore,
                     clay=robot_state.clay,
                     obsidian=robot_state.obsidian,
-                    geode=robot_state.geode + 1
+                    geode=robot_state.geode + 1,
                 )
                 next_mineral_state = MineralState(
                     ore=next_ore - 2,
@@ -145,7 +145,7 @@ def simulate_2(mineral_states):
                     ore=robot_state.ore + 1,
                     clay=robot_state.clay,
                     obsidian=robot_state.obsidian,
-                    geode=robot_state.geode
+                    geode=robot_state.geode,
                 )
 
                 next_mineral_state = MineralState(
@@ -162,7 +162,7 @@ def simulate_2(mineral_states):
                     ore=robot_state.ore,
                     clay=robot_state.clay + 1,
                     obsidian=robot_state.obsidian,
-                    geode=robot_state.geode
+                    geode=robot_state.geode,
                 )
                 next_mineral_state = MineralState(
                     ore=next_ore - 3,
@@ -173,12 +173,14 @@ def simulate_2(mineral_states):
 
                 new_mineral_states[next_robot_state].add(next_mineral_state)
 
-            if mineral_state.ore >= 3 and mineral_state.clay >= 8:  # base calculation on original ore levels:
+            if (
+                mineral_state.ore >= 3 and mineral_state.clay >= 8
+            ):  # base calculation on original ore levels:
                 next_robot_state = MineralRobotState(
                     ore=robot_state.ore,
                     clay=robot_state.clay,
                     obsidian=robot_state.obsidian + 1,
-                    geode=robot_state.geode
+                    geode=robot_state.geode,
                 )
                 next_mineral_state = MineralState(
                     ore=next_ore - 3,
@@ -189,12 +191,14 @@ def simulate_2(mineral_states):
 
                 new_mineral_states[next_robot_state].add(next_mineral_state)
 
-            if mineral_state.ore >= 3 and mineral_state.obsidian >= 12:  # base calculation on original ore levels:
+            if (
+                mineral_state.ore >= 3 and mineral_state.obsidian >= 12
+            ):  # base calculation on original ore levels:
                 next_robot_state = MineralRobotState(
                     ore=robot_state.ore,
                     clay=robot_state.clay,
                     obsidian=robot_state.obsidian,
-                    geode=robot_state.geode + 1
+                    geode=robot_state.geode + 1,
                 )
                 next_mineral_state = MineralState(
                     ore=next_ore - 3,
@@ -214,12 +218,9 @@ def main():
     for _ in range(1, 25):
         # print()
         mineral_states = simulate(mineral_states)
-    print('done')
+    print("done")
 
-
-    print(max(set.union(*mineral_states.values()) ).geode)
-
-
+    print(max(set.union(*mineral_states.values())).geode)
 
 
 if __name__ == "__main__":

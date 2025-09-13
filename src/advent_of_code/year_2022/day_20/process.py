@@ -14,15 +14,14 @@ def sign_magnitude_mod(num: int, mod: int):
 @dataclasses.dataclass
 class Node:
     data: int
-    prev: Optional['Node'] = None
-    next: Optional['Node'] = None
+    prev: Optional["Node"] = None
+    next: Optional["Node"] = None
 
     def __repr__(self):
         return f"<Node data={self.data} prev={self.prev.data} next={self.next.data}>"
 
 
 class DoublyLinkedList:
-
     def __init__(self):
         self.first = None
         self._len = 0
@@ -61,7 +60,6 @@ class DoublyLinkedList:
 
 
 class GrovePositioningSystem:
-
     def __init__(self, grove_data):
         self.grove_data = [int(num) for num in grove_data.splitlines()]
 
@@ -83,7 +81,6 @@ class GrovePositioningSystem:
 
     def __iter__(self):
         for node in self.grove_nodes:
-
             if node.data == 0:
                 pass
             elif node.data < 0:
@@ -106,7 +103,6 @@ class GrovePositioningSystem:
 
                     self.grove_linked_list.remove(node)
                     self.grove_linked_list.insert_after(target_node, node)
-
 
             # if node.data == 0:
             #     pass
@@ -144,7 +140,6 @@ class GrovePositioningSystem:
             #     print()
 
             yield
-
 
     def get_key_nos(self):
         values = []

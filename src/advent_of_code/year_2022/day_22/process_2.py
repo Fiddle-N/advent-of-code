@@ -100,8 +100,6 @@ class CoordPos:
     next_edge_dir: Direction
 
 
-
-
 class Cube:
     def __init__(self, input_: list[list[int | None]]):
         self.sides = {}
@@ -265,7 +263,9 @@ class Map(dict):
 
     def _wrap(self, curr: Coords, direction: Direction):
         edge_details = self.cube_coord_edges[curr][direction]
-        dest = self.cube_edge_coords[edge_details.next_face].edges[edge_details.next_edge_dir][edge_details.next_pos]
+        dest = self.cube_edge_coords[edge_details.next_face].edges[
+            edge_details.next_edge_dir
+        ][edge_details.next_pos]
         next_dir = edge_details.next_edge_dir.opposite()
         return dest, next_dir
 
@@ -345,9 +345,13 @@ class MonkeyMap:
                 continue
             for direction, coords in side.edges.items():
                 edge = self.cube_edges[side.id].edges[direction]
-                opposite_edge_dir = [dir_ for dir_, opp_edge in self.cube_edges[edge.id].edges.items() if opp_edge.id == side.id]
+                opposite_edge_dir = [
+                    dir_
+                    for dir_, opp_edge in self.cube_edges[edge.id].edges.items()
+                    if opp_edge.id == side.id
+                ]
                 assert len(opposite_edge_dir) == 1
-                opposite_edge_dir, = opposite_edge_dir
+                (opposite_edge_dir,) = opposite_edge_dir
                 for idx, coord in enumerate(coords):
                     self.cube_coord_edges[coord][direction] = CoordPos(
                         next_pos=(self.face_size - idx) - 1,

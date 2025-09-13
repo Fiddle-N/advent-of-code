@@ -32,7 +32,6 @@ class Step:
 
 
 class ReactorReboot:
-
     SET_OPS = {
         StepSwitch.ON: set.add,
         StepSwitch.OFF: set.discard,
@@ -67,7 +66,8 @@ class ReactorReboot:
             upper = {axis: getattr(step, axis).end for axis in ("x", "y", "z")}
 
             check = any(val < self.INIT_RANGE.start for val in lower.values()) or any(
-                val > self.INIT_RANGE.end for val in upper.values())
+                val > self.INIT_RANGE.end for val in upper.values()
+            )
 
             if not self.enable_full and check:
                 continue
@@ -89,9 +89,10 @@ def main():
             cubes = next(rr_iter)
         except StopIteration:
             break
-    print('On cubes:', len(cubes))
+    print("On cubes:", len(cubes))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
+
     print(timeit.timeit(main, number=1))

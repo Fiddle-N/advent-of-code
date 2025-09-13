@@ -33,11 +33,9 @@ OFFSETS = [
 
 
 class OctopusEnergyModel:
-
     def __init__(self, octopuses):
         octopus_grid = [
-            [Octopus(int(octopus)) for octopus in row]
-            for row in octopuses.split('\n')
+            [Octopus(int(octopus)) for octopus in row] for row in octopuses.split("\n")
         ]
         self.height = len(octopus_grid)
         self.width = len(octopus_grid[0])
@@ -50,7 +48,7 @@ class OctopusEnergyModel:
 
     @classmethod
     def read_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls(f.read().strip())
 
     def _get_neighbours(self, coord):
@@ -83,15 +81,22 @@ class OctopusEnergyModel:
             for neighbour_coord in neighbour_coords:
                 next_octopus = self.octopuses[neighbour_coord] + 1
                 self.octopuses[neighbour_coord] = next_octopus
-                if self._will_flash(next_octopus) and neighbour_coord not in about_to_flash:
+                if (
+                    self._will_flash(next_octopus)
+                    and neighbour_coord not in about_to_flash
+                ):
                     about_to_flash.add(neighbour_coord)
-            self.octopuses[octopus_coord] = Octopus(energy=octopus.energy, has_flashed=True)
+            self.octopuses[octopus_coord] = Octopus(
+                energy=octopus.energy, has_flashed=True
+            )
 
     def _reset_flashed_octopuses(self):
         any_octopuses_not_flashed = False
         for octopus_coord, octopus in self.octopuses.items():
             if octopus.has_flashed:
-                self.octopuses[Coords(octopus_coord.x, octopus_coord.y)] = Octopus(energy=0, has_flashed=False)
+                self.octopuses[Coords(octopus_coord.x, octopus_coord.y)] = Octopus(
+                    energy=0, has_flashed=False
+                )
                 self.flashes += 1
             else:
                 any_octopuses_not_flashed = True
@@ -110,15 +115,16 @@ class OctopusEnergyModel:
 
     def __str__(self):
         octopus_energy_grid: typing.List[typing.List[typing.Optional[int]]] = [
-            [None for _ in range(self.width)]
-            for _ in range(self.height)
+            [None for _ in range(self.width)] for _ in range(self.height)
         ]
         for x in range(self.width):
             for y in range(self.height):
                 octopus_energy_grid[y][x] = self.octopuses[Coords(x, y)].energy
-        return '\n'.join(
-            [''.join([str(octopus_energy) for octopus_energy in row])
-             for row in octopus_energy_grid]
+        return "\n".join(
+            [
+                "".join([str(octopus_energy) for octopus_energy in row])
+                for row in octopus_energy_grid
+            ]
         )
 
 
@@ -126,15 +132,16 @@ def main():
     octopus_model = OctopusEnergyModel.read_file()
     for _ in range(100):
         next(octopus_model)
-    print('Octopus flashes after 100 steps:', octopus_model.flashes)
+    print("Octopus flashes after 100 steps:", octopus_model.flashes)
     while True:
         try:
             next(octopus_model)
-        except StopIteration as e:
+        except StopIteration:
             break
-    print('First step when all octopuses flash:', octopus_model.step)
+    print("First step when all octopuses flash:", octopus_model.step)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
+
     print(timeit.timeit(main, number=1))

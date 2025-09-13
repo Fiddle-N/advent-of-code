@@ -4,7 +4,7 @@ import statistics
 
 @functools.cache
 def triangle(num):
-    return (num * (num+1)) // 2
+    return (num * (num + 1)) // 2
 
 
 def crab_alignment_linear(positions):
@@ -20,13 +20,14 @@ def crab_alignment_triangular(positions):
 
 
 def main():
-    with open('input.txt') as f:
+    with open("input.txt") as f:
         raw_positions = f.read().strip()
-    positions = [int(pos) for pos in raw_positions.split(',')]
-    print(f'{crab_alignment_linear(positions)}')
-    print(f'{crab_alignment_triangular(positions)}')
+    positions = [int(pos) for pos in raw_positions.split(",")]
+    print(f"{crab_alignment_linear(positions)}")
+    print(f"{crab_alignment_triangular(positions)}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
+
     print(timeit.timeit(main, number=1))

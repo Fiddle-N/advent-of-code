@@ -1,9 +1,7 @@
 import collections
-import copy
 import dataclasses
 import enum
 import functools
-import queue
 import typing
 
 AMPHIPODS_PER_ROW = 4
@@ -84,7 +82,6 @@ class AmphipodCounterMixin:
 
 
 class Amphipod(AmphipodCounterMixin):
-
     def __hash__(self):
         return hash((self.type, self.id))
 
@@ -93,7 +90,6 @@ class Amphipod(AmphipodCounterMixin):
 
 
 class BurrowAmphipod:
-
     def __init__(self, amphipod_type: AmphipodType):
         self.amphipod: Amphipod = Amphipod(amphipod_type)
         self.state: BurrowAmphipodState = BurrowAmphipodState.ORIGINAL
@@ -103,7 +99,6 @@ class BurrowAmphipod:
 
 
 class BurrowAmphipodSpace(AmphipodCounterMixin):
-
     def __init__(self, amphipod_type: AmphipodType, room_type: BurrowRoomType):
         super().__init__(amphipod_type)
         self.room_type: BurrowRoomType = room_type
@@ -128,8 +123,12 @@ class Move:
 class AmphipodConfiguration:
     energy: int
     amphipods: dict[Coords, Amphipod] = dataclasses.field(compare=False)
-    amphipods_state: dict[Amphipod, BurrowAmphipodState] = dataclasses.field(compare=False)
-    history: frozenset[tuple[Amphipod, Coords]] = dataclasses.field(default_factory=frozenset)
+    amphipods_state: dict[Amphipod, BurrowAmphipodState] = dataclasses.field(
+        compare=False
+    )
+    history: frozenset[tuple[Amphipod, Coords]] = dataclasses.field(
+        default_factory=frozenset
+    )
 
     @property
     def diagram(self):
@@ -138,22 +137,21 @@ class AmphipodConfiguration:
 #...........#
 ### # # # ###"""
 
-        burrow_mid_row = '  # # # # #  '
+        burrow_mid_row = "  # # # # #  "
 
-        burrow_bottom_row = '  #########  '
+        burrow_bottom_row = "  #########  "
 
-        burrow_middle = '\n'.join([burrow_mid_row] * ((len(self.amphipods) // AMPHIPODS_PER_ROW) - 1))
-        burrow = '\n'.join([burrow_top, burrow_middle, burrow_bottom_row])
+        burrow_middle = "\n".join(
+            [burrow_mid_row] * ((len(self.amphipods) // AMPHIPODS_PER_ROW) - 1)
+        )
+        burrow = "\n".join([burrow_top, burrow_middle, burrow_bottom_row])
 
-        base_diagram_list = [
-            list(row)
-            for row in burrow.splitlines()
-        ]
+        base_diagram_list = [list(row) for row in burrow.splitlines()]
 
         for amphipod_coord, amphipod in self.amphipods.items():
             base_diagram_list[amphipod_coord.y][amphipod_coord.x] = amphipod.type.value
 
-        return '\n'.join([''.join(row) for row in base_diagram_list])
+        return "\n".join(["".join(row) for row in base_diagram_list])
 
 
 class BurrowMap:
@@ -172,11 +170,14 @@ class BurrowMap:
         return self._amphipod_space_coords[amphipod_type]
 
     def get_hallway_coords(self):
-        return [coord for coord, node in self.map.items() if node.this == BurrowHallwayType.AWAY_FROM_ROOM]
+        return [
+            coord
+            for coord, node in self.map.items()
+            if node.this == BurrowHallwayType.AWAY_FROM_ROOM
+        ]
 
     @functools.cache
     def _path_coords(self, start: Coords, end: Coords):
-
         def dfs(space=start, path=None):
             if path is None:
                 path = []
@@ -201,23 +202,22 @@ class BurrowMap:
 
 
 class BurrowMapGenerator:
-
     BURROW_TOP = """\
 #############
 #...........#
 ###A#B#C#D###"""
 
-    BURROW_MID_ROW = '  #A#B#C#D#  '
+    BURROW_MID_ROW = "  #A#B#C#D#  "
 
-    BURROW_BOTTOM_ROW = '  #########  '
+    BURROW_BOTTOM_ROW = "  #########  "
 
     def __init__(self):
         self.height = None
         self.width = None
 
     def create(self, amphipod_rows):
-        burrow_middle = '\n'.join([self.BURROW_MID_ROW] * (amphipod_rows - 1))
-        burrow = '\n'.join([self.BURROW_TOP, burrow_middle, self.BURROW_BOTTOM_ROW])
+        burrow_middle = "\n".join([self.BURROW_MID_ROW] * (amphipod_rows - 1))
+        burrow = "\n".join([self.BURROW_TOP, burrow_middle, self.BURROW_BOTTOM_ROW])
         burrow_grid = self._generate_grid(burrow)
         self.height = len(burrow_grid)
         self.width = len(burrow_grid[0])
@@ -270,9 +270,15 @@ class BurrowMapGenerator:
                     Location(coord, distance=1) for coord in neighbour_coords
                 ]
                 if space == BurrowMapSpace.HALLWAY:
-                    node_val = BurrowHallwayType.OUTSIDE_ROOM if len(neighbour_nodes) == 3 else BurrowHallwayType.AWAY_FROM_ROOM
+                    node_val = (
+                        BurrowHallwayType.OUTSIDE_ROOM
+                        if len(neighbour_nodes) == 3
+                        else BurrowHallwayType.AWAY_FROM_ROOM
+                    )
                 elif space in AmphipodType:
-                    node_val = BurrowAmphipodSpace(space, neighbour_nodes_to_side_room_types[len(neighbour_nodes)])
+                    node_val = BurrowAmphipodSpace(
+                        space, neighbour_nodes_to_side_room_types[len(neighbour_nodes)]
+                    )
                 else:
                     raise Exception
                 node = Node(node_val, neighbour_nodes)
@@ -280,17 +286,16 @@ class BurrowMapGenerator:
         return burrow_map
 
 
-
 class AmphipodOrganiser:
     def __init__(self, burrow_start_input, unfolded=False):
         burrow_start = burrow_start_input.splitlines()
         if unfolded:
             burrow_start = (
-                    burrow_start[:3]
-                    + """\
+                burrow_start[:3]
+                + """\
   #D#C#B#A#
   #D#B#A#C#""".splitlines()
-                    + burrow_start[3:]
+                + burrow_start[3:]
             )
         amphipods = self._find_amphipods(burrow_start)
         amphipod_rows = len(amphipods) // AMPHIPODS_PER_ROW
@@ -305,7 +310,7 @@ class AmphipodOrganiser:
 
     @classmethod
     def read_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls(f.read().strip())
 
     def _find_amphipods(self, burrow_start):
@@ -321,17 +326,23 @@ class AmphipodOrganiser:
         return amphipods
 
     def _determine_amphipod_state(self, amphipods: dict[Coords, Amphipod]):
-        amphipods_state = {amphipod: BurrowAmphipodState.ORIGINAL for amphipod in amphipods.values()}
+        amphipods_state = {
+            amphipod: BurrowAmphipodState.ORIGINAL for amphipod in amphipods.values()
+        }
 
         open_neighbours_of_settled_end_amphipods = set()
 
         for coord, amphipod in amphipods.items():
             room = self.burrow_map.map[coord]
-            if room.this.room_type == BurrowRoomType.END:    # we need to check bottom row first
+            if (
+                room.this.room_type == BurrowRoomType.END
+            ):  # we need to check bottom row first
                 room_amphipod_type = room.this.type
                 if room_amphipod_type == amphipod.type:
                     amphipods_state[amphipod] = BurrowAmphipodState.SETTLED
-                    open_neighbours_of_settled_end_amphipods.add(room.neighbours[0].coords)        # assume end only has one neighbour
+                    open_neighbours_of_settled_end_amphipods.add(
+                        room.neighbours[0].coords
+                    )  # assume end only has one neighbour
 
         # now check top row of those next to settled bottom row
         for coord in open_neighbours_of_settled_end_amphipods:
@@ -344,7 +355,10 @@ class AmphipodOrganiser:
         return amphipods_state
 
     def _win_condition(self, state):
-        if all(amphipod_state == BurrowAmphipodState.SETTLED for amphipod_state in state.amphipods_state.values()):
+        if all(
+            amphipod_state == BurrowAmphipodState.SETTLED
+            for amphipod_state in state.amphipods_state.values()
+        ):
             return True
         return False
 
@@ -356,7 +370,9 @@ class AmphipodOrganiser:
                 # both spaces are empty - move into the end room
                 return end_coords
             else:
-                return Exception('somehow open room is occupied and blocking off an empty end room - should not be the case')
+                return Exception(
+                    "somehow open room is occupied and blocking off an empty end room - should not be the case"
+                )
         elif amphipods[end_coords].type == amphipod.type:
             # end room is occupied with the correct amphipod type
             if (open_coords := amphipod_rooms[BurrowRoomType.OPEN]) not in amphipods:
@@ -370,11 +386,15 @@ class AmphipodOrganiser:
 
     def _is_free_path(self, state, intrapath_coords):
         amphipods = state.amphipods
-        free_path = not any(intrapath_coord in amphipods for intrapath_coord in intrapath_coords)
+        free_path = not any(
+            intrapath_coord in amphipods for intrapath_coord in intrapath_coords
+        )
         return free_path
 
     def _intrapath_coords(self, amphipod_coord, dest_coord):
-        intrapath_coords = self.burrow_map.path_coords(amphipod_coord, dest_coord, exclude_start=True)
+        intrapath_coords = self.burrow_map.path_coords(
+            amphipod_coord, dest_coord, exclude_start=True
+        )
         return intrapath_coords
 
     def _path_details(self, state, amphipod_coord: Coords, dest_coord: Coords):
@@ -383,7 +403,9 @@ class AmphipodOrganiser:
         distance = len(intrapath_coords)
         return free_path, distance
 
-    def _create_next_state(self, state, old_coord, new_coord, distance, amphipod_state: BurrowAmphipodState):
+    def _create_next_state(
+        self, state, old_coord, new_coord, distance, amphipod_state: BurrowAmphipodState
+    ):
         next_amphipods = state.amphipods.copy()
         amphipod = next_amphipods.pop(old_coord)
         next_amphipods[new_coord] = amphipod
@@ -400,12 +422,20 @@ class AmphipodOrganiser:
             energy=state.energy + energy,
             amphipods=next_amphipods,
             amphipods_state=next_amphipods_state,
-            history=next_history
+            history=next_history,
         )
         return next_state
 
-    def _move_amphipod(self, state, amphipod_coord, next_coord, distance, next_amphipod_state):
-        next_state = self._create_next_state(state, amphipod_coord, next_coord, distance, amphipod_state=next_amphipod_state)
+    def _move_amphipod(
+        self, state, amphipod_coord, next_coord, distance, next_amphipod_state
+    ):
+        next_state = self._create_next_state(
+            state,
+            amphipod_coord,
+            next_coord,
+            distance,
+            amphipod_state=next_amphipod_state,
+        )
         if (next_history := next_state.history) in self._cache:
             return False
         self._cache.add(next_history)
@@ -420,13 +450,22 @@ class AmphipodOrganiser:
                 self._total_energy = state.energy
             return
         for amphipod_coord, amphipod in state.amphipods.items():
-            if (amphipod_state := state.amphipods_state[amphipod]) in (BurrowAmphipodState.HALLWAY, BurrowAmphipodState.ORIGINAL):
+            if (amphipod_state := state.amphipods_state[amphipod]) in (
+                BurrowAmphipodState.HALLWAY,
+                BurrowAmphipodState.ORIGINAL,
+            ):
                 if free_room_coord := self._free_room(state.amphipods, amphipod):
-                    free_path, distance = self._path_details(state, amphipod_coord, free_room_coord)
+                    free_path, distance = self._path_details(
+                        state, amphipod_coord, free_room_coord
+                    )
                 if free_room_coord and free_path:
                     # amphipod can move straight into settled room
                     is_new_state = self._move_amphipod(
-                        state=state, amphipod_coord=amphipod_coord, next_coord=free_room_coord, distance=distance, next_amphipod_state=BurrowAmphipodState.SETTLED
+                        state=state,
+                        amphipod_coord=amphipod_coord,
+                        next_coord=free_room_coord,
+                        distance=distance,
+                        next_amphipod_state=BurrowAmphipodState.SETTLED,
                     )
                     if not is_new_state:
                         continue
@@ -435,13 +474,19 @@ class AmphipodOrganiser:
                     # amphipod must move into hallway
                     hallway_coords = self.burrow_map.get_hallway_coords()
                     for hallway_coord in hallway_coords:
-                        free_path, distance = self._path_details(state, amphipod_coord, hallway_coord)
+                        free_path, distance = self._path_details(
+                            state, amphipod_coord, hallway_coord
+                        )
                         if not free_path:
                             # spaces from amphipod to hallway room is occupied
                             continue
 
                         is_new_state = self._move_amphipod(
-                            state=state, amphipod_coord=amphipod_coord, next_coord=hallway_coord, distance=distance, next_amphipod_state=BurrowAmphipodState.HALLWAY
+                            state=state,
+                            amphipod_coord=amphipod_coord,
+                            next_coord=hallway_coord,
+                            distance=distance,
+                            next_amphipod_state=BurrowAmphipodState.HALLWAY,
                         )
                         if not is_new_state:
                             continue
@@ -455,13 +500,13 @@ class AmphipodOrganiser:
 def main():
     ao = AmphipodOrganiser.read_file()
     total_energy = ao.organise()
-    print(f'{total_energy=}')
+    print(f"{total_energy=}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import timeit
-    print(timeit.timeit(main, number=1))
 
+    print(timeit.timeit(main, number=1))
 
 
 # if __name__ == '__main__':

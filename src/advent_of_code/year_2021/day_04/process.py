@@ -4,7 +4,6 @@ import numpy as np
 
 
 class BingoBoard:
-
     def __init__(self, board_data, height, width):
         self.board_data = board_data
         self._board = np.full((height, width), False)
@@ -22,12 +21,13 @@ class BingoBoard:
         return win_condition
 
     def score(self, called_num):
-        unmarked_nums = [num for num, pos in self.board_data.items() if not self._board[pos]]
+        unmarked_nums = [
+            num for num, pos in self.board_data.items() if not self._board[pos]
+        ]
         return sum(unmarked_nums) * called_num
 
 
 class BingoSubsystem:
-
     def __init__(self, bingo_data):
         self._bingo_data = bingo_data
         self.numbers = None
@@ -35,18 +35,17 @@ class BingoSubsystem:
 
     @classmethod
     def read_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls(f.read())
 
     def _process_data(self, bingo_data):
-        raw_numbers, *raw_boards = bingo_data.split('\n\n')
-        numbers = [int(number) for number in raw_numbers.split(',')]
+        raw_numbers, *raw_boards = bingo_data.split("\n\n")
+        numbers = [int(number) for number in raw_numbers.split(",")]
         boards = []
         for raw_board in raw_boards:
             board_data = {}
             split_board = [
-                [int(val) for val in row.split()]
-                for row in raw_board.split('\n')
+                [int(val) for val in row.split()] for row in raw_board.split("\n")
             ]
             height = len(split_board)
             width = len(split_board[0])
@@ -88,9 +87,9 @@ class BingoSubsystem:
 
 def main():
     bingo_subsystem = BingoSubsystem.read_file()
-    print('Win score:', bingo_subsystem.win())
-    print('Wookie win score:', bingo_subsystem.wookie_win())
+    print("Win score:", bingo_subsystem.win())
+    print("Wookie win score:", bingo_subsystem.wookie_win())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(timeit.timeit(main, number=1))
