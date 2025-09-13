@@ -56,7 +56,7 @@ class TransparentOrigami:
                     next_dot = dot.__dict__.copy()
                     after_fold = (2 * fold.coord) - before_fold
                     next_dot[fold.axis] = after_fold
-                    next_dots.add(Coords(**next_dot))
+                    next_dots.add(Coords(x=next_dot["x"], y=next_dot["y"]))
                 else:
                     next_dots.add(dot)
             self.dots = next_dots

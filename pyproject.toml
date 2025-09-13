@@ -15,6 +15,7 @@ dependencies = [
     "regex>=2024.9.11",
     "ruff>=0.13.0",
     "sortedcontainers>=2.4.0",
+    "ty>=0.0.1a20",
 ]
 
 [build-system]

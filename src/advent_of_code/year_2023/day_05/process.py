@@ -113,7 +113,18 @@ def resolve_individual_seed_details(almanac):
             source_category = dest_category
             source_category_val = dest_category_val
 
-        all_seed_details.append(SeedDetail(**seed_details))
+        all_seed_details.append(
+            SeedDetail(
+                seed=seed_details["seed"],
+                soil=seed_details["soil"],
+                fertilizer=seed_details["fertilizer"],
+                water=seed_details["water"],
+                light=seed_details["light"],
+                temperature=seed_details["temperature"],
+                humidity=seed_details["humidity"],
+                location=seed_details["location"],
+            )
+        )
 
     return all_seed_details
 
@@ -206,7 +217,18 @@ def resolve_seed_range_details(almanac):
             source_category = dest_category
             source_category_ranges = dest_category_ranges
 
-        seed_range_details.append(SeedRangeDetail(**seed_details))
+        seed_range_details.append(
+            SeedRangeDetail(
+                seed=seed_details["seed"],
+                soil=seed_details["soil"],
+                fertilizer=seed_details["fertilizer"],
+                water=seed_details["water"],
+                light=seed_details["light"],
+                temperature=seed_details["temperature"],
+                humidity=seed_details["humidity"],
+                location=seed_details["location"],
+            )
+        )
 
     return seed_range_details
 

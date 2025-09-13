@@ -112,7 +112,15 @@ def parse_notes(notes: str) -> Monkeys:
                         raise_unexpected_note_error()
                 case _:
                     raise_unexpected_note_error()
-        monkeys.append(Monkey(**monkey_dtls))
+        monkeys.append(
+            Monkey(
+                items=monkey_dtls["items"],
+                op=monkey_dtls["op"],
+                div_test=monkey_dtls["div_test"],
+                if_true=monkey_dtls["if_true"],
+                if_false=monkey_dtls["if_false"],
+            )
+        )
     return monkeys
 
 

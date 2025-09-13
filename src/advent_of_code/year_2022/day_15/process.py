@@ -48,8 +48,8 @@ def parse_reading_input(reading_input: str) -> list[Reading]:
         )
         readings.append(
             Reading(
-                sensor=Coords(**result["sensor"]),
-                beacon=Coords(**result["beacon"]),
+                sensor=Coords(x=result["sensor"]["x"], y=result["sensor"]["y"]),
+                beacon=Coords(x=result["beacon"]["x"], y=result["beacon"]["y"]),
             )
         )
     return readings

@@ -66,7 +66,7 @@ class Scratchcards:
         return total_scratchcards
 
 
-def sum_dict_values(dict_: dict[Any:int]) -> int:
+def sum_dict_values(dict_: dict[Any, int]) -> int:
     return sum(dict_.values())
 
 

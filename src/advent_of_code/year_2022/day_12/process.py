@@ -1,6 +1,6 @@
 import dataclasses
 
-import networkx as nx  # type: ignore
+import networkx as nx
 
 
 @dataclasses.dataclass(frozen=True)
@@ -113,7 +113,7 @@ class HillClimbing:
                     target=self._end,
                     weight="weight",
                 )
-            except nx.exception.NetworkXNoPath:
+            except nx.NetworkXNoPath:
                 continue
             else:
                 valid_shortest_paths.append(path)

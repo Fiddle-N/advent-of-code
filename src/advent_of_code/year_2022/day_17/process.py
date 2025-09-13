@@ -251,10 +251,7 @@ class PyroclasticFlow:
     def get_tower_height_after_large_value(self, large_value):
         found_two_groups = False
         found_three_groups = False
-        number_of_rocks_after_two_groups = None
         tower_height_after_two_groups = None
-        number_of_rocks_after_three_groups = None
-        tower_height_after_three_groups = None
         it = iter(self)
         for count in itertools.count(start=1):
             next(it)

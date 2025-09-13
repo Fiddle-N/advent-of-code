@@ -9,7 +9,7 @@ import re
 class Valve:
     name: str
     flow_rate: int
-    neighbours: dict[str:int]
+    neighbours: dict[str, int]
 
 
 class ProboscideaVolcanium:

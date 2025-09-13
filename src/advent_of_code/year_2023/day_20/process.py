@@ -81,7 +81,7 @@ class FlipFlopModule(Module):
 class ConjunctionModule(Module):
     name: str
     dests: list[str]
-    pulse_history: dict[str:Pulse]
+    pulse_history: dict[str, Pulse]
 
     def output(self, input_: PulseMsg) -> list[PulseMsg]:
         self.pulse_history[input_.source] = input_.pulse

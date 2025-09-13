@@ -45,7 +45,7 @@ class Condition:
     value: int
 
     def opposite(self) -> Self:
-        return Condition(attr=self.attr, op=OPPOSITE_OPS[self.op], value=self.value)
+        return type(self)(attr=self.attr, op=OPPOSITE_OPS[self.op], value=self.value)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -115,7 +115,12 @@ def parse_input(input_: str) -> tuple[dict[str, Workflow], list[Part]]:
     parts = []
     for part_str in part_rating_input.splitlines():
         parsed_part = parse.parse("{{x={x:d},m={m:d},a={a:d},s={s:d}}", part_str)
-        part = Part(**parsed_part.named)
+        part = Part(
+            x=parsed_part["x"],
+            m=parsed_part["m"],
+            a=parsed_part["a"],
+            s=parsed_part["s"],
+        )
         parts.append(part)
 
     return workflows, parts

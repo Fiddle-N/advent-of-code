@@ -10,7 +10,7 @@ class Coords:
     y: int
 
     def __add__(self, other: Self) -> Self:
-        return Coords(self.x + other.x, self.y + other.y)
+        return type(self)(self.x + other.x, self.y + other.y)
 
 
 OFFSET_COORDS = [

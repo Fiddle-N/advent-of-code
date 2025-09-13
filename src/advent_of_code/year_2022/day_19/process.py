@@ -80,10 +80,16 @@ class NotEnoughMaterials:
             self.blueprints.append(
                 Blueprint(
                     no=parse_match["no"],
-                    ore=OreRobot(**parse_match["ore_robot"]),
-                    clay=ClayRobot(**parse_match["clay_robot"]),
-                    obsidian=ObsidianRobot(**parse_match["obsidian_robot"]),
-                    geode=GeodeRobot(**parse_match["geode_robot"]),
+                    ore=OreRobot(ore=parse_match["ore_robot"]["ore"]),
+                    clay=ClayRobot(ore=parse_match["clay_robot"]["ore"]),
+                    obsidian=ObsidianRobot(
+                        ore=parse_match["obsidian_robot"]["ore"],
+                        clay=parse_match["obsidian_robot"]["clay"],
+                    ),
+                    geode=GeodeRobot(
+                        ore=parse_match["obsidian_robot"]["ore"],
+                        obsidian=parse_match["obsidian_robot"]["obsidian"],
+                    ),
                 )
             )
 

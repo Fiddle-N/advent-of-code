@@ -109,7 +109,7 @@ class BurrowAmphipodSpace(AmphipodCounterMixin):
 
 @dataclasses.dataclass
 class Node:
-    this: typing.Union[BurrowMapSpace, BurrowAmphipodSpace]
+    this: typing.Union[BurrowHallwayType, BurrowAmphipodSpace]
     neighbours: list[Location]
 
 

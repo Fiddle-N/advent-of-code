@@ -1,5 +1,6 @@
 # BROKEN TODO remove before you count
 import dataclasses
+import typing
 from typing import Optional
 
 
@@ -29,6 +30,7 @@ class DoublyLinkedList:
     def insert_after(self, ref_node: Node, new_node: Node):
         new_node.prev = ref_node
         new_node.next = ref_node.next
+        new_node.next = typing.cast(Node, new_node.next)
         new_node.next.prev = new_node
         ref_node.next = new_node
         self._len += 1

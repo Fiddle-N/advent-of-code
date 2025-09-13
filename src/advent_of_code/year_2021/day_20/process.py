@@ -74,7 +74,7 @@ class ImageEnhancer:
         next_image = []
         for rows in more_itertools.windowed(padded_image, 3):
             next_row = []
-            squares = [more_itertools.windowed(row, 3) for row in rows]
+            squares = [more_itertools.windowed(row, 3) for row in rows]  # type: ignore ndarray is iterable
             for square in zip(*squares):
                 pixel_str = itertools.chain.from_iterable(square)
                 binary = "".join(PIXEL_BIT[pixel] for pixel in pixel_str)

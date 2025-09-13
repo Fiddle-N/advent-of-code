@@ -158,7 +158,7 @@ class BeaconScanner:
             else:
                 transformation_offsets &= transformation_offset
 
-        assert len(transformation_offsets) == 1
+        assert transformation_offsets is not None
         (transformation_offset,) = transformation_offsets
 
         right_beacons_relative_to_0 = {

@@ -14,31 +14,14 @@ class Packet:
     def version_sum(self):
         raise NotImplementedError
 
-    @property
-    def val(self):
-        raise NotImplementedError
-
-    @val.setter
-    def val(self, value):
-        raise NotImplementedError
-
 
 @dataclasses.dataclass
 class LiteralPacket(Packet):
     val: int
-    _val: int = dataclasses.field(init=False, repr=False)
 
     @property
     def version_sum(self):
         return self.version
-
-    @property
-    def val(self):
-        return self._val
-
-    @val.setter
-    def val(self, value):
-        self._val = value
 
 
 @dataclasses.dataclass

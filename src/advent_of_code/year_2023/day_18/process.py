@@ -12,10 +12,10 @@ class Coords:
     y: int
 
     def __add__(self, other: Self) -> Self:
-        return Coords(self.x + other.x, self.y + other.y)
+        return type(self)(self.x + other.x, self.y + other.y)
 
     def __mul__(self, other: int) -> Self:
-        return Coords(self.x * other, self.y * other)
+        return type(self)(self.x * other, self.y * other)
 
 
 class Direction(enum.Enum):
