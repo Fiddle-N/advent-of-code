@@ -17,7 +17,7 @@ from advent_of_code.year_2015.day_01 import process
         (")())())", -3),
     ],
 )
-def test_traverse_floors(directions, floor):
+def test_traverse_floors(directions: str, floor: int) -> None:
     assert process.traverse_floors(directions) == floor
 
 
@@ -28,5 +28,5 @@ def test_traverse_floors(directions, floor):
         ("()())", 5),
     ],
 )
-def test_find_position_that_enters_basement(directions, floor):
+def test_find_position_that_enters_basement(directions: str, floor: int) -> None:
     assert process.find_position_that_enters_basement(directions) == floor
