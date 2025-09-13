@@ -9,12 +9,9 @@ Part 2
 Find the position in the directions where Santa enters the basement (floor -1).
 """
 
+from advent_of_code.common import read_file
+
 DIRECTION_MAPPING = {"(": 1, ")": -1}
-
-
-def read_file():
-    with open("input.txt") as f:
-        return f.read().strip()
 
 
 def traverse_floors(directions):

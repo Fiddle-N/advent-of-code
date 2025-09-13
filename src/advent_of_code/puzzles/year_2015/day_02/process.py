@@ -11,6 +11,7 @@ plus ribbon equal to the value of the volume of the box.
 """
 
 from dataclasses import dataclass
+from advent_of_code.common import read_file
 
 
 @dataclass
@@ -18,11 +19,6 @@ class Box:
     length: int
     width: int
     height: int
-
-
-def read_file() -> str:
-    with open("input.txt") as f:
-        return f.read().strip()
 
 
 def parse_box_dimensions(dimension_str: str) -> Box:
