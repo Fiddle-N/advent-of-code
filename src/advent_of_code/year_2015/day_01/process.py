@@ -1,26 +1,41 @@
+"""
+2015 Day 1
 
-MAPPING = {'(': 1, ')': -1}
+Part 1
+A string of () parentheses represents directions that Santa should go up and down floors in, where ( is go up one floor
+and ) is go down one floor. If Santa enters at floor 0, find the floor he ends up in.
+
+Part 2
+Find the position in the directions where Santa enters the basement (floor -1).
+"""
+
+
+DIRECTION_MAPPING = {'(': 1, ')': -1}
 
 def read_file():
     with open('input.txt') as f:
         return f.read().strip()
 
-def part1(text):
+def traverse_floors(directions):
     floor = 0
-    for char in text:
-        floor += MAPPING[char]
+    for direction in directions:
+        floor += DIRECTION_MAPPING[direction]
     return floor
 
 
-def part2(text):
+def find_position_that_enters_basement(directions):
     floor = 0
-    for pos, char in enumerate(text):
-        floor += MAPPING[char]
+    for position, direction in enumerate(directions):
+        floor += DIRECTION_MAPPING[direction]
         if floor < 0:
-            return pos + 1
+            return position + 1
+    raise ValueError("Santa will always enter the basement")
 
+
+def main():
+    directions = read_file()
+    print(traverse_floors(directions))
+    print(find_position_that_enters_basement(directions))
 
 if __name__ == '__main__':
-    text = read_file()
-    print(part1(text))
-    print(part2(text))
+    main()

@@ -16,8 +16,8 @@ from advent_of_code.year_2015.day_01 import process
         (")())())", -3),
     ],
 )
-def test_part1(directions, floor):
-    assert process.part1(directions) == floor
+def test_traverse_floors(directions, floor):
+    assert process.traverse_floors(directions) == floor
 
 
 @pytest.mark.parametrize(
@@ -27,5 +27,5 @@ def test_part1(directions, floor):
         ("()())", 5),
     ],
 )
-def test_part2(directions, floor):
-    assert process.part2(directions) == floor
+def test_find_position_that_enters_basement(directions, floor):
+    assert process.find_position_that_enters_basement(directions) == floor
