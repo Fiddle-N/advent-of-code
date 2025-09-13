@@ -1,0 +1,31 @@
+import pytest
+
+from advent_of_code.year_2015.day_01 import process
+
+@pytest.mark.parametrize(
+    "directions,floor",
+    [
+        ("(())", 0),
+        ("()()", 0),
+        ("(((", 3),
+        ("(()(()(", 3),
+        ("))(((((", 3),
+        ("())", -1),
+        ("))(", -1),
+        (")))", -3),
+        (")())())", -3),
+    ],
+)
+def test_part1(directions, floor):
+    assert process.part1(directions) == floor
+
+
+@pytest.mark.parametrize(
+    "directions,floor",
+    [
+        (")", 1),
+        ("()())", 5),
+    ],
+)
+def test_part2(directions, floor):
+    assert process.part2(directions) == floor
