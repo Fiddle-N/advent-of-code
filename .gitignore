@@ -1,4 +1,7 @@
+.mypy_cache
 *.pytest_cache
 .idea
-venv/
 *input.txt
+.pyc
+*__pycache__
+.venv
