@@ -1,6 +1,8 @@
 from typing import Self
+from collections.abc import Callable
 from enum import Enum
 from dataclasses import dataclass
+import timeit
 
 
 @dataclass(frozen=True)
@@ -30,3 +32,7 @@ DIRECTION_COORDS = {
 def read_file() -> str:
     with open("input.txt") as f:
         return f.read().strip()
+
+
+def timed_run(fn: Callable) -> None:
+    print(f"Ran in {timeit.timeit(fn, number=1)} seconds.")
