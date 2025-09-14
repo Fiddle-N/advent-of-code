@@ -18,26 +18,27 @@ class Coords:
 
 
 MOVES = {
-    'N': Coords(0, 1),
-    'E': Coords(1, 0),
-    'S': Coords(0, -1),
-    'W': Coords(-1, 0),
+    "N": Coords(0, 1),
+    "E": Coords(1, 0),
+    "S": Coords(0, -1),
+    "W": Coords(-1, 0),
 }
 
-TURNS = {'L': -1, 'R': 1}
+TURNS = {"L": -1, "R": 1}
 
 
 class Ship:
-
     def __init__(self, instrs_input=None):
         instrs_input = instrs_input if instrs_input is not None else self._read_file()
-        self.instructions = [self._preprocess(line) for line in instrs_input.splitlines()]
+        self.instructions = [
+            self._preprocess(line) for line in instrs_input.splitlines()
+        ]
         self.position = Coords(0, 0)
         self.relative_waypoint = Coords(10, 1)
 
     @staticmethod
     def _read_file():
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return f.read()
 
     @staticmethod
@@ -58,11 +59,11 @@ def rotate_90_clockwise(pos):
 
 def process_with_theoretical_actions(ship):
     ship_pos = ship.position
-    ship_dir = 'E'
+    ship_dir = "E"
     moves = list(MOVES.keys())
     for instr in ship.instructions:
-        if instr.action in MOVES or instr.action == 'F':
-            move_act = ship_dir if instr.action == 'F' else instr.action
+        if instr.action in MOVES or instr.action == "F":
+            move_act = ship_dir if instr.action == "F" else instr.action
             direction = MOVES[move_act]
             ship_pos = new_pos(ship_pos, direction, instr.value)
         elif instr.action in TURNS:
@@ -78,7 +79,7 @@ def process_with_actual_actions(ship):
     ship_pos = ship.position
     waypoint_pos = ship.relative_waypoint
     for instr in ship.instructions:
-        if instr.action == 'F':
+        if instr.action == "F":
             ship_pos = new_pos(ship_pos, waypoint_pos, instr.value)
         elif instr.action in MOVES:
             direction = MOVES[instr.action]
@@ -97,15 +98,15 @@ def main():
     ship = Ship()
     final_theoretical_pos = process_with_theoretical_actions(ship)
     print(
-        'Manhattan Distance of theoretical final position from current position: ',
-        final_theoretical_pos.manhattan_dist()
+        "Manhattan Distance of theoretical final position from current position: ",
+        final_theoretical_pos.manhattan_dist(),
     )
     final_actual_pos = process_with_actual_actions(ship)
     print(
-        'Manhattan Distance of actual final position from current position: ',
-        final_actual_pos.manhattan_dist()
+        "Manhattan Distance of actual final position from current position: ",
+        final_actual_pos.manhattan_dist(),
     )
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

@@ -2,21 +2,46 @@ from advent_of_code.puzzles.year_2020.day_24 import process
 
 
 def test_parse_step_example_1():
-    assert process.LobbyLayout.parse_step('esenee') == ['e', 'se', 'ne', 'e']
+    assert process.LobbyLayout.parse_step("esenee") == ["e", "se", "ne", "e"]
 
 
 def test_parse_step_example_2():
-    input_ = 'sesenwnenenewseeswwswswwnenewsewsw'
-    expected = ['se', 'se', 'nw', 'ne', 'ne', 'ne', 'w', 'se', 'e', 'sw', 'w', 'sw', 'sw', 'w', 'ne', 'ne', 'w', 'se', 'w', 'sw']
+    input_ = "sesenwnenenewseeswwswswwnenewsewsw"
+    expected = [
+        "se",
+        "se",
+        "nw",
+        "ne",
+        "ne",
+        "ne",
+        "w",
+        "se",
+        "e",
+        "sw",
+        "w",
+        "sw",
+        "sw",
+        "w",
+        "ne",
+        "ne",
+        "w",
+        "se",
+        "w",
+        "sw",
+    ]
     assert process.LobbyLayout.parse_step(input_) == expected
 
 
 def test_position_change():
-    assert process.LobbyLayout._calculate_position(['e', 'se', 'w']) == process.Coords(1, -2)
+    assert process.LobbyLayout._calculate_position(["e", "se", "w"]) == process.Coords(
+        1, -2
+    )
 
 
 def test_position_change_2():
-    assert process.LobbyLayout._calculate_position(['nw', 'w', 'sw', 'e', 'e']) == process.Coords(0, 0)
+    assert process.LobbyLayout._calculate_position(
+        ["nw", "w", "sw", "e", "e"]
+    ) == process.Coords(0, 0)
 
 
 def test_steps_example():

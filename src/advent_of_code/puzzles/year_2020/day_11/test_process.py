@@ -2,7 +2,6 @@ from advent_of_code.puzzles.year_2020.day_11 import process
 
 
 class TestTheoreticalModel:
-
     def test_theoretical_single_model_runs(self):
         grid_0 = """\
 L.LL.LL.LL
@@ -87,7 +86,6 @@ L.#.L..#..
         assert seating_system.output_grid(next(model)) == grid_5
         assert seating_system.output_grid(next(model)) == grid_6
 
-
     def test_theoretical_full_model_run(self):
         grid = """\
 L.LL.LL.LL
@@ -105,7 +103,6 @@ L.LLLLL.LL"""
 
 
 class TestRealModel:
-
     def test_real_model_adjacent_seats_1(self):
         grid = """\
 .......#.
@@ -120,15 +117,22 @@ class TestRealModel:
 
         # arrange
         seating_system = process.SeatingSystem(grid)
-        empty_seat, = [seat_coords for seat_coords, seat in seating_system.seats.items() if seat == process.EMPTY]
-        occupied_seats = {seat_coords for seat_coords, seat in seating_system.seats.items() if seat == process.OCCUPIED}
+        (empty_seat,) = [
+            seat_coords
+            for seat_coords, seat in seating_system.seats.items()
+            if seat == process.EMPTY
+        ]
+        occupied_seats = {
+            seat_coords
+            for seat_coords, seat in seating_system.seats.items()
+            if seat == process.OCCUPIED
+        }
 
         # act
         model = process.RealSeatingSystemModel(seating_system)
 
         # assert
         assert set(model.adj_seats[empty_seat]) == occupied_seats
-
 
     def test_real_model_adjacent_seats_2(self):
         grid = """\
@@ -138,16 +142,21 @@ class TestRealModel:
 
         # arrange
         seating_system = process.SeatingSystem(grid)
-        empty_seats = [seat_coords for seat_coords, seat in seating_system.seats.items() if seat == process.EMPTY]
+        empty_seats = [
+            seat_coords
+            for seat_coords, seat in seating_system.seats.items()
+            if seat == process.EMPTY
+        ]
 
         # act
         model = process.RealSeatingSystemModel(seating_system)
 
         # assert
-        expected_empty_seat, = model.adj_seats[empty_seats[0]]
+        (expected_empty_seat,) = model.adj_seats[empty_seats[0]]
         actual_empty_seat = empty_seats[1]
-        assert expected_empty_seat == actual_empty_seat  # assert left empty seat can only see right empty seat
-
+        assert (
+            expected_empty_seat == actual_empty_seat
+        )  # assert left empty seat can only see right empty seat
 
     def test_real_model_adjacent_seats_3(self):
         grid = """\
@@ -161,7 +170,11 @@ class TestRealModel:
 
         # arrange
         seating_system = process.SeatingSystem(grid)
-        empty_seat, = [seat_coords for seat_coords, seat in seating_system.seats.items() if seat == process.EMPTY]
+        (empty_seat,) = [
+            seat_coords
+            for seat_coords, seat in seating_system.seats.items()
+            if seat == process.EMPTY
+        ]
 
         # act
         model = process.RealSeatingSystemModel(seating_system)

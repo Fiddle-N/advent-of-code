@@ -2,7 +2,7 @@ from advent_of_code.puzzles.year_2020.day_23 import process
 
 
 def test_example_10_runs():
-    puzzle_input = '389125467'
+    puzzle_input = "389125467"
     crab_cups = process.crab_cups(puzzle_input, move_no=10)
     actual = None
     expected_cups = (
@@ -21,11 +21,11 @@ def test_example_10_runs():
         actual = next(crab_cups)
         assert expected == actual
     final_cups = actual
-    assert process.calculate_final_labels(final_cups) == '92658374'
+    assert process.calculate_final_labels(final_cups) == "92658374"
 
 
 def test_example_100_runs():
-    puzzle_input = '389125467'
+    puzzle_input = "389125467"
     crab_cups = process.crab_cups(puzzle_input, move_no=100)
     cups = None
     while True:
@@ -33,4 +33,4 @@ def test_example_100_runs():
             cups = next(crab_cups)
         except StopIteration:
             break
-    assert process.calculate_final_labels(cups) == '67384529'
+    assert process.calculate_final_labels(cups) == "67384529"

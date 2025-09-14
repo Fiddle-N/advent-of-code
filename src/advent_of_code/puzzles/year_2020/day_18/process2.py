@@ -5,14 +5,13 @@ import timeit
 
 
 class OperationOrder:
-
     def __init__(self, expressions):
         self.expressions = expressions
 
     @classmethod
     def read_file(cls):
         expressions = []
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             for raw_line in f:
                 line = raw_line.rstrip()
                 expressions.append(MathExpression.parse(line))
@@ -28,10 +27,9 @@ class OperationOrder:
 
 
 class MathExpression:
-
     OPERATORS = {
-        '+': operator.add,
-        '*': operator.mul,
+        "+": operator.add,
+        "*": operator.mul,
     }
 
     def __init__(self, expression):
@@ -47,12 +45,12 @@ class MathExpression:
         raw_expr = iter(raw_expr)
         items = []
         for item in raw_expr:
-            if item == '(':
+            if item == "(":
                 result, closeparen = cls._parse(raw_expr)
                 if not closeparen:
                     raise ValueError("bad expression -- unbalanced parentheses")
                 items.append(result)
-            elif item == ')':
+            elif item == ")":
                 return MathExpression(items), True
             elif item in string.whitespace:
                 continue
@@ -60,7 +58,7 @@ class MathExpression:
                 try:
                     item = int(item)
                 except ValueError:
-                    if item not in ('+', '*'):
+                    if item not in ("+", "*"):
                         raise
                 items.append(item)
         return MathExpression(items), False
@@ -78,14 +76,22 @@ class MathExpression:
             raw_l_operand = stack.popleft()
             operation = stack.popleft()
             raw_r_operand = stack.popleft()
-            l_operand = self.get_operand_result(raw_l_operand, result_type='result_same_precedence')
-            r_operand = self.get_operand_result(raw_r_operand, result_type='result_same_precedence')
+            l_operand = self.get_operand_result(
+                raw_l_operand, result_type="result_same_precedence"
+            )
+            r_operand = self.get_operand_result(
+                raw_r_operand, result_type="result_same_precedence"
+            )
             result = self.OPERATORS[operation](l_operand, r_operand)
             stack.appendleft(result)
         return stack[0]
 
     def get_operand_result(self, operand, result_type):
-        return getattr(operand, result_type) if isinstance(operand, MathExpression) else operand
+        return (
+            getattr(operand, result_type)
+            if isinstance(operand, MathExpression)
+            else operand
+        )
 
     @property
     def result_addition_first(self):
@@ -94,18 +100,22 @@ class MathExpression:
 
         while stack:
             raw_l_operand = stack.popleft()
-            l_operand = self.get_operand_result(raw_l_operand, result_type='result_addition_first')
+            l_operand = self.get_operand_result(
+                raw_l_operand, result_type="result_addition_first"
+            )
             try:
                 operator = stack.popleft()
-            except IndexError:      # only one element in the original stack
-                 new_stack.append(l_operand)
+            except IndexError:  # only one element in the original stack
+                new_stack.append(l_operand)
             else:
-                if operator == '*':
+                if operator == "*":
                     new_stack.append(l_operand)
                     new_stack.append(operator)
-                elif operator == '+':
+                elif operator == "+":
                     raw_r_operand = stack.popleft()
-                    r_operand = self.get_operand_result(raw_r_operand, result_type='result_addition_first')
+                    r_operand = self.get_operand_result(
+                        raw_r_operand, result_type="result_addition_first"
+                    )
                     result = self.OPERATORS[operator](l_operand, r_operand)
                     stack.appendleft(result)
                 else:
@@ -116,9 +126,9 @@ class MathExpression:
 
 def main():
     operation_order = OperationOrder.read_file()
-    print('Same precedence:', operation_order.result_same_precedence)
-    print('Addition first:', operation_order.result_addition_first)
+    print("Same precedence:", operation_order.result_same_precedence)
+    print("Addition first:", operation_order.result_addition_first)
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

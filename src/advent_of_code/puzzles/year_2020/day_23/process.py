@@ -21,7 +21,9 @@ def _crab_cups(cups, move_no):
             removed_cups.append(cups.pop(1))
         destination = _get_destination_cup(cups, start)
         destination_idx = cups.index(destination)
-        next_cups = cups[:destination_idx + 1] + removed_cups + cups[destination_idx + 1:]
+        next_cups = (
+            cups[: destination_idx + 1] + removed_cups + cups[destination_idx + 1 :]
+        )
         next_cups.append(next_cups.pop(0))
         next_cups = tuple(next_cups)
         yield next_cups
@@ -39,11 +41,11 @@ def calculate_final_labels(cups):
     cups = list(cups)
     while cups[0] != 1:
         cups.append(cups.pop(0))
-    return ''.join(str(cup) for cup in cups[1:])
+    return "".join(str(cup) for cup in cups[1:])
 
 
 def main():
-    with open('input.txt') as f:
+    with open("input.txt") as f:
         puzzle_input = f.read().strip()
     crab_cups_iter = crab_cups(puzzle_input, move_no=100)
     cups = None
@@ -52,8 +54,8 @@ def main():
             cups = next(crab_cups_iter)
         except StopIteration:
             break
-    print(f'Labels on cups after cup 1 for 100 rounds: {calculate_final_labels(cups)}')
+    print(f"Labels on cups after cup 1 for 100 rounds: {calculate_final_labels(cups)}")
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

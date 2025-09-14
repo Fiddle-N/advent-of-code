@@ -19,7 +19,7 @@ a
 
 b"""
     custom_customs = process.CustomCustoms(input_str)
-    assert custom_customs.questions_answered('anyone') == 11
+    assert custom_customs.questions_answered("anyone") == 11
 
 
 def test_questions_everyone_answered():
@@ -40,4 +40,4 @@ a
 
 b"""
     custom_customs = process.CustomCustoms(input_str)
-    assert custom_customs.questions_answered('everyone') == 6
+    assert custom_customs.questions_answered("everyone") == 6

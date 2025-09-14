@@ -2,14 +2,13 @@ import timeit
 
 
 class HandheldHalting:
-
     def __init__(self, code_input=None):
         code_input = code_input if code_input is not None else self._read_file()
         self.code = self._preprocess(code_input)
 
     @staticmethod
     def _read_file():
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return f.read()
 
     @staticmethod
@@ -27,17 +26,17 @@ class HandheldHalting:
         pos = 0
         while True:
             if pos in visited:
-                return 'infinite loop', acc
+                return "infinite loop", acc
             if pos == len(code):
-                return 'terminates', acc
+                return "terminates", acc
             visited.add(pos)
             op, arg = code[pos]
-            if op == 'acc':
+            if op == "acc":
                 acc += arg
                 pos += 1
-            elif op == 'jmp':
+            elif op == "jmp":
                 pos += arg
-            elif op == 'nop':
+            elif op == "nop":
                 pos += 1
             else:
                 raise Exception
@@ -47,24 +46,22 @@ class HandheldHalting:
         return value
 
     def process_with_changes(self):
-        opp_swap = {'jmp': 'nop', 'nop': 'jmp'}
+        opp_swap = {"jmp": "nop", "nop": "jmp"}
         for pos, (opp, arg) in enumerate(self.code):
             if opp in opp_swap:
                 new_opp = opp_swap[opp]
                 code = self.code.copy()
                 code[pos] = (new_opp, arg)
                 termination_type, value = self._process(code)
-                if termination_type == 'terminates':
+                if termination_type == "terminates":
                     return value
 
 
 def main():
     handheld_halting = HandheldHalting()
-    print(f'Accumulator with no code changes: {handheld_halting.process()}')
-    print(f'Accumulator with changes: {handheld_halting.process_with_changes()}')
+    print(f"Accumulator with no code changes: {handheld_halting.process()}")
+    print(f"Accumulator with changes: {handheld_halting.process_with_changes()}")
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
-
-
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

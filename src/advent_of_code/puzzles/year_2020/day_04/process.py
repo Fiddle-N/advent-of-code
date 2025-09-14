@@ -1,10 +1,9 @@
 import timeit
 
-import passport_validation
+from . import passport_validation
 
 
 class PassportProcessing:
-
     passport_field_validation = {
         "byr": passport_validation.is_valid_birth_year,
         "iyr": passport_validation.is_valid_issue_year,

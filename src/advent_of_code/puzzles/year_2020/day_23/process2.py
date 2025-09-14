@@ -3,19 +3,22 @@ import more_itertools
 
 
 class CrabCups:
-
-    def __init__(self, input, number_of_cups=1_000_000, moves=10_000_000, data_type='list'):
+    def __init__(
+        self, input, number_of_cups=1_000_000, moves=10_000_000, data_type="list"
+    ):
         initial_cup_list = [int(x) for x in input]
         self.first_cup = initial_cup_list[0]
         initial_max_cups = max(initial_cup_list)
         if number_of_cups is not None:
-            cup_list = initial_cup_list + list(range(initial_max_cups + 1, number_of_cups + 1))
+            cup_list = initial_cup_list + list(
+                range(initial_max_cups + 1, number_of_cups + 1)
+            )
         else:
             number_of_cups = initial_max_cups + 1
             cup_list = initial_cup_list
         self.max_cups = max(cup_list)
         self.data_type = data_type
-        if self.data_type == 'dict':
+        if self.data_type == "dict":
             self.cups = {}
         else:
             self.cups = [None] * (number_of_cups + 1)
@@ -65,13 +68,13 @@ class CrabCups:
 
 
 def main():
-    with open('input.txt') as f:
+    with open("input.txt") as f:
         puzzle_input = f.read().strip()
     crab_cups = CrabCups(puzzle_input)
     result_cups = crab_cups.process()
-    print('Result cups:', result_cups)
-    print('Result cups multiplied:', result_cups[0] * result_cups[1])
+    print("Result cups:", result_cups)
+    print("Result cups multiplied:", result_cups[0] * result_cups[1])
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

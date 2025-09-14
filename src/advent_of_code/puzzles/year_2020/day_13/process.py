@@ -5,28 +5,27 @@ import sympy.ntheory.modular
 
 
 class ShuttleSearch:
-
     def __init__(self, bus_input=None):
         bus_input = bus_input if bus_input is not None else self._read_file()
         raw_timestamp, raw_bus_ids = bus_input.splitlines()
         self.timestamp = int(raw_timestamp)
         self.bus_ids = []
-        for raw_bus_id in raw_bus_ids.split(','):
+        for raw_bus_id in raw_bus_ids.split(","):
             try:
                 bus_id = int(raw_bus_id)
             except ValueError:
-                if raw_bus_id != 'x':
+                if raw_bus_id != "x":
                     raise
                 bus_id = raw_bus_id
             self.bus_ids.append(bus_id)
 
     @staticmethod
     def _read_file():
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return f.read()
 
     def earliest_bus(self):
-        valid_bus_ids = [bus_id for bus_id in self.bus_ids if bus_id != 'x']
+        valid_bus_ids = [bus_id for bus_id in self.bus_ids if bus_id != "x"]
 
         def waited_mins(id):
             return id - (self.timestamp % id)
@@ -42,7 +41,7 @@ class ShuttleSearch:
     def chinese_remainder(self, use_sympy=False):
         mods = {}
         for pos, bus_id in enumerate(self.bus_ids):
-            if bus_id == 'x':
+            if bus_id == "x":
                 continue
             mods[bus_id] = (bus_id - pos) % bus_id
         if use_sympy:
@@ -50,7 +49,9 @@ class ShuttleSearch:
             return result
         else:
             if math.gcd(*mods.keys()) != 1:
-                raise Exception('bus ids are not coprime, chinese remainder not possible')
+                raise Exception(
+                    "bus ids are not coprime, chinese remainder not possible"
+                )
             total_prod = math.prod(mods.keys())
             result = 0
             for bus_id, mod in mods.items():
@@ -63,9 +64,13 @@ class ShuttleSearch:
 
 def main():
     shuttle_search = ShuttleSearch()
-    print(f'ID of earliest bus multiplied by number of minutes: {math.prod(shuttle_search.earliest_bus())}')
-    print(f'Earliest timestamp that bus IDs depart at offsets matching their positions: {shuttle_search.chinese_remainder()}')
+    print(
+        f"ID of earliest bus multiplied by number of minutes: {math.prod(shuttle_search.earliest_bus())}"
+    )
+    print(
+        f"Earliest timestamp that bus IDs depart at offsets matching their positions: {shuttle_search.chinese_remainder()}"
+    )
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

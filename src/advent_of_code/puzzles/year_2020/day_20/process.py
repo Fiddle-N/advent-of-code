@@ -16,7 +16,6 @@ class Coords:
 
 
 class Grid:
-
     def __init__(self, grid):
         self.grid = grid
 
@@ -54,25 +53,24 @@ class Grid:
 
 
 class JurassicJigsaw:
-
     OPPOSITES = {
-        'top': 'bottom',
-        'bottom': 'top',
-        'left': 'right',
-        'right': 'left',
+        "top": "bottom",
+        "bottom": "top",
+        "left": "right",
+        "right": "left",
     }
 
     DIRECTIONS = {
-        'top': Coords(0, -1),
-        'bottom': Coords(0, 1),
-        'left': Coords(-1, 0),
-        'right': Coords(1, 0),
+        "top": Coords(0, -1),
+        "bottom": Coords(0, 1),
+        "left": Coords(-1, 0),
+        "right": Coords(1, 0),
     }
 
     SEA_MONSTER_PATTERN = [
-        '..................#.',
-        '#....##....##....###',
-        '.#..#..#..#..#..#...',
+        "..................#.",
+        "#....##....##....###",
+        ".#..#..#..#..#..#...",
     ]
 
     FULL_ROTATION = 4
@@ -86,10 +84,10 @@ class JurassicJigsaw:
     @classmethod
     def from_text(cls, input_str):
         tiles = {}
-        raw_tiles = input_str.split('\n\n')
+        raw_tiles = input_str.split("\n\n")
         for raw_tile in raw_tiles:
-            raw_label, raw_image = raw_tile.split('\n', maxsplit=1)
-            label_re = regex.fullmatch(r'Tile (\d+):', raw_label)
+            raw_label, raw_image = raw_tile.split("\n", maxsplit=1)
+            label_re = regex.fullmatch(r"Tile (\d+):", raw_label)
             label = int(label_re.group(1))
             image = []
             for raw_row in raw_image.splitlines():
@@ -101,7 +99,7 @@ class JurassicJigsaw:
 
     @classmethod
     def from_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls.from_text(f.read().strip())
 
     @property
@@ -131,7 +129,10 @@ class JurassicJigsaw:
     def _add_to_grid(self, label, other_label, direction):
         label_location = self._find_coords_for_label(label)
         directions_coords = self.DIRECTIONS[direction]
-        new_location = Coords(label_location.x + directions_coords.x, label_location.y + directions_coords.y)
+        new_location = Coords(
+            label_location.x + directions_coords.x,
+            label_location.y + directions_coords.y,
+        )
         self.coords[new_location] = other_label
 
     def _get_edge_configs(self):
@@ -183,27 +184,33 @@ class JurassicJigsaw:
 
     @staticmethod
     def _find_sea_monsters_in_single_orientation(image, regex_mode):
-        image = [''.join(row) for row in image]
-        if regex_mode == 'chunked':
+        image = ["".join(row) for row in image]
+        if regex_mode == "chunked":
             matches = 0
             for rows in more_itertools.windowed(image, 3):
-                window_iters = [more_itertools.windowed(row, 20) for row in rows]
+                window_iters = [more_itertools.windowed(row, 20) for row in rows]  # type:ignore[invalid-argument-type]
                 for section in zip(*window_iters):
-                    section_str = [''.join(line) for line in section]
+                    section_str = ["".join(line) for line in section]
                     pattern_line = zip(JurassicJigsaw.SEA_MONSTER_PATTERN, section_str)
-                    if all(regex.fullmatch(pattern, line) for pattern, line in pattern_line):
+                    if all(
+                        regex.fullmatch(pattern, line) for pattern, line in pattern_line
+                    ):
                         matches += 1
             return matches
-        elif regex_mode == 'full':
-            image_str = '\n'.join(image)
+        elif regex_mode == "full":
+            image_str = "\n".join(image)
             len_pattern = len(JurassicJigsaw.SEA_MONSTER_PATTERN[0])
-            spaces_between_rows = '.{{{}}}'.format(len(image) - len_pattern + 1)
-            pattern = f'{spaces_between_rows}'.join(JurassicJigsaw.SEA_MONSTER_PATTERN)
-            return len(regex.findall(pattern, image_str, flags=regex.DOTALL, overlapped=True))
+            spaces_between_rows = ".{{{}}}".format(len(image) - len_pattern + 1)
+            pattern = f"{spaces_between_rows}".join(JurassicJigsaw.SEA_MONSTER_PATTERN)
+            return len(
+                regex.findall(pattern, image_str, flags=regex.DOTALL, overlapped=True)  # type:ignore[unresolved-attribute]
+            )
 
-    def find_sea_monsters(self, regex_mode='full'):
+    def find_sea_monsters(self, regex_mode="full"):
         for turn_no in range(1, self.FULL_ROTATION * 2 + 1):
-            if monsters := self._find_sea_monsters_in_single_orientation(self.picture.grid, regex_mode):
+            if monsters := self._find_sea_monsters_in_single_orientation(
+                self.picture.grid, regex_mode
+            ):
                 return monsters
             self.picture.rotate()
             if turn_no == self.FULL_ROTATION:
@@ -211,21 +218,22 @@ class JurassicJigsaw:
 
     def water_roughness(self):
         sea_monster_number = self.find_sea_monsters()
-        sea_monster_weight = sum(body_part.count('#') for body_part in self.SEA_MONSTER_PATTERN)
+        sea_monster_weight = sum(
+            body_part.count("#") for body_part in self.SEA_MONSTER_PATTERN
+        )
         total_sea_monster_weight = sea_monster_number * sea_monster_weight
-        water_roughness_plus_sea_monsters = np.count_nonzero(self.picture.grid == '#')
+        water_roughness_plus_sea_monsters = np.count_nonzero(self.picture.grid == "#")
         return water_roughness_plus_sea_monsters - total_sea_monster_weight
 
 
 def main():
     jurassic_jigsaw = JurassicJigsaw.from_file()
     corner_tiles = jurassic_jigsaw.corner_tiles()
-    print(f'Corner tiles: {corner_tiles}')
-    print(f'Corner tiles product: {math.prod(corner_tiles)}')
+    print(f"Corner tiles: {corner_tiles}")
+    print(f"Corner tiles product: {math.prod(corner_tiles)}")
     print(f"Sea monsters: {jurassic_jigsaw.find_sea_monsters()}")
-    print(f'Water roughness: {jurassic_jigsaw.water_roughness()}')
+    print(f"Water roughness: {jurassic_jigsaw.water_roughness()}")
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
-
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

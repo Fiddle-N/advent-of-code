@@ -16,7 +16,7 @@ Player 2:
 4
 7
 10"""
-    combat = process.Combat.from_text(starting_decks, mode='normal')
+    combat = process.Combat.from_text(starting_decks, mode="normal")
     combat.play_game()
     expected_intermediate_decks = {
         0: ((9, 2, 6, 3, 1), (5, 8, 4, 7, 10)),
@@ -57,7 +57,7 @@ Player 2:
 4
 7
 10"""
-    combat = process.Combat.from_text(starting_decks, mode='recursive')
+    combat = process.Combat.from_text(starting_decks, mode="recursive")
     combat.play_game()
 
     expected_intermediate_decks = [

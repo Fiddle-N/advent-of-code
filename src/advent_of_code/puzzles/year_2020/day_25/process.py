@@ -2,7 +2,6 @@ import timeit
 
 
 class ComboBreaker:
-
     def __init__(self, card_pk: int, door_pk: int):
         self.card_pk = card_pk
         self.door_pk = door_pk
@@ -12,7 +11,7 @@ class ComboBreaker:
 
     @classmethod
     def from_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             card_pk, door_pk = f.read().splitlines()
             return cls(int(card_pk), int(door_pk))
 
@@ -49,8 +48,8 @@ class ComboBreaker:
 
 def main():
     combo_breaker = ComboBreaker.from_file()
-    print('Encryption key:', combo_breaker.encryption_key)
+    print("Encryption key:", combo_breaker.encryption_key)
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

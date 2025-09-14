@@ -8,18 +8,19 @@ import regex
 def parse(input_str):
     output = {}
     for line in input_str.splitlines():
-        label, rule = line.split(': ')
-        split_rule = rule.split(' | ')
+        label, rule = line.split(": ")
+        split_rule = rule.split(" | ")
         split_chars = []
         for rule in split_rule:
             chars = []
             for char in rule.split():
                 try:
-                    char = int(char)
-                    chars.append(char)
+                    char_int = int(char)
                 except ValueError:
-                    chars = ast.literal_eval(char)   # parse literal string
+                    chars = ast.literal_eval(char)  # parse literal string
                     break
+                else:
+                    chars.append(char_int)
             else:
                 chars = tuple(chars)
             split_chars.append(chars)
@@ -29,7 +30,6 @@ def parse(input_str):
 
 
 class CalculateRules:
-
     def __init__(self, parsed):
         self.parsed = parsed
         self.calculated = parsed
@@ -59,18 +59,19 @@ class CalculateRules:
         return self.calculated
 
     def _calculate(self, sub_rule):
-        are_labels_calculated = all(self.calculated_cached.get(label, False) for label in sub_rule)
+        are_labels_calculated = all(
+            self.calculated_cached.get(label, False) for label in sub_rule
+        )
         if not are_labels_calculated:
             return None
         sub_rule_letters = [self.calculated[label] for label in sub_rule]
-        return [''.join(result) for result in itertools.product(*sub_rule_letters)]
+        return ["".join(result) for result in itertools.product(*sub_rule_letters)]
 
 
 class MonsterMessages:
-
     def __init__(self, input_str):
         self.input_str = input_str
-        raw_rules, raw_messages = input_str.split('\n\n')
+        raw_rules, raw_messages = input_str.split("\n\n")
         parsed_rules = parse(raw_rules)
         self.rules = CalculateRules(parsed_rules).calculate()
         self.messages = raw_messages.splitlines()
@@ -86,8 +87,8 @@ class MonsterMessages:
     def number_of_messages_that_match_rule_0_with_recursive_rules(self):
         pattern_42 = f"({'|'.join(self.rules[42])})"
         pattern_31 = f"({'|'.join(self.rules[31])})"
-        pattern_8 = f'{pattern_42}+'    # match one or more of 42
-        pattern_11 = f'(?P<pattern_11>{pattern_42}(?&pattern_11){pattern_31}|{pattern_42}{pattern_31})'    # matches exactly the same number of 42 and 31
+        pattern_8 = f"{pattern_42}+"  # match one or more of 42
+        pattern_11 = f"(?P<pattern_11>{pattern_42}(?&pattern_11){pattern_31}|{pattern_42}{pattern_31})"  # matches exactly the same number of 42 and 31
         pattern_0 = pattern_8 + pattern_11
 
         matches = 0
@@ -98,25 +99,23 @@ class MonsterMessages:
 
     @classmethod
     def from_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls(f.read())
 
 
 def main():
     monster_messages = MonsterMessages.from_file()
     print(
-        'Number of messages that completely match rule 0:',
+        "Number of messages that completely match rule 0:",
         monster_messages.number_of_messages_that_match_rule_0(),
-        sep=' ',
+        sep=" ",
     )
     print(
-        'Number of messages that completely match rule 0 with recursive rules:',
+        "Number of messages that completely match rule 0 with recursive rules:",
         monster_messages.number_of_messages_that_match_rule_0_with_recursive_rules(),
-        sep=' ',
+        sep=" ",
     )
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
-
-
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

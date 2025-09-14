@@ -5,16 +5,15 @@ import timeit
 
 
 def parse(expr):
-
     def _parse(iter):
         items = []
         for item in iter:
-            if item == '(':
+            if item == "(":
                 result, closeparen = _parse(iter)
                 if not closeparen:
                     raise ValueError("bad expression -- unbalanced parentheses")
                 items.append(result)
-            elif item == ')':
+            elif item == ")":
                 return items, True
             elif item in string.whitespace:
                 continue
@@ -22,7 +21,7 @@ def parse(expr):
                 try:
                     item = int(item)
                 except ValueError:
-                    if item not in ('+', '*'):
+                    if item not in ("+", "*"):
                         raise
                 items.append(item)
         return items, False
@@ -31,10 +30,9 @@ def parse(expr):
 
 
 def calculate(parsed, mode):
-
     operators = {
-        '+': operator.add,
-        '*': operator.mul,
+        "+": operator.add,
+        "*": operator.mul,
     }
 
     def reduce_stack_same_precedence_mode(stack):
@@ -46,7 +44,6 @@ def calculate(parsed, mode):
             stack.appendleft(result)
         return stack
 
-
     def reduce_stack_addition_first_mode(stack):
         new_stack = collections.deque()
 
@@ -54,13 +51,13 @@ def calculate(parsed, mode):
             l_operand = stack.popleft()
             try:
                 operator = stack.popleft()
-            except IndexError:      # only one element in the original stack
-                 new_stack.append(l_operand)
+            except IndexError:  # only one element in the original stack
+                new_stack.append(l_operand)
             else:
-                if operator == '*':
+                if operator == "*":
                     new_stack.append(l_operand)
                     new_stack.append(operator)
-                elif operator == '+':
+                elif operator == "+":
                     r_operand = stack.popleft()
                     result = operators[operator](l_operand, r_operand)
                     stack.appendleft(result)
@@ -69,8 +66,10 @@ def calculate(parsed, mode):
 
         return reduce_stack_same_precedence_mode(new_stack)
 
-
-    modes = {'same_precedence': reduce_stack_same_precedence_mode, 'addition_first': reduce_stack_addition_first_mode}
+    modes = {
+        "same_precedence": reduce_stack_same_precedence_mode,
+        "addition_first": reduce_stack_addition_first_mode,
+    }
 
     def _calculate(parsed):
         stack = collections.deque()
@@ -95,17 +94,25 @@ def process(input_str, mode):
 
 
 def read_file():
-    with open('input.txt') as f:
+    with open("input.txt") as f:
         return f.read().splitlines()
 
 
 def main():
     input_str = read_file()
-    processed_same_precedence = [process(line, mode='same_precedence') for line in input_str]
-    print(f'Sum of resulting values in same precedence mode: {sum(processed_same_precedence)}')
-    processed_addition_first = [process(line, mode='addition_first') for line in input_str]
-    print(f'Sum of resulting values in addition first mode: {sum(processed_addition_first)}')
+    processed_same_precedence = [
+        process(line, mode="same_precedence") for line in input_str
+    ]
+    print(
+        f"Sum of resulting values in same precedence mode: {sum(processed_same_precedence)}"
+    )
+    processed_addition_first = [
+        process(line, mode="addition_first") for line in input_str
+    ]
+    print(
+        f"Sum of resulting values in addition first mode: {sum(processed_addition_first)}"
+    )
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

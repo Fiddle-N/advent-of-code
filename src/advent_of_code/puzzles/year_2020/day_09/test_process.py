@@ -26,4 +26,3 @@ def test():
     encoding_error = process.EncodingError(cypher_input=input_str)
     assert encoding_error.first_number_not_total_of_previous_two(window_size=5) == 127
     assert encoding_error.total_of_lowest_and_highest_in_contiguous_set(127) == 62
-

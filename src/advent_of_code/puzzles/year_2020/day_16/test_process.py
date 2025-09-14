@@ -38,4 +38,4 @@ nearby tickets:
     ticket_translation = process.TicketTranslation(input_str)
     ticket_translation.invalid_tickets()
     assert ticket_translation.valid_tickets == [[3, 9, 18], [15, 1, 5], [5, 14, 9]]
-    assert ticket_translation.determine_fields() == ['row', 'class', 'seat']
+    assert ticket_translation.determine_fields() == ["row", "class", "seat"]

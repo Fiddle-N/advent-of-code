@@ -5,10 +5,8 @@ import timeit
 
 
 class TicketTranslation:
-
     def __init__(self, ticket_data=None):
         self.rules = None
-        self.ticket = None
         self.nearby_tickets = None
         self.valid_tickets = None
         ticket_data = ticket_data if ticket_data is not None else self._read_file()
@@ -16,34 +14,42 @@ class TicketTranslation:
 
     @staticmethod
     def _read_file():
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return f.read().strip()
 
     def _preprocess(self, ticket_data):
-        rule_data, your_ticket_data, nearby_ticket_data = ticket_data.split('\n\n')
+        rule_data, your_ticket_data, nearby_ticket_data = ticket_data.split("\n\n")
         self.rules = collections.defaultdict(set)
-        for line in rule_data.split('\n'):
-            rule_name, raw_rule_range_data = line.split(': ')
-            rule_range_data = raw_rule_range_data.split(' or ')
+        for line in rule_data.split("\n"):
+            rule_name, raw_rule_range_data = line.split(": ")
+            rule_range_data = raw_rule_range_data.split(" or ")
             for rule_range in rule_range_data:
-                range_start, range_end = rule_range.split('-')
+                range_start, range_end = rule_range.split("-")
                 rule_range = range(int(range_start), int(range_end) + 1)
                 self.rules[rule_name].update(list(rule_range))
 
-        _, your_ticket_fields = your_ticket_data.split('\n')
-        self.ticket = [int(ticket_field) for ticket_field in your_ticket_fields.split(',')]
+        _, your_ticket_fields = your_ticket_data.split("\n")
+        self.ticket = [
+            int(ticket_field) for ticket_field in your_ticket_fields.split(",")
+        ]
 
         self.nearby_tickets = []
-        _, nearby_ticket_fields = nearby_ticket_data.split('\n', 1)
-        for ticket_line in nearby_ticket_fields.split('\n'):
-            self.nearby_tickets.append([int(ticket_field) for ticket_field in ticket_line.split(',')])
+        _, nearby_ticket_fields = nearby_ticket_data.split("\n", 1)
+        for ticket_line in nearby_ticket_fields.split("\n"):
+            self.nearby_tickets.append(
+                [int(ticket_field) for ticket_field in ticket_line.split(",")]
+            )
 
     def invalid_tickets(self):
         self.valid_tickets = []
         valid_ranges = set.union(*self.rules.values())
         invalid_fields = []
         for ticket in self.nearby_tickets:
-            invalid_ticket_fields = [ticket_field for ticket_field in ticket if ticket_field not in valid_ranges]
+            invalid_ticket_fields = [
+                ticket_field
+                for ticket_field in ticket
+                if ticket_field not in valid_ranges
+            ]
             invalid_ticket = bool(invalid_ticket_fields)
             if invalid_ticket:
                 invalid_fields.extend(invalid_ticket_fields)
@@ -54,7 +60,9 @@ class TicketTranslation:
     def _resolve_order(self, field_order):
         while not all((len(fields) == 1) for fields in field_order):
             unresolved_field_order = field_order
-            resolved_fields = set.union(*[fields for fields in unresolved_field_order if len(fields) == 1])
+            resolved_fields = set.union(
+                *[fields for fields in unresolved_field_order if len(fields) == 1]
+            )
             field_order = []
             for fields in unresolved_field_order:
                 if len(fields) == 1:
@@ -78,17 +86,16 @@ class TicketTranslation:
 
 def main():
     ticket_translation = TicketTranslation()
-    print(f'Ticket scanning error rate: {sum(ticket_translation.invalid_tickets())}')
+    print(f"Ticket scanning error rate: {sum(ticket_translation.invalid_tickets())}")
     field_order = ticket_translation.determine_fields()
     departure_fields = [
         (field, field_value)
         for field, field_value in zip(field_order, ticket_translation.ticket)
-        if field.startswith('departure')
+        if field.startswith("departure")
     ]
-    print(f'Departure fields: {departure_fields}')
-    print(f'Departure field value: {math.prod(value for _, value in departure_fields)}')
+    print(f"Departure fields: {departure_fields}")
+    print(f"Departure field value: {math.prod(value for _, value in departure_fields)}")
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
-
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")
