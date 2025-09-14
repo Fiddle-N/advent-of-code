@@ -1,7 +1,8 @@
 .mypy_cache
 *.pytest_cache
 .idea
-*input.txt
+*input*.txt
 .pyc
 *__pycache__
 .venv
+*.png
