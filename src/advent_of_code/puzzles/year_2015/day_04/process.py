@@ -4,6 +4,9 @@
 Part 1
 Given a secret key and a number appended to it, find the lowest appended number to create a hex digest beginning with
 5 zeroes.
+
+Part 2
+Repeat with 6 zeroes.
 """
 
 import hashlib
