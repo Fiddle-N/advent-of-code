@@ -1,6 +1,6 @@
 import timeit
 
-from . import passport_validation
+from advent_of_code.puzzles.year_2020.day_04 import passport_validation
 
 
 class PassportProcessing:
