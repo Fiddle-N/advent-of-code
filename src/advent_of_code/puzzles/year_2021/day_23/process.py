@@ -330,7 +330,7 @@ class AmphipodOrganiser:
             amphipod: BurrowAmphipodState.ORIGINAL for amphipod in amphipods.values()
         }
 
-        open_neighbours_of_settled_end_amphipods = set()
+        settled_neighbours = set()
 
         for coord, amphipod in amphipods.items():
             room = self.burrow_map.map[coord]
@@ -340,17 +340,31 @@ class AmphipodOrganiser:
                 room_amphipod_type = room.this.type
                 if room_amphipod_type == amphipod.type:
                     amphipods_state[amphipod] = BurrowAmphipodState.SETTLED
-                    open_neighbours_of_settled_end_amphipods.add(
-                        room.neighbours[0].coords
+                    settled_neighbours.add(
+                        (room.neighbours[0].coords, coord)
                     )  # assume end only has one neighbour
 
-        # now check top row of those next to settled bottom row
-        for coord in open_neighbours_of_settled_end_amphipods:
-            amphipod = amphipods[coord]
-            room = self.burrow_map.map[coord]
-            room_amphipod_type = room.this.type
-            if room_amphipod_type == amphipod.type:
-                amphipods_state[amphipod] = BurrowAmphipodState.SETTLED
+        while True:
+            new_settled_neighbours = set()
+            for coord, prev_coord in settled_neighbours:
+                amphipod = amphipods[coord]
+                room = self.burrow_map.map[coord]
+                room_amphipod_type = room.this.type
+                if room_amphipod_type == amphipod.type:
+                    amphipods_state[amphipod] = BurrowAmphipodState.SETTLED
+                    next_neighbour = [
+                        neighbour.coords
+                        for neighbour in room.neighbours
+                        if neighbour.coords != prev_coord
+                    ][0]
+                    if next_neighbour not in amphipods:
+                        # we only care about checking amphipods - this must be a hallway space so stop
+                        continue
+                    new_settled_neighbours.add((next_neighbour, coord))
+            if not new_settled_neighbours:
+                break
+            else:
+                settled_neighbours = new_settled_neighbours
 
         return amphipods_state
 
@@ -363,6 +377,7 @@ class AmphipodOrganiser:
         return False
 
     def _free_room(self, amphipods: dict[Coords, Amphipod], amphipod: Amphipod):
+        # ASSUMES ONLY TWO ROWS
         amphipod_rooms = self.burrow_map.get_amphipod_coords(amphipod.type)
 
         if (end_coords := amphipod_rooms[BurrowRoomType.END]) not in amphipods:

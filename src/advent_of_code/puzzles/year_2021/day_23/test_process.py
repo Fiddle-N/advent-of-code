@@ -1,8 +1,7 @@
-import pytest
 from advent_of_code.puzzles.year_2021.day_23 import process
 
 # tests are too slow
-pytest.skip(allow_module_level=True)
+# pytest.skip(allow_module_level=True)
 
 
 def test():
@@ -16,18 +15,18 @@ def test():
     assert total_energy == 12_521
 
 
-def test_unfolded():
-    ao = process.AmphipodOrganiser(
-        """\
-#############
-#...........#
-###B#C#B#D###
-  #A#D#C#A#
-  #########  """,
-        unfolded=True,
-    )
-    total_energy = ao.organise()
-    assert total_energy == 44169
+# def test_unfolded():
+#     ao = process.AmphipodOrganiser(
+#         """\
+# #############
+# #...........#
+# ###B#C#B#D###
+#   #A#D#C#A#
+#   #########  """,
+#         unfolded=True,
+#     )
+#     total_energy = ao.organise()
+#     assert total_energy == 44169
 
 
 def test_small():
@@ -98,6 +97,60 @@ def test_amphipod_settled_state_more():
     # One Desert amphipod in correct column but with wrong amphipod underneath - original
     assert (
         amphipods_state[amphipods[process.Coords(9, 3)]]
+        == process.BurrowAmphipodState.ORIGINAL
+    )
+
+
+def test_amphipod_settled_state_four_rows_one_col_all_settled():
+    ao = process.AmphipodOrganiser("""\
+#############
+#...........#
+###A#B#C#D###
+  #A#B#C#D#  
+  #A#B#C#D#  
+  #A#C#B#D#  
+  #########  """)
+
+    amphipods = ao.start_state.amphipods
+    amphipods_state = ao.start_state.amphipods_state
+
+    assert (
+        amphipods_state[amphipods[process.Coords(3, 2)]]
+        == process.BurrowAmphipodState.SETTLED
+    )
+
+    assert (
+        amphipods_state[amphipods[process.Coords(3, 3)]]
+        == process.BurrowAmphipodState.SETTLED
+    )
+
+    assert (
+        amphipods_state[amphipods[process.Coords(3, 4)]]
+        == process.BurrowAmphipodState.SETTLED
+    )
+
+    assert (
+        amphipods_state[amphipods[process.Coords(3, 5)]]
+        == process.BurrowAmphipodState.SETTLED
+    )
+
+    assert (
+        amphipods_state[amphipods[process.Coords(5, 2)]]
+        == process.BurrowAmphipodState.ORIGINAL
+    )
+
+    assert (
+        amphipods_state[amphipods[process.Coords(5, 3)]]
+        == process.BurrowAmphipodState.ORIGINAL
+    )
+
+    assert (
+        amphipods_state[amphipods[process.Coords(5, 4)]]
+        == process.BurrowAmphipodState.ORIGINAL
+    )
+
+    assert (
+        amphipods_state[amphipods[process.Coords(5, 5)]]
         == process.BurrowAmphipodState.ORIGINAL
     )
 
