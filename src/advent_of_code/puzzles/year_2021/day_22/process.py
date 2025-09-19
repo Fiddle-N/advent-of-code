@@ -10,6 +10,35 @@ Execute only the steps where the greatest point from the origin is no more than 
 
 Part 2
 Execute all steps.
+
+Solution
+This solution uses the inclusion/exclusion principle.
+
+Considering two cuboids A and B where the instructions are to turn both on,
+then the number of on points are calculated as:
+A + B - A∩B
+.
+The subtraction of the intersection is needed to avoid double-counting those points.
+
+Extending to three cuboids A, B and C,
+then the number of on points are calculated as:
+A + B + C - A∩B - A∩C - B∩C + A∩B∩C
+Subtraction of the double intersections are needed to avoid double-counting those points, as before.
+But in doing so, any point in A∩B∩C ends up completely negated, as we have added three regions and subtracted three.
+So we need to add back in A∩B∩C to avoid missing this region.
+
+This alternating plus/minus pattern continues with each cuboid intersection.
+Hence, each new intersection can be added in by recording the intersection with the opposite sign of the previous cuboid
+recorded.
+
+Considering two cuboids A and B where the instructions are to turn A on and B off,
+then the number of on points are calculated as:
+A - A∩B
+.
+
+Hence, an off instruction is identical to an on instruction, except that the volume of the off cuboid is not added in.
+
+
 """
 
 import dataclasses
@@ -33,7 +62,7 @@ class Instruction(enum.Enum):
 
 
 @dataclasses.dataclass(frozen=True, eq=True)
-class Cube:
+class Cuboid:
     start: Coords
     end: Coords
 
@@ -62,7 +91,7 @@ class Cube:
 
 def parse_steps(
     step_input: str, init_procedure_only: bool
-) -> list[tuple[Cube, Instruction]]:
+) -> list[tuple[Cuboid, Instruction]]:
     steps = []
     for raw_step in step_input.splitlines():
         parsed_step = parse.parse(STEP_TEMPLATE, raw_step)
@@ -79,7 +108,7 @@ def parse_steps(
                 continue
         steps.append(
             (
-                Cube(
+                Cuboid(
                     start=Coords(
                         parsed_step["x_start"],
                         parsed_step["y_start"],
@@ -97,17 +126,17 @@ def parse_steps(
     return steps
 
 
-def reboot(steps: list[tuple[Cube, Instruction]]) -> int:
-    signed_cubes = defaultdict(int)
-    for cube, instruction in steps:
-        for previous_cube, previous_cube_sign in signed_cubes.copy().items():
-            intersect_cube = cube.intersect(previous_cube)
-            if intersect_cube is not None:
-                signed_cubes[intersect_cube] -= previous_cube_sign
+def reboot(steps: list[tuple[Cuboid, Instruction]]) -> int:
+    signed_cuboids = defaultdict(int)
+    for cuboid, instruction in steps:
+        for previous_cuboid, previous_cuboid_sign in signed_cuboids.copy().items():
+            intersect_cuboid = cuboid.intersect(previous_cuboid)
+            if intersect_cuboid is not None:
+                signed_cuboids[intersect_cuboid] -= previous_cuboid_sign
         if instruction == Instruction.ON:
-            signed_cubes[cube] += 1
+            signed_cuboids[cuboid] += 1
 
-    on_points = sum((cube.volume * sign) for cube, sign in signed_cubes.items())
+    on_points = sum((cuboid.volume * sign) for cuboid, sign in signed_cuboids.items())
     return on_points
 
 
