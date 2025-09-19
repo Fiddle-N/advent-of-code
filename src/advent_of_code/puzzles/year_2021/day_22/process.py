@@ -49,9 +49,7 @@ from advent_of_code.common import read_file, Coords, timed_run
 
 import parse
 
-STEP_TEMPLATE = (
-    "{state} x={x_start:d}..{x_end:d},y={y_start:d}..{y_end:d},z={z_start:d}..{z_end:d}"
-)
+STEP_TEMPLATE = "{instruction} x={x_start:d}..{x_end:d},y={y_start:d}..{y_end:d},z={z_start:d}..{z_end:d}"
 
 INIT_PROCEDURE_MAX_DISTANCE_FROM_ORIGIN = 50
 
@@ -120,7 +118,7 @@ def parse_steps(
                         parsed_step["z_end"],
                     ),
                 ),
-                getattr(Instruction, parsed_step["state"].upper()),
+                getattr(Instruction, parsed_step["instruction"].upper()),
             )
         )
     return steps
