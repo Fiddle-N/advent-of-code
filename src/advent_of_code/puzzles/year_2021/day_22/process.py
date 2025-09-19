@@ -2,7 +2,7 @@
 2021 Day 22
 
 Consider a 3D grid of integer points. The points can either be on or off - all points are set to off at the start.
-A sequence of steps define cuboids of points and an instruction to turn those points should be turned on or off.
+A sequence of steps define cuboids of points and an instruction to turn those points on or off.
 Execute the steps in order and calculate the number of points that are on.
 
 Part 1
