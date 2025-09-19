@@ -3,6 +3,7 @@ import dataclasses
 import enum
 import functools
 import typing
+import itertools
 
 AMPHIPODS_PER_ROW = 4
 
@@ -67,44 +68,17 @@ AMPHIPOD_ENERGY = {
 }
 
 
-class AmphipodCounterMixin:
-    def __init_subclass__(cls, /, **kwargs):
-        super().__init_subclass__(**kwargs)
-        cls._ids = collections.Counter()
-
-    def __init__(self, amphipod_type: AmphipodType):
-        self.id = type(self)._ids[amphipod_type]
-        type(self)._ids[amphipod_type] += 1
-        self.type = amphipod_type
-
-    def __repr__(self):
-        return f"<{type(self).__name__}: type={self.type.name}, id={self.id}>"
+@dataclasses.dataclass(frozen=True)
+class Amphipod:
+    type: AmphipodType
+    id: int
 
 
-class Amphipod(AmphipodCounterMixin):
-    def __hash__(self):
-        return hash((self.type, self.id))
-
-    def __eq__(self, other):
-        return (self.type == other.type) and (self.id == other.id)
-
-
-class BurrowAmphipod:
-    def __init__(self, amphipod_type: AmphipodType):
-        self.amphipod: Amphipod = Amphipod(amphipod_type)
-        self.state: BurrowAmphipodState = BurrowAmphipodState.ORIGINAL
-
-    def __repr__(self):
-        return f"<{type(self).__name__}: type={self.amphipod.type.name}, id={self.amphipod.id}, state={self.state}>"
-
-
-class BurrowAmphipodSpace(AmphipodCounterMixin):
-    def __init__(self, amphipod_type: AmphipodType, room_type: BurrowRoomType):
-        super().__init__(amphipod_type)
-        self.room_type: BurrowRoomType = room_type
-
-    def __repr__(self):
-        return f"<{type(self).__name__}: type={self.type.name}, id={self.id}, room_type={self.room_type}>"
+@dataclasses.dataclass(frozen=True)
+class BurrowAmphipodSpace:
+    type: AmphipodType
+    id: int
+    room_type: BurrowRoomType
 
 
 @dataclasses.dataclass
@@ -113,10 +87,26 @@ class Node:
     neighbours: list[Location]
 
 
-@dataclasses.dataclass(frozen=True, eq=True)
-class Move:
-    amphipod: BurrowAmphipod
-    location: typing.Union[BurrowMapSpace, BurrowAmphipodSpace]
+def amphipod_generator_factory():
+    counter = {amphipod_type: itertools.count() for amphipod_type in AmphipodType}
+
+    def amphipod_generator(amphipod_type: AmphipodType):
+        return Amphipod(amphipod_type, next(counter[amphipod_type]))
+
+    return amphipod_generator
+
+
+def burrow_amphipod_space_generator_factory():
+    counter = {amphipod_type: itertools.count() for amphipod_type in AmphipodType}
+
+    def burrow_amphipod_space_generator(
+        amphipod_type: AmphipodType, room_type: BurrowRoomType
+    ):
+        return BurrowAmphipodSpace(
+            amphipod_type, next(counter[amphipod_type]), room_type
+        )
+
+    return burrow_amphipod_space_generator
 
 
 @dataclasses.dataclass(frozen=True, order=True)
@@ -155,8 +145,9 @@ class AmphipodConfiguration:
 
 
 class BurrowMap:
-    def __init__(self, burrow_map):
+    def __init__(self, burrow_map, amphipod_rows):
         self.map = burrow_map
+        self.amphipod_rows = amphipod_rows
         self._amphipod_space_coords = self._calculate_amphipod_spaces()
 
     def _calculate_amphipod_spaces(self):
@@ -211,9 +202,10 @@ class BurrowMapGenerator:
 
     BURROW_BOTTOM_ROW = "  #########  "
 
-    def __init__(self):
+    def __init__(self, burrow_amphipod_space_gen):
         self.height = None
         self.width = None
+        self.burrow_amphipod_space_gen = burrow_amphipod_space_gen
 
     def create(self, amphipod_rows):
         burrow_middle = "\n".join([self.BURROW_MID_ROW] * (amphipod_rows - 1))
@@ -222,7 +214,7 @@ class BurrowMapGenerator:
         self.height = len(burrow_grid)
         self.width = len(burrow_grid[0])
         burrow_map = self._generate_map(burrow_grid)
-        return BurrowMap(burrow_map)
+        return BurrowMap(burrow_map, amphipod_rows)
 
     def get_neighbours(self, coord):
         neighbour_coords = []
@@ -276,7 +268,7 @@ class BurrowMapGenerator:
                         else BurrowHallwayType.AWAY_FROM_ROOM
                     )
                 elif space in AmphipodType:
-                    node_val = BurrowAmphipodSpace(
+                    node_val = self.burrow_amphipod_space_gen(
                         space, neighbour_nodes_to_side_room_types[len(neighbour_nodes)]
                     )
                 else:
@@ -297,10 +289,15 @@ class AmphipodOrganiser:
   #D#B#A#C#""".splitlines()
                 + burrow_start[3:]
             )
+        self.amphipod_gen = amphipod_generator_factory()
+        burrow_amphipod_space_gen = burrow_amphipod_space_generator_factory()
+
         amphipods = self._find_amphipods(burrow_start)
         amphipod_rows = len(amphipods) // AMPHIPODS_PER_ROW
 
-        self.burrow_map = BurrowMapGenerator().create(amphipod_rows)
+        self.burrow_map = BurrowMapGenerator(burrow_amphipod_space_gen).create(
+            amphipod_rows
+        )
 
         amphipods_state = self._determine_amphipod_state(amphipods)
         self.start_state = AmphipodConfiguration(0, amphipods, amphipods_state)
@@ -322,7 +319,7 @@ class AmphipodOrganiser:
                 except ValueError:
                     pass
                 else:
-                    amphipods[Coords(x, y)] = Amphipod(space)
+                    amphipods[Coords(x, y)] = self.amphipod_gen(space)
         return amphipods
 
     def _determine_amphipod_state(self, amphipods: dict[Coords, Amphipod]):
@@ -335,8 +332,8 @@ class AmphipodOrganiser:
         for coord, amphipod in amphipods.items():
             room = self.burrow_map.map[coord]
             if (
-                room.this.room_type == BurrowRoomType.END
-            ):  # we need to check bottom row first
+                room.this.id == self.burrow_map.amphipod_rows - 1
+            ):  # we need to check bottom row first - rows are ordered 0 to n-1 , where n-1 is the end
                 room_amphipod_type = room.this.type
                 if room_amphipod_type == amphipod.type:
                     amphipods_state[amphipod] = BurrowAmphipodState.SETTLED

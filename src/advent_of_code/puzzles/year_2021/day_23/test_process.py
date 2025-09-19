@@ -156,7 +156,9 @@ def test_amphipod_settled_state_four_rows_one_col_all_settled():
 
 
 def test_burrow_map_path_coords():
-    map = process.BurrowMapGenerator().create(amphipod_rows=2)
+    map = process.BurrowMapGenerator(
+        process.burrow_amphipod_space_generator_factory()
+    ).create(amphipod_rows=2)
     assert map.path_coords(start=process.Coords(3, 3), end=process.Coords(9, 3)) == [
         process.Coords(3, 3),
         process.Coords(3, 2),
@@ -173,7 +175,9 @@ def test_burrow_map_path_coords():
 
 
 def test_burrow_map_path_coords_cache():
-    map = process.BurrowMapGenerator().create(amphipod_rows=2)
+    map = process.BurrowMapGenerator(
+        process.burrow_amphipod_space_generator_factory()
+    ).create(amphipod_rows=2)
     result_1 = map.path_coords(process.Coords(3, 3), process.Coords(9, 3))
     result_2 = map.path_coords(process.Coords(3, 3), process.Coords(9, 3))
 
@@ -181,7 +185,9 @@ def test_burrow_map_path_coords_cache():
 
 
 def test_burrow_map_path_coords_exclude_true():
-    map = process.BurrowMapGenerator().create(amphipod_rows=2)
+    map = process.BurrowMapGenerator(
+        process.burrow_amphipod_space_generator_factory()
+    ).create(amphipod_rows=2)
     assert map.path_coords(
         process.Coords(3, 3), process.Coords(9, 3), exclude_start=True
     ) == [
@@ -199,7 +205,9 @@ def test_burrow_map_path_coords_exclude_true():
 
 
 def test_burrow_map_intrapath_coords_cache():
-    map = process.BurrowMapGenerator().create(amphipod_rows=2)
+    map = process.BurrowMapGenerator(
+        process.burrow_amphipod_space_generator_factory()
+    ).create(amphipod_rows=2)
     result_1 = map.path_coords(
         process.Coords(3, 3), process.Coords(9, 3), exclude_start=True
     )
