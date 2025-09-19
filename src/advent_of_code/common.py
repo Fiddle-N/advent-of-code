@@ -9,9 +9,10 @@ import timeit
 class Coords:
     x: int
     y: int
+    z: int = 0
 
     def __add__(self, other: Self):
-        return type(self)(self.x + other.x, self.y + other.y)
+        return type(self)(self.x + other.x, self.y + other.y, self.z + other.z)
 
 
 class Directions(Enum):
