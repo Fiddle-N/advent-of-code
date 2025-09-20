@@ -1,3 +1,58 @@
+"""
+2021 Day 23
+
+Amphipods live in a very specific burrow of side rooms (the amphipods are denoted by A B C D, empty space by ., walls
+by #):
+#############
+#...........#
+###B#C#B#D###
+  #A#D#C#A#
+  #########
+
+They want to be rearranged like so:
+#############
+#...........#
+###A#B#C#D###
+  #A#B#C#D#
+  #########
+
+Rules:
+* Amphipods don't stop on the space outside a room:
+* Amphipods don't move from the hallway into a room until there's a free space and only the right type of amphipod is in
+that room
+* Once an amphipod is in a hallway space, it moves nowhere until it can move into a room.
+
+Amber amphipods require 1 energy per step, Bronze amphipods require 10 energy, Copper amphipods require 100,
+and Desert ones require 1000.
+
+Find the solution with the least energy.
+
+Part 1
+Map is like so, with two rows of amphipods to be solved:
+
+#############
+#...........#
+###B#C#B#D###
+  #A#D#C#A#
+  #########
+
+Part 2
+These lines are added in the middle of the grid:
+  #D#C#B#A#
+  #D#B#A#C#
+
+making a map of four rows of amphipods to be solved:
+
+#############
+#...........#
+###B#C#B#D###
+  #D#C#B#A#
+  #D#B#A#C#
+  #A#D#C#A#
+  #########
+
+"""
+
 import collections
 import dataclasses
 import enum
@@ -35,11 +90,6 @@ class BurrowMapSpace(enum.Enum):
     WALL = "#"
     HALLWAY = "."
     EMPTY = " "
-
-
-# class BurrowRoomType(enum.Enum):
-#     OPEN = enum.auto()
-#     END = enum.auto()
 
 
 class BurrowHallwayType(enum.Enum):
@@ -405,7 +455,6 @@ class AmphipodOrganiser:
         amphipod = next_amphipods.pop(old_coord)
         next_amphipods[new_coord] = amphipod
 
-        # next_history = frozenset.union(*[state.history, (amphipod, new_coord)])       # write a test to protect against this monstrosity
         next_history = frozenset.union(*[state.history, ((amphipod, new_coord),)])
 
         next_amphipods_state = state.amphipods_state.copy()
