@@ -295,9 +295,9 @@ class AmphipodOrganiser:
         self._cache = None
 
     @classmethod
-    def read_file(cls):
+    def read_file(cls, unfolded):
         with open("input.txt") as f:
-            return cls(f.read().strip())
+            return cls(f.read().strip(), unfolded)
 
     def _find_amphipods(self, burrow_start):
         amphipods: dict[Coords, Amphipod] = {}
@@ -493,7 +493,11 @@ class AmphipodOrganiser:
 
 
 def main():
-    ao = AmphipodOrganiser.read_file()
+    ao = AmphipodOrganiser.read_file(unfolded=False)
+    total_energy = ao.organise()
+    print(f"{total_energy=}")
+
+    ao = AmphipodOrganiser.read_file(unfolded=True)
     total_energy = ao.organise()
     print(f"{total_energy=}")
 
@@ -502,8 +506,3 @@ if __name__ == "__main__":
     import timeit
 
     print(timeit.timeit(main, number=1))
-
-
-# if __name__ == '__main__':
-#     import cProfile
-#     cProfile.run('main()')
