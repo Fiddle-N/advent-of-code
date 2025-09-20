@@ -37,9 +37,9 @@ class BurrowMapSpace(enum.Enum):
     EMPTY = " "
 
 
-class BurrowRoomType(enum.Enum):
-    OPEN = enum.auto()
-    END = enum.auto()
+# class BurrowRoomType(enum.Enum):
+#     OPEN = enum.auto()
+#     END = enum.auto()
 
 
 class BurrowHallwayType(enum.Enum):
@@ -78,7 +78,6 @@ class Amphipod:
 class BurrowAmphipodSpace:
     type: AmphipodType
     id: int
-    room_type: BurrowRoomType
 
 
 @dataclasses.dataclass
@@ -99,12 +98,8 @@ def amphipod_generator_factory():
 def burrow_amphipod_space_generator_factory():
     counter = {amphipod_type: itertools.count() for amphipod_type in AmphipodType}
 
-    def burrow_amphipod_space_generator(
-        amphipod_type: AmphipodType, room_type: BurrowRoomType
-    ):
-        return BurrowAmphipodSpace(
-            amphipod_type, next(counter[amphipod_type]), room_type
-        )
+    def burrow_amphipod_space_generator(amphipod_type: AmphipodType):
+        return BurrowAmphipodSpace(amphipod_type, next(counter[amphipod_type]))
 
     return burrow_amphipod_space_generator
 
@@ -154,7 +149,7 @@ class BurrowMap:
         coords = collections.defaultdict(dict)
         for coord, space in self.map.items():
             if isinstance(space.this, BurrowAmphipodSpace):
-                coords[space.this.type][space.this.room_type] = coord
+                coords[space.this.type][space.this.id] = coord
         return coords
 
     def get_amphipod_coords(self, amphipod_type: AmphipodType):
@@ -242,10 +237,6 @@ class BurrowMapGenerator:
 
     def _generate_map(self, burrow_preprocessed):
         burrow_map = {}
-        neighbour_nodes_to_side_room_types = {
-            2: BurrowRoomType.OPEN,
-            1: BurrowRoomType.END,
-        }
         for y, row in enumerate(burrow_preprocessed):
             for x, space in enumerate(row):
                 coord = Coords(x, y)
@@ -268,9 +259,7 @@ class BurrowMapGenerator:
                         else BurrowHallwayType.AWAY_FROM_ROOM
                     )
                 elif space in AmphipodType:
-                    node_val = self.burrow_amphipod_space_gen(
-                        space, neighbour_nodes_to_side_room_types[len(neighbour_nodes)]
-                    )
+                    node_val = self.burrow_amphipod_space_gen(space)
                 else:
                     raise Exception
                 node = Node(node_val, neighbour_nodes)
@@ -374,27 +363,21 @@ class AmphipodOrganiser:
         return False
 
     def _free_room(self, amphipods: dict[Coords, Amphipod], amphipod: Amphipod):
-        # ASSUMES ONLY TWO ROWS
-        amphipod_rooms = self.burrow_map.get_amphipod_coords(amphipod.type)
+        amphipod_room_coords = self.burrow_map.get_amphipod_coords(amphipod.type)
 
-        if (end_coords := amphipod_rooms[BurrowRoomType.END]) not in amphipods:
-            if amphipod_rooms[BurrowRoomType.OPEN] not in amphipods:
-                # both spaces are empty - move into the end room
-                return end_coords
+        maybe_free_room = None
+        for room_coord in reversed(amphipod_room_coords.values()):
+            if room_coord in amphipods:
+                if maybe_free_room is not None:
+                    raise Exception("occupied room discovered in front of free room")
+                if amphipods[room_coord].type != amphipod.type:
+                    # room is blocked with another amphipod
+                    return None
             else:
-                return Exception(
-                    "somehow open room is occupied and blocking off an empty end room - should not be the case"
-                )
-        elif amphipods[end_coords].type == amphipod.type:
-            # end room is occupied with the correct amphipod type
-            if (open_coords := amphipod_rooms[BurrowRoomType.OPEN]) not in amphipods:
-                # open room is empty
-                return open_coords
-            else:
-                # open room is occupied and blocking off end room populated (with the correct amphipod type)
-                return None
-        else:
-            return None
+                if maybe_free_room is None:
+                    maybe_free_room = room_coord
+
+        return maybe_free_room
 
     def _is_free_path(self, state, intrapath_coords):
         amphipods = state.amphipods
