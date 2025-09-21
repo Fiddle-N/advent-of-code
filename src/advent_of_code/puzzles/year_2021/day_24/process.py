@@ -208,45 +208,78 @@ class ModelNumberValidation:
     def __init__(self, instruction_text: str):
         self.single_digit_instructions = parse_single_digit_instructions()
         self.variable_operands = parse_variable_operands(instruction_text)
+        self.num_26 = len(
+            [
+                variable_operand
+                for variable_operand in self.variable_operands
+                if variable_operand.div_z == 26
+            ]
+        )
+        print()
 
     @functools.cache
     def _validate_model_number(
-        self, model_no_pos: int, digit: int, registers: FrozenRegisters
-    ) -> str | None:
-        print(model_no_pos, digit, registers)
+        self, model_no_pos: int, digit: int, registers: FrozenRegisters, num_26
+    ) -> tuple[str, FrozenRegisters, int] | None:
+        var_ops = self.variable_operands[model_no_pos]
+
+        if var_ops.div_z == 26:
+            num_26 -= 1
+
         output_registers = execute_instructions(
             self.single_digit_instructions,
             [digit],
-            self.variable_operands[model_no_pos],
+            var_ops,
             registers,
         )
 
+        is_x_0 = output_registers.x == 0
+
         # base case
         if model_no_pos == (MODEL_NO_DIGITS - 1):
-            if output_registers.z == 0:
-                return str(digit)
-            return None
+            return str(digit), output_registers, is_x_0
+
+            # if output_registers.z == 0:
+            #     return str(digit), output_registers, is_x_0
+            # return None
+
+        # if output_registers.z >= (26 ** num_26):
+        #     return None
 
         # recursive case
         for next_digit in range(9, 0, -1):
-            model_no_suffix = self._validate_model_number(
-                model_no_pos + 1, next_digit, output_registers
+            print(model_no_pos)
+            result = self._validate_model_number(
+                model_no_pos + 1, next_digit, output_registers, num_26
             )
             # print(self._validate_model_number.cache_info())
-            if model_no_suffix is None:
-                continue
-            return str(digit) + model_no_suffix
+            # if result is None:
+            #     continue
+            model_no_suffix, next_registers, next_is_x_0 = result
+
+            result_suffix = str(digit) + model_no_suffix
+
+            if (result_is_x_0 := (is_x_0 + next_is_x_0)) == self.num_26:
+                raise ValueError(result_suffix)
+
+            # print(f"{result_is_x_0=}")
+
+            # return (result_suffix, output_registers, result_is_x_0)
 
         return None
 
     def validate_model_number(self) -> str:
         for digit in range(9, 0, -1):
-            model_no_suffix = self._validate_model_number(
-                model_no_pos=0, digit=digit, registers=freeze_registers(Registers())
+            result = self._validate_model_number(
+                model_no_pos=0,
+                digit=digit,
+                registers=freeze_registers(Registers()),
+                num_26=self.num_26,
             )
-            if model_no_suffix is None:
-                continue
-            return str(digit) + model_no_suffix
+            # if result is None:
+            #     continue
+            # model_no_suffix, _, __ = result
+            # return str(digit) + model_no_suffix
         raise RuntimeError("a result must be present")
 
 
