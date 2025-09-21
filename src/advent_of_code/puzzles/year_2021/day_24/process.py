@@ -1,5 +1,4 @@
 import dataclasses
-import functools
 import enum
 import itertools
 import operator
@@ -32,7 +31,7 @@ add z y"""
 SINGLE_DIGIT_INSTRUCTIONS_PATTERN_RE = SINGLE_DIGIT_INSTRUCTIONS_PATTERN.format(
     div_z=r"(?P<div_z_operand>-?\d+)",
     add_x=r"(?P<add_x_operand>-?\d+)",
-    add_y=r"(?P<add_y_operand>-?\d+)",
+    add_y=r"(?P<add_y_operand>\d+)",  # add_y must be a positive integer
 )
 
 
@@ -78,12 +77,12 @@ class Instruction:
     operand_2: RegisterAttr | int | VariableOperand | None
 
 
-@dataclasses.dataclass(frozen=True)
-class FrozenRegisters:
-    w: int = 0
-    x: int = 0
-    y: int = 0
-    z: int = 0
+# @dataclasses.dataclass(frozen=True)
+# class FrozenRegisters:
+#     w: int = 0
+#     x: int = 0
+#     y: int = 0
+#     z: int = 0
 
 
 @dataclasses.dataclass
@@ -94,12 +93,12 @@ class Registers:
     z: int = 0
 
 
-def freeze_registers(r: Registers) -> FrozenRegisters:
-    return FrozenRegisters(w=r.w, x=r.x, y=r.y, z=r.z)
-
-
-def unfreeze_registers(fr: FrozenRegisters) -> Registers:
-    return Registers(w=fr.w, x=fr.x, y=fr.y, z=fr.z)
+# def freeze_registers(r: Registers) -> FrozenRegisters:
+#     return FrozenRegisters(w=r.w, x=r.x, y=r.y, z=r.z)
+#
+#
+# def unfreeze_registers(fr: FrozenRegisters) -> Registers:
+#     return Registers(w=fr.w, x=fr.x, y=fr.y, z=fr.z)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -166,12 +165,10 @@ def execute_instructions(
     instructions: list[Instruction],
     inputs: list[int],
     variable_operands: VariableOperands,
-    registers: Registers | FrozenRegisters | None = None,
-) -> FrozenRegisters:
+    registers: Registers | None = None,
+) -> None:
     if registers is None:
         registers = Registers()
-    elif isinstance(registers, FrozenRegisters):
-        registers = unfreeze_registers(registers)
 
     input_position_iter = itertools.count()
 
@@ -201,59 +198,37 @@ def execute_instructions(
                     operand_2_val = operand_2
                 result = operation_fn(operand_1_val, operand_2_val)
                 setattr(registers, operand_1, result)
-    return freeze_registers(registers)
 
 
 class ModelNumberValidation:
     def __init__(self, instruction_text: str):
         self.single_digit_instructions = parse_single_digit_instructions()
-        self.variable_operands = parse_variable_operands(instruction_text)
+        self.digit_variable_operands = parse_variable_operands(instruction_text)
 
-    @functools.cache
-    def _validate_model_number(
-        self, model_no_pos: int, digit: int, registers: FrozenRegisters
-    ) -> str | None:
-        print(model_no_pos, digit, registers)
-        output_registers = execute_instructions(
-            self.single_digit_instructions,
-            [digit],
-            self.variable_operands[model_no_pos],
-            registers,
-        )
-
-        # base case
-        if model_no_pos == (MODEL_NO_DIGITS - 1):
-            if output_registers.z == 0:
-                return str(digit)
-            return None
-
-        # recursive case
-        for next_digit in range(9, 0, -1):
-            model_no_suffix = self._validate_model_number(
-                model_no_pos + 1, next_digit, output_registers
-            )
-            # print(self._validate_model_number.cache_info())
-            if model_no_suffix is None:
-                continue
-            return str(digit) + model_no_suffix
-
-        return None
-
-    def validate_model_number(self) -> str:
-        for digit in range(9, 0, -1):
-            model_no_suffix = self._validate_model_number(
-                model_no_pos=0, digit=digit, registers=freeze_registers(Registers())
-            )
-            if model_no_suffix is None:
-                continue
-            return str(digit) + model_no_suffix
-        raise RuntimeError("a result must be present")
+    def validate(self) -> list[list[int]]:
+        valid_model_number = []
+        for variable_operands in self.digit_variable_operands:
+            valid_digits = []
+            for position, digit in enumerate(range(1, 10)):
+                registers = Registers()
+                execute_instructions(
+                    self.single_digit_instructions,
+                    [digit],
+                    variable_operands,
+                    registers,
+                )
+                if registers.x == registers.y == registers.z == 0:
+                    valid_digits.append(digit)
+            valid_model_number.append(valid_digits)
+        return valid_model_number
 
 
 def run():
     instruction_text = read_file()
     model_number_validation = ModelNumberValidation(instruction_text)
-    print(model_number_validation.validate_model_number())
+    from pprint import pp
+
+    pp(model_number_validation.validate())
 
 
 def main() -> None:
