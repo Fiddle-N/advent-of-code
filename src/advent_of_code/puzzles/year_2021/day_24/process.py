@@ -1,9 +1,9 @@
 import dataclasses
-import functools
 import enum
 import itertools
 import operator
 import re
+from typing import Literal
 
 from advent_of_code.common import read_file, timed_run
 
@@ -208,23 +208,18 @@ class ModelNumberValidation:
     def __init__(self, instruction_text: str):
         self.single_digit_instructions = parse_single_digit_instructions()
         self.variable_operands = parse_variable_operands(instruction_text)
-        self.num_26 = len(
-            [
-                variable_operand
-                for variable_operand in self.variable_operands
-                if variable_operand.div_z == 26
-            ]
-        )
-        print()
+        self.chunk_positions = []
+        for pos, var_op in enumerate(self.variable_operands):
+            if var_op.add_x < 10:
+                self.chunk_positions.append(pos)
+        self.largest_model_number_range = range(9, 0, -1)
+        self.smallest_model_number_range = range(1, 10)
+        self._range = None
 
-    @functools.cache
     def _validate_model_number(
-        self, model_no_pos: int, digit: int, registers: FrozenRegisters, num_26
-    ) -> tuple[str, FrozenRegisters, int] | None:
-        var_ops = self.variable_operands[model_no_pos]
-
-        if var_ops.div_z == 26:
-            num_26 -= 1
+        self, pos: int, digit: int, end_pos: int, registers: FrozenRegisters
+    ) -> list[tuple[str, FrozenRegisters]]:
+        var_ops = self.variable_operands[pos]
 
         output_registers = execute_instructions(
             self.single_digit_instructions,
@@ -233,60 +228,80 @@ class ModelNumberValidation:
             registers,
         )
 
-        is_x_0 = output_registers.x == 0
-
         # base case
-        if model_no_pos == (MODEL_NO_DIGITS - 1):
-            return str(digit), output_registers, is_x_0
-
-            # if output_registers.z == 0:
-            #     return str(digit), output_registers, is_x_0
-            # return None
-
-        # if output_registers.z >= (26 ** num_26):
-        #     return None
+        if pos == end_pos:
+            if output_registers.x == 0:
+                return [(str(digit), output_registers)]
+            return []
 
         # recursive case
-        for next_digit in range(9, 0, -1):
-            print(model_no_pos)
+        results = []
+        for next_digit in self._range:
             result = self._validate_model_number(
-                model_no_pos + 1, next_digit, output_registers, num_26
+                pos + 1, next_digit, end_pos, output_registers
             )
-            # print(self._validate_model_number.cache_info())
-            # if result is None:
-            #     continue
-            model_no_suffix, next_registers, next_is_x_0 = result
+            if not result:
+                continue
 
-            result_suffix = str(digit) + model_no_suffix
+            for i in result:
+                model_no_suffix, next_registers = i
+                result_suffix = str(digit) + model_no_suffix
 
-            if (result_is_x_0 := (is_x_0 + next_is_x_0)) == self.num_26:
-                raise ValueError(result_suffix)
+                results.append((result_suffix, next_registers))
 
-            # print(f"{result_is_x_0=}")
+        return results
 
-            # return (result_suffix, output_registers, result_is_x_0)
+    def validate_model_number_chunk(
+        self,
+        start_pos: int,
+        chunk_pos: int,
+        registers: FrozenRegisters = FrozenRegisters(),
+    ) -> str | None:
+        end_pos = self.chunk_positions[chunk_pos]
+        results = {}
+        for digit in self._range:
+            result = self._validate_model_number(start_pos, digit, end_pos, registers)
+
+            for i in result:
+                model_no_suffix, output_registers = i
+                if output_registers.z in results:
+                    continue
+                results[output_registers.z] = (model_no_suffix, output_registers)
+
+        # base case
+        if chunk_pos == len(self.chunk_positions) - 1:
+            for z, (suffix, final_registers) in results.items():
+                if z == 0:
+                    return suffix
+            return None
+
+        # recursive case
+        for next_model_no_prefix, next_register in results.values():
+            suffix = self.validate_model_number_chunk(
+                start_pos=end_pos + 1, chunk_pos=chunk_pos + 1, registers=next_register
+            )
+            if suffix is not None:
+                return next_model_no_prefix + suffix
 
         return None
 
-    def validate_model_number(self) -> str:
-        for digit in range(9, 0, -1):
-            result = self._validate_model_number(
-                model_no_pos=0,
-                digit=digit,
-                registers=freeze_registers(Registers()),
-                num_26=self.num_26,
-            )
-            # if result is None:
-            #     continue
-            # model_no_suffix, _, __ = result
-            # return str(digit) + model_no_suffix
-        raise RuntimeError("a result must be present")
+    def run(self, mode: Literal["smallest", "largest"]):
+        self._range = (
+            self.largest_model_number_range
+            if mode == "largest"
+            else self.smallest_model_number_range
+        )
+        result = self.validate_model_number_chunk(start_pos=0, chunk_pos=0)
+        if result is None:
+            raise ValueError("A result was not found")
+        return result
 
 
 def run():
     instruction_text = read_file()
     model_number_validation = ModelNumberValidation(instruction_text)
-    print(model_number_validation.validate_model_number())
+    print(model_number_validation.run(mode="largest"))
+    print(model_number_validation.run(mode="smallest"))
 
 
 def main() -> None:
