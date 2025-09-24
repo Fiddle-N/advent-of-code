@@ -1,3 +1,124 @@
+"""
+2021 Day 24
+
+An ALU (arithmetic logic unit) is a 4D processing unit with four
+registers - w, x, y and z, all initialised to 0 - and six instructions:
+
+inp a - read an input and write to a.
+add a b - add a to b and write to a.
+mul a b - multiply a with b and write to a.
+div a b - floor-divide a with b and write to a.
+mod a b - get the remainder of a divided with b and write to a.
+eql a b - if a equals b, write 1 to a, else write 0 to a.
+
+You are given a program called MONAD that validates a 14 digit number
+where each digit is 1-9. MONAD takes in 14 inputs corresponding to the
+14 individual digits from left to right, and if the number is valid,
+leaves the z register as 0.
+
+Part 1
+Find the greatest number accepted by MONAD.
+
+Part 2
+Find the smallest number accepted by MONAD.
+
+Solution
+
+MONAD is a program of 14 repeating chunks of instructions that follow the
+below pattern:
+
+inp w
+mul x 0
+add x z
+mod x 26
+div z {div_z}
+add x {add_x}
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+mul y 0
+add y w
+add y {add_y}
+mul y x
+add z y
+
+where div_z is seven times as 1 and seven times as 26, add_x is an integer
+where seven are greater than 10 and seven are 0 or less, and add_y is always
+a positive integer.
+
+z must always equal 0 at the very end.
+There are three operations that change z:
+
+div z {div_z}
+mul z y
+add z y
+
+Let's consider the block of code that ends in "add z y", which is the last
+operation of the chunk and therefore the program:
+
+eql x w
+eql x 0
+...
+mul y 0
+add y w
+add y {add_y}
+mul y x
+add z y
+
+y is zeroed, and then either added to a w (which never changes), add_y
+(which is a positive integer), or multiplied to with x (which is 0 or 1).
+This is then added to z. So for z to be 0, since y cannot be positive,
+x must be 0 to zero y. Which means that w must be equal to x in the "eql"
+block at the very end.
+
+Let's now also consider the "mul z y" block:
+
+eql x w
+eql x 0
+mul y 0
+add y 25
+mul y x
+add y 1
+mul z y
+
+When x is 1, y is 26 and z is multiplied by 26.
+When x is 0, y is 1 and z is multiplied by 1.
+It stands to reason, then than we want x to be equal to w as many times as
+possible to limit the growth of z. z is divided by 26 only seven times, so we
+can only let z be multiplied by 26 seven times.
+
+Now, let's consider the code block that determines whether x is equal to w:
+
+mul x 0
+add x z
+mod x 26
+div z {div_z}
+add x {add_x}
+eql x w
+eql x 0
+
+x undergoes the modulo operator to be between 0 and 25. But then it is added to
+add_x before undergoing the x == w check. However, in the seven times that add_x
+is greater than 10, it is impossible for x to equal w as w is between 1-9 and never
+gets changed.
+
+This means, then, that x can only equal w the other seven times. And must equal w
+the other seven times, in order to limit the growth of z and have a chance that z
+equals 0 by the end.
+
+The solution below recursively splits the program into the fourteen chunks, but it
+also splits into the seven sections where x must be 0. At each of these larger sections,
+we check to see if x is equal to 0, and then discard multiple overlapping options.
+For example, for the same numeric outputs, if z is the same value at the end of a
+section, we can keep either the greatest or smallest output (depending on part 1 vs 2)
+and discard the rest. This greatly reduces the number of operations to check
+overall.
+"""
+
 import dataclasses
 import enum
 import itertools
@@ -208,15 +329,15 @@ class ModelNumberValidation:
     def __init__(self, instruction_text: str):
         self.single_digit_instructions = parse_single_digit_instructions()
         self.variable_operands = parse_variable_operands(instruction_text)
-        self.chunk_positions = []
+        self.section_positions = []
         for pos, var_op in enumerate(self.variable_operands):
             if var_op.add_x < 10:
-                self.chunk_positions.append(pos)
+                self.section_positions.append(pos)
         self.largest_model_number_range = range(9, 0, -1)
         self.smallest_model_number_range = range(1, 10)
         self._range = None
 
-    def _validate_model_number(
+    def _validate_digit(
         self, pos: int, digit: int, end_pos: int, registers: FrozenRegisters
     ) -> list[tuple[str, FrozenRegisters]]:
         var_ops = self.variable_operands[pos]
@@ -237,39 +358,37 @@ class ModelNumberValidation:
         # recursive case
         results = []
         for next_digit in self._range:
-            result = self._validate_model_number(
+            result = self._validate_digit(
                 pos + 1, next_digit, end_pos, output_registers
             )
             if not result:
                 continue
 
-            for i in result:
-                model_no_suffix, next_registers = i
+            for model_no_suffix, next_registers in result:
                 result_suffix = str(digit) + model_no_suffix
 
                 results.append((result_suffix, next_registers))
 
         return results
 
-    def validate_model_number_chunk(
+    def _validate_section(
         self,
         start_pos: int,
         chunk_pos: int,
         registers: FrozenRegisters = FrozenRegisters(),
     ) -> str | None:
-        end_pos = self.chunk_positions[chunk_pos]
+        end_pos = self.section_positions[chunk_pos]
         results = {}
         for digit in self._range:
-            result = self._validate_model_number(start_pos, digit, end_pos, registers)
+            result = self._validate_digit(start_pos, digit, end_pos, registers)
 
-            for i in result:
-                model_no_suffix, output_registers = i
+            for model_no_suffix, output_registers in result:
                 if output_registers.z in results:
                     continue
                 results[output_registers.z] = (model_no_suffix, output_registers)
 
         # base case
-        if chunk_pos == len(self.chunk_positions) - 1:
+        if chunk_pos == len(self.section_positions) - 1:
             for z, (suffix, final_registers) in results.items():
                 if z == 0:
                     return suffix
@@ -277,7 +396,7 @@ class ModelNumberValidation:
 
         # recursive case
         for next_model_no_prefix, next_register in results.values():
-            suffix = self.validate_model_number_chunk(
+            suffix = self._validate_section(
                 start_pos=end_pos + 1, chunk_pos=chunk_pos + 1, registers=next_register
             )
             if suffix is not None:
@@ -285,13 +404,13 @@ class ModelNumberValidation:
 
         return None
 
-    def run(self, mode: Literal["smallest", "largest"]):
+    def validate(self, mode: Literal["smallest", "largest"]) -> str:
         self._range = (
             self.largest_model_number_range
             if mode == "largest"
             else self.smallest_model_number_range
         )
-        result = self.validate_model_number_chunk(start_pos=0, chunk_pos=0)
+        result = self._validate_section(start_pos=0, chunk_pos=0)
         if result is None:
             raise ValueError("A result was not found")
         return result
@@ -300,8 +419,8 @@ class ModelNumberValidation:
 def run():
     instruction_text = read_file()
     model_number_validation = ModelNumberValidation(instruction_text)
-    print(model_number_validation.run(mode="largest"))
-    print(model_number_validation.run(mode="smallest"))
+    print(model_number_validation.validate(mode="largest"))
+    print(model_number_validation.validate(mode="smallest"))
 
 
 def main() -> None:
