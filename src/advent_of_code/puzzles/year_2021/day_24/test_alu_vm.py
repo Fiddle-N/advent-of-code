@@ -13,20 +13,20 @@ mul x -1"""
 
 
 @pytest.mark.parametrize(
-    "input, exp_z",
+    "input_, exp_z",
     [
         ([3, 9], 1),
         ([3, 8], 0),
     ],
 )
-def test_alu_check_number_multiplied_by_three_program(input, exp_z):
+def test_alu_check_number_multiplied_by_three_program(input_, exp_z):
     alu_program = """\
 inp z
 inp x
 mul z 3
 eql z x"""
     instructions = alu_vm.parse_instructions(alu_program)
-    output = alu_vm.execute_instructions(instructions=instructions, inputs=input)
+    output = alu_vm.execute_instructions(instructions=instructions, inputs=input_)
     assert output.z == exp_z
 
 
