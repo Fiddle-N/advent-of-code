@@ -119,14 +119,15 @@ and discard the rest. This greatly reduces the number of operations to check
 overall.
 """
 
-import dataclasses
-import enum
-import itertools
-import operator
 import re
-from typing import Literal
+from typing import Literal, TypedDict
 
 from advent_of_code.common import read_file, timed_run
+from advent_of_code.puzzles.year_2021.day_24.alu_vm import (
+    Registers,
+    execute_instructions,
+    parse_instructions,
+)
 
 MODEL_NO_DIGITS = 14
 
@@ -157,123 +158,18 @@ SINGLE_DIGIT_INSTRUCTIONS_PATTERN_RE = SINGLE_DIGIT_INSTRUCTIONS_PATTERN.format(
 )
 
 
-class RegisterAttr(enum.StrEnum):
-    W = enum.auto()
-    X = enum.auto()
-    Y = enum.auto()
-    Z = enum.auto()
-
-
-class VariableOperand(enum.StrEnum):
-    DIV_Z = enum.auto()
-    ADD_X = enum.auto()
-    ADD_Y = enum.auto()
-
-
-class Operator(enum.StrEnum):
-    INP = enum.auto()
-    ADD = enum.auto()
-    MUL = enum.auto()
-    DIV = enum.auto()
-    MOD = enum.auto()
-    EQL = enum.auto()
-
-
-def eql_fn(a, b):
-    return 1 if a == b else 0
-
-
-OPERATOR_FNS = {
-    Operator.ADD: operator.add,
-    Operator.MUL: operator.mul,
-    Operator.DIV: operator.floordiv,
-    Operator.MOD: operator.mod,
-    Operator.EQL: eql_fn,
-}
-
-
-@dataclasses.dataclass(frozen=True)
-class Instruction:
-    operator: Operator
-    operand_1: RegisterAttr
-    operand_2: RegisterAttr | int | VariableOperand | None
-
-
-@dataclasses.dataclass(frozen=True)
-class FrozenRegisters:
-    w: int = 0
-    x: int = 0
-    y: int = 0
-    z: int = 0
-
-
-@dataclasses.dataclass
-class Registers:
-    w: int = 0
-    x: int = 0
-    y: int = 0
-    z: int = 0
-
-
-def freeze_registers(r: Registers) -> FrozenRegisters:
-    return FrozenRegisters(w=r.w, x=r.x, y=r.y, z=r.z)
-
-
-def unfreeze_registers(fr: FrozenRegisters) -> Registers:
-    return Registers(w=fr.w, x=fr.x, y=fr.y, z=fr.z)
-
-
-@dataclasses.dataclass(frozen=True)
-class VariableOperands:
+class MONADVariableOperands(TypedDict):
     div_z: int
     add_x: int
     add_y: int
 
 
-def parse_single_digit_instructions() -> list[Instruction]:
-    instructions = []
-    for raw_instruction in SINGLE_DIGIT_INSTRUCTIONS_PATTERN.splitlines():
-        match raw_instruction.split():
-            case [operator_, register_attr]:
-                instructions.append(
-                    Instruction(
-                        Operator(operator_),
-                        RegisterAttr(register_attr),
-                        None,
-                    )
-                )
-            case [operator_, operand_1, operand_2] if operand_2.startswith(
-                "{"
-            ) and operand_2.endswith("}"):
-                var_operand = operand_2[1:-1]
-                instructions.append(
-                    Instruction(
-                        Operator(operator_),
-                        RegisterAttr(operand_1),
-                        VariableOperand(var_operand),
-                    )
-                )
-            case [operator_, operand_1, operand_2_str]:
-                try:
-                    operand_2 = int(operand_2_str)
-                except ValueError:
-                    operand_2 = RegisterAttr(operand_2_str)
-                instructions.append(
-                    Instruction(
-                        Operator(operator_),
-                        RegisterAttr(operand_1),
-                        operand_2,
-                    )
-                )
-    return instructions
-
-
-def parse_variable_operands(instruction_text: str) -> list[VariableOperands]:
+def parse_variable_operands(instruction_text: str) -> list[MONADVariableOperands]:
     variable_operands = []
     iter_chunks = re.finditer(SINGLE_DIGIT_INSTRUCTIONS_PATTERN_RE, instruction_text)
     for match_ in iter_chunks:
         variable_operands.append(
-            VariableOperands(
+            MONADVariableOperands(
                 div_z=int(match_.group("div_z_operand")),
                 add_x=int(match_.group("add_x_operand")),
                 add_y=int(match_.group("add_y_operand")),
@@ -283,63 +179,23 @@ def parse_variable_operands(instruction_text: str) -> list[VariableOperands]:
     return variable_operands
 
 
-def execute_instructions(
-    instructions: list[Instruction],
-    inputs: list[int],
-    variable_operands: VariableOperands,
-    registers: Registers | FrozenRegisters | None = None,
-) -> FrozenRegisters:
-    if registers is None:
-        registers = Registers()
-    elif isinstance(registers, FrozenRegisters):
-        registers = unfreeze_registers(registers)
-
-    input_position_iter = itertools.count()
-
-    for instruction in instructions:
-        match instruction:
-            case Instruction(Operator.INP, operand, _):
-                input_position = next(input_position_iter)
-                setattr(registers, operand, inputs[input_position])
-            case Instruction(
-                (
-                    Operator.ADD
-                    | Operator.MUL
-                    | Operator.DIV
-                    | Operator.MOD
-                    | Operator.EQL
-                ) as operator_,
-                operand_1,
-                operand_2,
-            ):
-                operation_fn = OPERATOR_FNS[operator_]
-                operand_1_val = getattr(registers, operand_1)
-                if isinstance(operand_2, RegisterAttr):
-                    operand_2_val = getattr(registers, operand_2)
-                elif isinstance(operand_2, VariableOperand):
-                    operand_2_val = getattr(variable_operands, operand_2)
-                else:
-                    operand_2_val = operand_2
-                result = operation_fn(operand_1_val, operand_2_val)
-                setattr(registers, operand_1, result)
-    return freeze_registers(registers)
-
-
 class ModelNumberValidation:
     def __init__(self, instruction_text: str):
-        self.single_digit_instructions = parse_single_digit_instructions()
+        self.single_digit_instructions = parse_instructions(
+            SINGLE_DIGIT_INSTRUCTIONS_PATTERN
+        )
         self.variable_operands = parse_variable_operands(instruction_text)
         self.section_positions = []
         for pos, var_op in enumerate(self.variable_operands):
-            if var_op.add_x < 10:
+            if var_op["add_x"] < 10:
                 self.section_positions.append(pos)
         self.largest_model_number_range = range(9, 0, -1)
         self.smallest_model_number_range = range(1, 10)
         self._range = None
 
     def _validate_digit(
-        self, pos: int, digit: int, end_pos: int, registers: FrozenRegisters
-    ) -> list[tuple[str, FrozenRegisters]]:
+        self, pos: int, digit: int, end_pos: int, registers: Registers
+    ) -> list[tuple[str, Registers]]:
         var_ops = self.variable_operands[pos]
 
         output_registers = execute_instructions(
@@ -375,7 +231,7 @@ class ModelNumberValidation:
         self,
         start_pos: int,
         chunk_pos: int,
-        registers: FrozenRegisters = FrozenRegisters(),
+        registers: Registers,
     ) -> str | None:
         end_pos = self.section_positions[chunk_pos]
         results = {}
@@ -410,7 +266,7 @@ class ModelNumberValidation:
             if mode == "largest"
             else self.smallest_model_number_range
         )
-        result = self._validate_section(start_pos=0, chunk_pos=0)
+        result = self._validate_section(start_pos=0, chunk_pos=0, registers=Registers())
         if result is None:
             raise ValueError("A result was not found")
         return result
