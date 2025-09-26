@@ -1,3 +1,14 @@
+"""
+2021 Day 25 - Sea Cucumber
+
+A 2D grid of south-facing sea cucumbers, east-facing sea cucumbers and empty spaces. East-facing moves first, followed
+by south-facing, to make one step. All sea cucumbers in a herd move simultaneously. If there is no empty space, a sea
+cucumber doesn't move. If a sea cucumber would move off the edge, then wrap around.
+
+Part 1
+How many steps until no more sea cucumbers move?
+"""
+
 from enum import StrEnum
 from typing import Self
 from advent_of_code.common import read_file, timed_run, Coords
