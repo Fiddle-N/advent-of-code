@@ -1,3 +1,19 @@
+"""
+2015 Day 7
+
+Consider a circuit of wires in the format
+(operation) -> (wire)
+Each wire is a 16-bit integer.
+Operations can be an input (number -> wire), be a bitwise operation of AND, OR, LSHIFT or RSHIFT
+(number1 OP number2 -> wire) or be a bitwise complement NOT (NOT number1 -> wire).
+
+Part 1
+Calculate the value of wire a.
+
+Part 2
+Get the value of wire a and make it wire b, then reset the circuit and calculate a again.
+"""
+
 import operator
 from collections.abc import Callable
 from typing import Literal

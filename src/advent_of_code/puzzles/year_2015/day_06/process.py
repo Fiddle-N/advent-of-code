@@ -1,5 +1,5 @@
 """
-2021 Day 22
+2015 Day 6
 
 Consider a 2D grid of points representing individual lights. Each light has a brightness - all lights are set to off
 at the start. A sequence of steps define rectangles of points and an instruction to turn those points on or off, or to
