@@ -21,7 +21,7 @@ def not_16(x: int) -> int:
     return (~x) & 0xFFFF
 
 
-def resolve_operand(circuit: Circuit, operand: str):
+def resolve_operand(circuit: Circuit, operand: str) -> int:
     try:
         val_1 = int(operand)
     except ValueError:
@@ -29,18 +29,18 @@ def resolve_operand(circuit: Circuit, operand: str):
     return val_1
 
 
-def input_execute_factory(circuit: Circuit, op_1: str) -> CircuitFn:
+def input_execute_factory(circuit: Circuit, op: str) -> CircuitFn:
     @functools.cache
     def execute() -> int:
-        return resolve_operand(circuit, op_1)
+        return resolve_operand(circuit, op)
 
     return execute
 
 
-def inverse_execute_factory(circuit: Circuit, op_1: str) -> CircuitFn:
+def inverse_execute_factory(circuit: Circuit, op: str) -> CircuitFn:
     @functools.cache
     def execute() -> int:
-        return not_16(resolve_operand(circuit, op_1))
+        return not_16(resolve_operand(circuit, op))
 
     return execute
 
