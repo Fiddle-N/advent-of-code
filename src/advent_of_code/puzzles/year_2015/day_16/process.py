@@ -1,3 +1,23 @@
+"""
+2015 Day 16
+
+Part 1
+Find the Aunt Sue that matches the following:
+children: 3
+cats: 7
+samoyeds: 2
+pomeranians: 3
+akitas: 0
+vizslas: 0
+goldfish: 5
+trees: 3
+cars: 2
+perfumes: 1
+
+Part 2
+Part 1, but cats is greater than 7, trees is greater than 3, pomeranians is less than 3 and goldfish is less than 5.
+"""
+
 import re
 import itertools
 from collections.abc import Callable
