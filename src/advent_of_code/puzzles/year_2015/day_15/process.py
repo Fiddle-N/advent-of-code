@@ -1,3 +1,15 @@
+"""
+2015 Day 15
+
+Part 1
+Ingredients have a certain capacity, durability, flavour and texture. Work out the total score possible from 100
+teaspoons of the various ingredients. Work out the total properties for each teaspoon combo and multiply - if a property
+total would be negative, that is instead set to zero.
+
+Part 2
+Part 1, but only consider where teaspoons equal exactly 500 calories.
+"""
+
 import re
 from collections.abc import Iterator
 from dataclasses import dataclass

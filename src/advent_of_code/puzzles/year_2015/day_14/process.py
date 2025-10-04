@@ -1,3 +1,15 @@
+"""
+2015 Day 14
+
+Part 1
+Reindeer can fly x number of kilometers per second for y second but then must rest for z seconds. Work out the furthest
+distance travelled after 2503 seconds.
+
+Part 2
+The reindeer in the lead after each second wins a point (if a tie, both/all get a point). Work out the highest score
+after 2503 seconds.
+"""
+
 import re
 from collections import Counter
 from dataclasses import dataclass
