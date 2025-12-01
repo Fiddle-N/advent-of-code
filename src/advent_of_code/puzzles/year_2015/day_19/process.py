@@ -1,7 +1,6 @@
 import re
 from collections import defaultdict
 
-from advent_of_code.common import read_file, timed_run
 
 COMPOUND_PATTERN = r"[A-Z][a-z]?"
 COMPOUND_MAP_PATTERN = r"(?P<source>\w+) => (?P<target>\w+)"
@@ -18,7 +17,7 @@ def parse_compound_map(compound_map_text: str) -> dict[str, list[str]]:
     return compound_map
 
 
-def flip_compound_map(compound_map: dict[str, list[str]]) -> dict[str, list[str]]:
+def flip_com(compound_map: dict[str, list[str]]) -> dict[str, list[str]]:
     reversed_map = defaultdict(list)
     for element, compound_transforms in compound_map.items():
         for compound in compound_transforms:
@@ -56,15 +55,86 @@ def count_unique_transformations(
     return len(transforms)
 
 
-def run():
-    compound_map_text, compound = read_file().split("\n\n")
-    compound_map = parse_compound_map(compound_map_text)
-    print(count_unique_transformations(compound, compound_map))
+# def old_count_synthesis_steps(compound: str, compound_map: dict[str, list[str]]) -> int:
+#     flipped_map = flip_compound_map(compound_map)
+#     re_compound_pattern = (
+#         rf"(?=(?P<compound>{'|'.join(compound for compound in flipped_map)}))"
+#     )
+#
+#     q = deque()
+#     q.append((compound, 0))
+#
+#     while q:
+#         current_compound, steps = q.popleft()
+#         next_steps = steps + 1
+#         for match_ in re.finditer(re_compound_pattern, current_compound):
+#             matched_compound = match_.group("compound")
+#             for transform in flipped_map[matched_compound]:
+#                 new_compound = (
+#                     current_compound[: match_.start("compound")]
+#                     + transform
+#                     + current_compound[match_.end("compound") :]
+#                 )
+#                 # print(new_compound)
+#                 # print(next_steps)
+#                 if set(new_compound) == {"e"}:
+#                     return next_steps
+#                 q.append((new_compound, next_steps))
+#
+#     raise RuntimeError("invalid synthesis")
 
 
-def main() -> None:
-    timed_run(run)
+# def count_synthesis_steps(compound: str, compound_map: dict[str, list[str]]) -> int:
+#     chunked_compound = chunk_compound(compound)
+#     flipped_map = flip_compound_map(compound_map)
+#
+#     chunked_compound_map = [chunk_compound(c) for c in flipped_map]
+#
+#     # smallest_target = min(len(c) for c in chunked_compound_map)
+#     # largest_target = max(len(c) for c in chunked_compound_map)
+#     #
+#     # right = deque(chunked_compound)
+#
+#     subs = 0
+#     current_compound = compound
+#     while True:
+#         re_compound_pattern = (
+#             rf"(?=(?P<compound>{'|'.join(compound for compound in flipped_map)}))"
+#         )
+#         match_ = re.search(re_compound_pattern, current_compound)
+#         matched_compound = match_.group("compound")
+#         transform = flipped_map[matched_compound][0]
+#         current_compound = (
+#             current_compound[: match_.start("compound")]
+#             + transform
+#             + current_compound[match_.end("compound") :]
+#         )
+#         subs += 1
+#         print()
+#
+#     print()
+#     raise RuntimeError("invalid synthesis")
+#
 
-
-if __name__ == "__main__":
-    main()
+# def run():
+#     compound_map_text, compound = read_file().split("\n\n")
+#     compound_map = parse_compound_map(compound_map_text)
+#     print(count_unique_transformations(compound, compound_map))
+#
+#     # flipped_map = flip_compound_map(compound_map)
+#     # for compound in flipped_map:
+#     #     other_compounds = set(flipped_map) - {compound}
+#     #     for other in other_compounds:
+#     #         if other.endswith(compound):
+#     #             print('uhuh')
+#     # print('yay')
+#
+#     print(count_synthesis_steps(compound, compound_map))
+#
+#
+# def main() -> None:
+#     timed_run(run)
+#
+#
+# if __name__ == "__main__":
+#     main()
