@@ -23,14 +23,26 @@ def execute_instructions(
     position = STARTING_POSITION
     zero_visited = 0
     for rotation in rotations:
-        sign = -1 if rotation < 0 else 1
         distance = abs(rotation)
-        for i in range(distance):
-            offset = position + sign
-            position = offset % DIAL_SIZE
-            if position == 0 and (mode == "click" or (i == distance - 1)):
-                zero_visited += 1
 
+        sign = -1 if rotation < 0 else 1
+        if sign == -1:
+            # flip dial because negatives are hard
+            position = (DIAL_SIZE - position) % DIAL_SIZE
+
+        offset = position + distance
+
+        full_rotations, position = divmod(offset, DIAL_SIZE)
+        full_rotations = abs(full_rotations)
+
+        if sign == -1:
+            # reflip dial afterwards
+            position = (DIAL_SIZE - position) % DIAL_SIZE
+
+        if mode == "original" and position == 0:
+            zero_visited += 1
+        elif mode == "click":
+            zero_visited += full_rotations
     return zero_visited
 
 
