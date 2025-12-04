@@ -22,7 +22,7 @@ class Directions(Enum):
     WEST = "<"
 
 
-DIRECTION_COORDS = {
+FOUR_POINT_DIRECTION_TO_COORDS = {
     Directions.NORTH: Coords(0, -1),
     Directions.SOUTH: Coords(0, 1),
     Directions.WEST: Coords(-1, 0),

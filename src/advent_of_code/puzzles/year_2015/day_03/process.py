@@ -9,7 +9,12 @@ Part 2
 Find the number of unique positions if there are two people starting at the same place and each alternating on moving.
 """
 
-from advent_of_code.common import read_file, Coords, Directions, DIRECTION_COORDS
+from advent_of_code.common import (
+    read_file,
+    Coords,
+    Directions,
+    FOUR_POINT_DIRECTION_TO_COORDS,
+)
 
 
 def parse_directions(direction_str: str) -> list[Directions]:
@@ -20,7 +25,7 @@ def _visit_positions(directions: list[Directions]) -> set[Coords]:
     current = Coords(0, 0)
     visited = {current}
     for direction in directions:
-        current += DIRECTION_COORDS[direction]
+        current += FOUR_POINT_DIRECTION_TO_COORDS[direction]
         visited.add(current)
     return visited
 
