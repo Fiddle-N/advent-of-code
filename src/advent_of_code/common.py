@@ -29,6 +29,17 @@ DIRECTION_COORDS = {
     Directions.EAST: Coords(1, 0),
 }
 
+EIGHT_POINT_DIRECTION_COORDS = [
+    Coords(0, -1),
+    Coords(1, -1),
+    Coords(1, 0),
+    Coords(1, 1),
+    Coords(0, 1),
+    Coords(-1, 1),
+    Coords(-1, 0),
+    Coords(-1, -1),
+]
+
 
 def read_file() -> str:
     with open("input.txt") as f:
