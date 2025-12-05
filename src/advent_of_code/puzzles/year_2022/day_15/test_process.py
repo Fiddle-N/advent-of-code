@@ -1,11 +1,6 @@
 from advent_of_code.puzzles.year_2022.day_15 import process
 
 
-def test_merge_overlapping_intervals_equal() -> None:
-    input_ = [[2, 6], [1, 3], [8, 10], [10, 12], [10, 13]]
-    assert process.merge_overlapping_intervals(input_) == [[1, 6], [8, 13]]
-
-
 def test_sum_positions_without_beacon() -> None:
     reading_input = """\
 Sensor at x=2, y=18: closest beacon is at x=-2, y=15

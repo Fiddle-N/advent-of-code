@@ -3,19 +3,7 @@ import operator
 import parse  # type: ignore
 from typing import Callable
 
-
-def read_file() -> str:
-    with open("input.txt") as f:
-        return f.read().strip()
-
-
-@dataclasses.dataclass(frozen=True)
-class Coords:
-    x: int
-    y: int
-
-    def distance(self, other: "Coords") -> int:
-        return abs(self.x - other.x) + abs(self.y - other.y)
+from advent_of_code.common import Coords, read_file, timed_run, merge_intervals
 
 
 @dataclasses.dataclass
@@ -32,7 +20,7 @@ class Reading:
         return diff_fn(getattr(self.sensor, axis), self.distance)
 
     def __post_init__(self) -> None:
-        self.distance = self.sensor.distance(self.beacon)
+        self.distance = self.sensor.manhatten_distance(self.beacon)
         self.sensor_min_x = self._get_boundary(operator.sub, "x")
         self.sensor_max_x = self._get_boundary(operator.add, "x")
         self.sensor_min_y = self._get_boundary(operator.sub, "y")
@@ -55,35 +43,22 @@ def parse_reading_input(reading_input: str) -> list[Reading]:
     return readings
 
 
-def merge_overlapping_intervals(intervals: list[list[int]]) -> list[list[int]]:
-    intervals = sorted(intervals)
-    left, right = intervals[:1], intervals[1:]
-    for next_i in right:
-        last_i = left.pop()
-        if last_i[0] <= next_i[0] <= last_i[1]:
-            i = [last_i[0], max(last_i[1], next_i[1])]
-            left.append(i)
-        else:
-            left.extend([last_i, next_i])
-    return left
-
-
-def _get_sensor_x_range(reading: Reading, y_axis: int) -> list[int] | None:
+def _get_sensor_x_range(reading: Reading, y_axis: int) -> tuple[int, int] | None:
     if not reading.sensor_min_y <= y_axis <= reading.sensor_max_y:
         return None
     y_offset = abs(reading.sensor.y - y_axis)
-    x_range = [reading.sensor_min_x + y_offset, reading.sensor_max_x - y_offset]
+    x_range = (reading.sensor_min_x + y_offset, reading.sensor_max_x - y_offset)
     return x_range
 
 
-def _get_sensor_x_ranges(readings: list[Reading], y_axis: int) -> list[list[int]]:
+def _get_sensor_x_ranges(readings: list[Reading], y_axis: int) -> list[tuple[int, int]]:
     x_ranges = []
     for reading in readings:
         x_range = _get_sensor_x_range(reading, y_axis)
         if x_range is None:
             continue
         x_ranges.append(x_range)
-    merged_x_ranges = merge_overlapping_intervals(x_ranges)
+    merged_x_ranges = merge_intervals(x_ranges)
     return merged_x_ranges
 
 
@@ -103,7 +78,7 @@ def sum_positions_without_beacon(readings: list[Reading], y_axis: int) -> int:
 
 
 def _do_missing_beacon_search_for_row(
-    sensor_ranges: list[list[int]], start_x: int, end_x: int
+    sensor_ranges: list[tuple[int, int]], start_x: int, end_x: int
 ) -> int | None:
     beacon_surrounding_ranges = []
     sensor_range_it = iter(sensor_ranges)
@@ -146,7 +121,7 @@ def missing_beacon_tuning_freq(readings: list[Reading], start: int, end: int) ->
     return 4_000_000 * beacon.x + beacon.y
 
 
-def main() -> None:
+def run() -> None:
     reading_input = read_file()
     readings = parse_reading_input(reading_input)
 
@@ -162,7 +137,9 @@ def main() -> None:
     )
 
 
-if __name__ == "__main__":
-    import timeit
+def main() -> None:
+    timed_run(run)
 
-    print(timeit.timeit(main, number=1))
+
+if __name__ == "__main__":
+    main()

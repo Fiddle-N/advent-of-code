@@ -14,6 +14,9 @@ class Coords:
     def __add__(self, other: Self):
         return type(self)(self.x + other.x, self.y + other.y, self.z + other.z)
 
+    def manhatten_distance(self, other: Self) -> int:
+        return abs(self.x - other.x) + abs(self.y - other.y)
+
 
 class Directions(Enum):
     NORTH = "^"
