@@ -46,7 +46,7 @@ EIGHT_POINT_DIRECTION_COORDS = [
 
 def read_file() -> str:
     with open("input.txt") as f:
-        return f.read().strip()
+        return f.read().rstrip("\n")
 
 
 def timed_run(fn: Callable) -> None:
