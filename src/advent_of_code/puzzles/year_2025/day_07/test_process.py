@@ -1,7 +1,7 @@
 from advent_of_code.puzzles.year_2025.day_07 import process
 
 
-def test_tachyon_manifold_resolver():
+def test_tachyon_manifold_simulator():
     tm = process.TachyonManifold.from_input("""\
 .......S.......
 ...............
@@ -19,5 +19,5 @@ def test_tachyon_manifold_resolver():
 ...............
 .^.^.^.^.^...^.
 ...............""")
-    tmr = process.TachyonManifoldResolver(tm)
-    assert tmr.resolve() == (21, 40)
+    tmr = process.TachyonManifoldSimulator(tm)
+    assert tmr.simulate() == (21, 40)

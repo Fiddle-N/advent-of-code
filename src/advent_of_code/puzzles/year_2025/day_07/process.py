@@ -2,15 +2,16 @@ from dataclasses import dataclass
 from functools import cache
 from typing import Self
 
-from advent_of_code.common import Coords, read_file, timed_run
+from advent_of_code.common import (
+    Coords,
+    Directions,
+    FOUR_POINT_DIRECTION_TO_COORDS,
+    read_file,
+    timed_run,
+)
 
 START = "S"
 SPLITTER = "^"
-
-
-DOWN = Coords(0, 1)
-LEFT = Coords(-1, 0)
-RIGHT = Coords(1, 0)
 
 
 @dataclass
@@ -34,37 +35,39 @@ class TachyonManifold:
         return cls(start, length, splitters)
 
 
-class TachyonManifoldResolver:
+class TachyonManifoldSimulator:
     def __init__(self, tm: TachyonManifold):
         self.tm = tm
 
     @cache
-    def split(self, splitter: Coords) -> int:
-        return self.path(splitter + LEFT) + self.path(splitter + RIGHT)
+    def _split(self, splitter: Coords) -> int:
+        return self._simulate(
+            splitter + FOUR_POINT_DIRECTION_TO_COORDS[Directions.LEFT]
+        ) + self._simulate(splitter + FOUR_POINT_DIRECTION_TO_COORDS[Directions.RIGHT])
 
-    def path(self, curr: Coords) -> int:
+    def _simulate(self, curr: Coords) -> int:
         while True:
-            immediate_below = curr + DOWN
-            if immediate_below.y == self.tm.length:
+            next_ = curr + FOUR_POINT_DIRECTION_TO_COORDS[Directions.DOWN]
+            if next_.y == self.tm.length:
                 # end of manifold - beam terminates
                 return 1
-            elif immediate_below in self.tm.splitters:
+            elif next_ in self.tm.splitters:
                 # beam splits
-                return self.split(immediate_below)
+                return self._split(next_)
             else:
-                curr = immediate_below
-            # beam continues down
+                # beam continues down
+                curr = next_
 
-    def resolve(self) -> tuple[int, int]:
-        paths = self.path(self.tm.start)
-        splits = self.split.cache_info().misses
-        return (splits, paths)
+    def simulate(self) -> tuple[int, int]:
+        timelines = self._simulate(self.tm.start)
+        splits = self._split.cache_info().misses
+        return (splits, timelines)
 
 
 def run():
     tm = TachyonManifold.from_input(read_file())
-    tmr = TachyonManifoldResolver(tm)
-    print(tmr.resolve())
+    tmr = TachyonManifoldSimulator(tm)
+    print(tmr.simulate())
 
 
 def main() -> None:
