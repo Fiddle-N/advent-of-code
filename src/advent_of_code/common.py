@@ -25,14 +25,6 @@ class Directions(Enum):
     LEFT = "<"
 
 
-FOUR_POINT_DIRECTION_TO_COORDS = {
-    Directions.UP: Coords(0, -1),
-    Directions.DOWN: Coords(0, 1),
-    Directions.LEFT: Coords(-1, 0),
-    Directions.RIGHT: Coords(1, 0),
-}
-
-
 class CardinalDirections(Enum):
     NORTH = "^"
     SOUTH = "v"
@@ -40,11 +32,27 @@ class CardinalDirections(Enum):
     WEST = "<"
 
 
+FOUR_POINT_DIRECTION_COORDS = [
+    Coords(0, -1),
+    Coords(1, 0),
+    Coords(0, 1),
+    Coords(-1, 0),
+]
+
+
+FOUR_POINT_DIRECTION_TO_COORDS = {
+    Directions.UP: FOUR_POINT_DIRECTION_COORDS[0],
+    Directions.RIGHT: FOUR_POINT_DIRECTION_COORDS[1],
+    Directions.DOWN: FOUR_POINT_DIRECTION_COORDS[2],
+    Directions.LEFT: FOUR_POINT_DIRECTION_COORDS[3],
+}
+
+
 FOUR_POINT_CARDINAL_DIRECTION_TO_COORDS = {
-    CardinalDirections.NORTH: Coords(0, -1),
-    CardinalDirections.SOUTH: Coords(0, 1),
-    CardinalDirections.WEST: Coords(-1, 0),
-    CardinalDirections.EAST: Coords(1, 0),
+    CardinalDirections.NORTH: FOUR_POINT_DIRECTION_COORDS[0],
+    CardinalDirections.EAST: FOUR_POINT_DIRECTION_COORDS[1],
+    CardinalDirections.SOUTH: FOUR_POINT_DIRECTION_COORDS[2],
+    CardinalDirections.WEST: FOUR_POINT_DIRECTION_COORDS[3],
 }
 
 EIGHT_POINT_DIRECTION_COORDS = [
