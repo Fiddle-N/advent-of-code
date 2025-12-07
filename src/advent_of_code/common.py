@@ -11,11 +11,11 @@ class Coords:
     y: int
     z: int = 0
 
-    def __add__(self, other: Self):
+    def __add__(self, other: Self) -> Self:
         return type(self)(self.x + other.x, self.y + other.y, self.z + other.z)
 
     def manhatten_distance(self, other: Self) -> int:
-        return abs(self.x - other.x) + abs(self.y - other.y)
+        return abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)
 
 
 class Directions(Enum):
