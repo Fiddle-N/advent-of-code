@@ -12,29 +12,31 @@ Find the number of unique positions if there are two people starting at the same
 from advent_of_code.common import (
     read_file,
     Coords,
-    Directions,
-    FOUR_POINT_DIRECTION_TO_COORDS,
+    CardinalDirections,
+    FOUR_POINT_CARDINAL_DIRECTION_TO_COORDS,
 )
 
 
-def parse_directions(direction_str: str) -> list[Directions]:
-    return [Directions(direction) for direction in direction_str]
+def parse_directions(direction_str: str) -> list[CardinalDirections]:
+    return [CardinalDirections(direction) for direction in direction_str]
 
 
-def _visit_positions(directions: list[Directions]) -> set[Coords]:
+def _visit_positions(directions: list[CardinalDirections]) -> set[Coords]:
     current = Coords(0, 0)
     visited = {current}
     for direction in directions:
-        current += FOUR_POINT_DIRECTION_TO_COORDS[direction]
+        current += FOUR_POINT_CARDINAL_DIRECTION_TO_COORDS[direction]
         visited.add(current)
     return visited
 
 
-def count_positions_visited(directions: list[Directions]) -> int:
+def count_positions_visited(directions: list[CardinalDirections]) -> int:
     return len(_visit_positions(directions))
 
 
-def count_positions_visited_with_alternating_pair(directions: list[Directions]) -> int:
+def count_positions_visited_with_alternating_pair(
+    directions: list[CardinalDirections],
+) -> int:
     return len(_visit_positions(directions[::2]) | _visit_positions(directions[1::2]))
 
 

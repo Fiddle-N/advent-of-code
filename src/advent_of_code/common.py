@@ -19,17 +19,32 @@ class Coords:
 
 
 class Directions(Enum):
+    UP = "^"
+    DOWN = "v"
+    RIGHT = ">"
+    LEFT = "<"
+
+
+FOUR_POINT_DIRECTION_TO_COORDS = {
+    Directions.UP: Coords(0, -1),
+    Directions.DOWN: Coords(0, 1),
+    Directions.LEFT: Coords(-1, 0),
+    Directions.RIGHT: Coords(1, 0),
+}
+
+
+class CardinalDirections(Enum):
     NORTH = "^"
     SOUTH = "v"
     EAST = ">"
     WEST = "<"
 
 
-FOUR_POINT_DIRECTION_TO_COORDS = {
-    Directions.NORTH: Coords(0, -1),
-    Directions.SOUTH: Coords(0, 1),
-    Directions.WEST: Coords(-1, 0),
-    Directions.EAST: Coords(1, 0),
+FOUR_POINT_CARDINAL_DIRECTION_TO_COORDS = {
+    CardinalDirections.NORTH: Coords(0, -1),
+    CardinalDirections.SOUTH: Coords(0, 1),
+    CardinalDirections.WEST: Coords(-1, 0),
+    CardinalDirections.EAST: Coords(1, 0),
 }
 
 EIGHT_POINT_DIRECTION_COORDS = [
