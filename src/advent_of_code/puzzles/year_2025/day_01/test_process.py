@@ -69,14 +69,14 @@ R0""")
     assert process.execute_instructions(rotations, mode="click") == 2
 
 
-def test_execute_instructions_click_mode_case_3():
+def test_execute_instructions_click_mode_counting_forwards_exactly_zero_then_counting_back():
     rotations = process.parse("""\
 R50
 L1""")
     assert process.execute_instructions(rotations, mode="click") == 1
 
 
-def test_execute_instructions_click_mode_case_4():
+def test_execute_instructions_click_mode_counting_backwards_exactly_zero_then_counting_forwards():
     rotations = process.parse("""\
 L50
 R1""")
