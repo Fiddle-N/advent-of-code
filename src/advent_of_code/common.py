@@ -2,10 +2,11 @@ from typing import Self
 from collections.abc import Callable
 from enum import Enum
 from dataclasses import dataclass
+from math import sqrt
 import timeit
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, order=True)
 class Coords:
     x: int
     y: int
@@ -16,6 +17,11 @@ class Coords:
 
     def manhatten_distance(self, other: Self) -> int:
         return abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)
+
+    def distance(self, other: Self) -> float:
+        return sqrt(
+            (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2
+        )
 
 
 class Directions(Enum):
