@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+import pulp
+
 from advent_of_code.common import read_file, timed_run
 
 ON = "#"
@@ -43,75 +45,40 @@ def calculate_max_presses(machine: Machine) -> list[int]:
     return [min(machine.joltages[idx] for idx in button) for button in machine.buttons]
 
 
-class JoltageDFSearcher:
-    def __init__(self, machine: Machine):
-        self._joltages = machine.joltages
-        max_presses_per_button = calculate_max_presses(machine)
-        self._buttons = sorted(zip(max_presses_per_button, machine.buttons))
+def solve_int_lin_prob(machine: Machine) -> int:
+    # Create problem
+    prob = pulp.LpProblem("ButtonPresses", pulp.LpMinimize)
 
-        self._min_presses = None
+    # Variables
+    x = [
+        pulp.LpVariable(f"x{idx}", lowBound=0, cat="Integer")
+        for idx, _ in enumerate(machine.buttons)
+    ]
 
-    def _dfs(self, joltages: list[int], presses: list[int]) -> None:
-        print(joltages, presses)
-        next_total_presses = sum(presses) + 1
-        if self._min_presses is not None and next_total_presses >= self._min_presses:
-            return None
+    # Objective
+    prob += pulp.lpSum(x)
 
-        for idx, (max_button_press, button) in enumerate(self._buttons):
-            next_presses = presses.copy()
-            button_presses = next_presses[idx] + 1
-            next_presses[idx] = button_presses
+    # Constraints
+    for target_idx, target_val in enumerate(machine.joltages):
+        prob += (
+            pulp.lpSum(
+                x[touches_idx]
+                for touches_idx, touches_val in enumerate(machine.buttons)
+                if target_idx in touches_val
+            )
+            == target_val
+        )
 
-            # calculate if button press goes over max press limit for that button
-            if button_presses > max_button_press:
-                continue
+    # Solve
+    prob.solve(pulp.PULP_CBC_CMD(msg=False))
 
-            # calculate joltages after button press
-            next_joltages = []
-            max_press_overflow = False
-            for idx, joltage in enumerate(joltages):
-                if idx in button:
-                    next_joltage = joltage - 1
-                    if next_joltage < 0:
-                        # pushing the button has skipped past our target
-                        # skip this button and try the next
-                        max_press_overflow = True
-                        break
-                else:
-                    next_joltage = joltage
-                next_joltages.append(next_joltage)
-            if max_press_overflow:
-                continue
-
-            if all(joltage == 0 for joltage in next_joltages):
-                # win condition
-                # not possible for any other button presses in this for loop to beat this
-                # so return immediately
-                self._min_presses = next_total_presses
-                return None
-
-            # not yet at win condition - recurse
-            self._dfs(next_joltages, next_presses)
-
-        return None
-
-    def dfs(self) -> int:
-        initial_joltages = self._joltages.copy()
-        initial_presses = [0] * len(self._buttons)
-        self._dfs(initial_joltages, initial_presses)
-        return self._min_presses
+    # Print solution
+    return int(pulp.value(prob.objective))
 
 
 def run():
     machines = parse(read_file())
-    total = 0
-    total_machines = len(machines)
-    for num, machine in enumerate(machines):
-        df_searcher = JoltageDFSearcher(machine)
-        result = df_searcher.dfs()
-        total += result
-        print(f"{num + 1} of {total_machines}")
-    print(total)
+    print(sum(solve_int_lin_prob(machine) for machine in machines))
 
 
 def main() -> None:

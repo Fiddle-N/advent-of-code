@@ -59,25 +59,22 @@ def test_parse():
 """
 
 
-def test_bfs_0():
+def test_solve_0():
     input_ = """\
 [.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}"""
     (machine,) = process_2.parse(input_)
-    df_searcher = process_2.JoltageDFSearcher(machine)
-    assert df_searcher.dfs() == 10
+    assert process_2.solve_int_lin_prob(machine) == 10
 
 
-def test_bfs_1():
+def test_solve_1():
     input_ = """\
 [...#.] (0,2,3,4) (2,3) (0,4) (0,1,2) (1,2,3,4) {7,5,12,7,2}"""
     (machine,) = process_2.parse(input_)
-    df_searcher = process_2.JoltageDFSearcher(machine)
-    assert df_searcher.dfs() == 12
+    assert process_2.solve_int_lin_prob(machine) == 12
 
 
-def test_bfs_2():
+def test_solve_2():
     input_ = """\
 [.###.#] (0,1,2,3,4) (0,3,4) (0,1,2,4,5) (1,2) {10,11,11,5,10,5}"""
     (machine,) = process_2.parse(input_)
-    df_searcher = process_2.JoltageDFSearcher(machine)
-    assert df_searcher.dfs() == 11
+    assert process_2.solve_int_lin_prob(machine) == 11
