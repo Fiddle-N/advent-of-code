@@ -1,4 +1,3 @@
-import collections
 from dataclasses import dataclass
 
 from advent_of_code.common import read_file, timed_run
@@ -37,40 +36,70 @@ def parse(raw_input: str) -> list[Machine]:
     return machines
 
 
-def bfs(machine: Machine) -> int:
-    if all(joltage == 0 for joltage in machine.joltages):
-        return 0
+def calculate_max_presses(machine: Machine) -> list[int]:
+    # the smallest joltage target per each joltage that a button affects
+    # is that button's max number of times it can be pressed
+    # for pressing it more times leads to overflowing the target
+    return [min(machine.joltages[idx] for idx in button) for button in machine.buttons]
 
-    q = collections.deque()
-    q.append(JoltageState(joltages=tuple(machine.joltages), pressed=0))
-    cache = set()
-    while True:
-        state = q.popleft()
-        if state.joltages in cache:
-            continue
-        else:
-            cache.add(state.joltages)
-        for button in machine.buttons:
+
+class JoltageDFSearcher:
+    def __init__(self, machine: Machine):
+        self._joltages = machine.joltages
+        max_presses_per_button = calculate_max_presses(machine)
+        self._buttons = sorted(zip(max_presses_per_button, machine.buttons))
+
+        self._min_presses = None
+
+    def _dfs(self, joltages: list[int], presses: list[int]) -> None:
+        print(joltages, presses)
+        next_total_presses = sum(presses) + 1
+        if self._min_presses is not None and next_total_presses >= self._min_presses:
+            return None
+
+        for idx, (max_button_press, button) in enumerate(self._buttons):
+            next_presses = presses.copy()
+            button_presses = next_presses[idx] + 1
+            next_presses[idx] = button_presses
+
+            # calculate if button press goes over max press limit for that button
+            if button_presses > max_button_press:
+                continue
+
+            # calculate joltages after button press
             next_joltages = []
-            next_pressed = state.pressed + 1
-            overflow = False
-            for idx, joltage in enumerate(state.joltages):
+            max_press_overflow = False
+            for idx, joltage in enumerate(joltages):
                 if idx in button:
                     next_joltage = joltage - 1
                     if next_joltage < 0:
-                        overflow = True
+                        # pushing the button has skipped past our target
+                        # skip this button and try the next
+                        max_press_overflow = True
                         break
                 else:
                     next_joltage = joltage
                 next_joltages.append(next_joltage)
-
-            if overflow:
+            if max_press_overflow:
                 continue
 
             if all(joltage == 0 for joltage in next_joltages):
-                return next_pressed
+                # win condition
+                # not possible for any other button presses in this for loop to beat this
+                # so return immediately
+                self._min_presses = next_total_presses
+                return None
 
-            q.append(JoltageState(joltages=tuple(next_joltages), pressed=next_pressed))
+            # not yet at win condition - recurse
+            self._dfs(next_joltages, next_presses)
+
+        return None
+
+    def dfs(self) -> int:
+        initial_joltages = self._joltages.copy()
+        initial_presses = [0] * len(self._buttons)
+        self._dfs(initial_joltages, initial_presses)
+        return self._min_presses
 
 
 def run():
@@ -78,7 +107,8 @@ def run():
     total = 0
     total_machines = len(machines)
     for num, machine in enumerate(machines):
-        result = bfs(machine)
+        df_searcher = JoltageDFSearcher(machine)
+        result = df_searcher.dfs()
         total += result
         print(f"{num + 1} of {total_machines}")
     print(total)
