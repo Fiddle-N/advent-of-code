@@ -4,6 +4,7 @@ import dataclasses
 import functools
 import operator
 import timeit
+from typing import Any, cast
 
 
 @dataclasses.dataclass(frozen=True)
@@ -21,37 +22,35 @@ class Sample:
     after: list
 
 
-
 class DeviceVM:
-
-    def __init__(self, samples, test_program=None):
+    def __init__(self, samples, test_program: list[Instructions] | None = None):
         self.samples = samples
         self.test_program = test_program
-        self.opcodes = None
+        self.opcodes: Any
 
     @classmethod
     def read_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             input_ = f.read().strip()
-        raw_samples, raw_test_program = input_.split('\n\n\n\n')
+        raw_samples, raw_test_program = input_.split("\n\n\n\n")
 
-        raw_samples = raw_samples.split('\n\n')
+        raw_samples = raw_samples.split("\n\n")
         samples = []
         for raw_sample in raw_samples:
-            raw_before, raw_instrs, raw_after = raw_sample.split('\n')
+            raw_before, raw_instrs, raw_after = raw_sample.split("\n")
 
-            _, before_data = raw_before.split(': ')
+            _, before_data = raw_before.split(": ")
             before = ast.literal_eval(before_data)
 
             instrs_data = [int(num) for num in raw_instrs.split()]
             instrs = Instructions(*instrs_data)
 
-            _, after_data = raw_after.split(':  ')
+            _, after_data = raw_after.split(":  ")
             after = ast.literal_eval(after_data)
 
             samples.append(Sample(before, instrs, after))
 
-        raw_test_program = raw_test_program.split('\n')
+        raw_test_program = raw_test_program.split("\n")
         test_program = []
         for raw_instrs in raw_test_program:
             instrs_data = [int(num) for num in raw_instrs.split()]
@@ -66,7 +65,12 @@ class DeviceVM:
         for sample in self.samples:
             possible_opcodes = set()
             for opcode, opcode_fn in self.OPCODE_FNS.items():
-                exp = opcode_fn(sample.before, sample.instructions.a, sample.instructions.b, sample.instructions.c)
+                exp = opcode_fn(
+                    sample.before,
+                    sample.instructions.a,
+                    sample.instructions.b,
+                    sample.instructions.c,
+                )
                 if sample.after == exp:
                     possible_opcodes.add(opcode)
             if len(possible_opcodes) >= 3:
@@ -80,23 +84,27 @@ class DeviceVM:
     def _resolve_opcode_results(unresolved_opcodes):
         while not all((len(name) == 1) for name in unresolved_opcodes.values()):
             initial_unresolved_opcodes = unresolved_opcodes
-            resolved_names = set.union(*[names for names in unresolved_opcodes.values() if len(names) == 1])
+            resolved_names = set.union(
+                *[names for names in unresolved_opcodes.values() if len(names) == 1]
+            )
             unresolved_opcodes = {}
             for number, names in initial_unresolved_opcodes.items():
                 if len(names) == 1:
                     unresolved_opcodes[number] = names
                 else:
-                    unresolved_opcodes[number] = (names - resolved_names)
+                    unresolved_opcodes[number] = names - resolved_names
 
         resolved_opcodes = [None] * len(unresolved_opcodes)
         for number, names in unresolved_opcodes.items():
-            name, = names
+            (name,) = names
             resolved_opcodes[number] = name
         return resolved_opcodes
 
     def run_program(self):
         registers = [0, 0, 0, 0]
-        for instrs in self.test_program:
+        test_program = self.test_program
+        test_program = cast(list[Instructions], test_program)
+        for instrs in test_program:
             fn = getattr(self, self.opcodes[instrs.opcode])
             registers = fn(registers, instrs.a, instrs.b, instrs.c)
         return registers
@@ -163,31 +171,33 @@ class DeviceVM:
     @property
     def OPCODE_FNS(self):
         opcodes = [
-            '_addr',
-            '_addi',
-            '_mulr',
-            '_muli',
-            '_banr',
-            '_bani',
-            '_borr',
-            '_bori',
-            '_setr',
-            '_seti',
-            '_gtir',
-            '_gtri',
-            '_gtrr',
-            '_eqir',
-            '_eqri',
-            '_eqrr',
+            "_addr",
+            "_addi",
+            "_mulr",
+            "_muli",
+            "_banr",
+            "_bani",
+            "_borr",
+            "_bori",
+            "_setr",
+            "_seti",
+            "_gtir",
+            "_gtri",
+            "_gtrr",
+            "_eqir",
+            "_eqri",
+            "_eqrr",
         ]
         return {opcode: getattr(self, opcode) for opcode in opcodes}
 
 
 def main():
     dvm = DeviceVM.read_file()
-    print(f'Number of samples that behave like 3 or more opcodes: {dvm.calculate_opcodes()}')
-    print(f'Register 0 value after executing test program: {dvm.run_program()[0]}')
+    print(
+        f"Number of samples that behave like 3 or more opcodes: {dvm.calculate_opcodes()}"
+    )
+    print(f"Register 0 value after executing test program: {dvm.run_program()[0]}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(f"Completed in {timeit.timeit(main, number=1)} seconds")

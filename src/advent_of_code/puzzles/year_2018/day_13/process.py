@@ -3,6 +3,7 @@ import dataclasses
 import enum
 import timeit
 import typing
+from typing import cast
 
 
 class Directions(enum.Enum):
@@ -110,7 +111,6 @@ DIRECTION_COORDS = {
 
 @dataclasses.dataclass()
 class TrackPiece:
-
     location: Coords
     adj_track: dict[Directions, Coords]
     cart: typing.Optional[Cart]
@@ -127,6 +127,7 @@ class TrackPiece:
                 "Previous coordinates must be specified for non-intersections"
             )
         if not self.is_intersection:
+            assert direction is not None
             next_locations = {
                 adj_track_direction: direction_coord
                 for adj_track_direction, direction_coord in self.adj_track.items()
@@ -278,6 +279,7 @@ class MineCartMadness:
                         raise Exception
                 if track_piece == RawGridPieces.TRACK_INTERSECTION:
                     adj_track = populated_adj_positions.copy()
+                adj_track = cast(dict[Directions, Coords], adj_track)
                 track[track_position] = TrackPiece(track_position, adj_track, cart)
         return track
 

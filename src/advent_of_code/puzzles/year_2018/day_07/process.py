@@ -9,8 +9,7 @@ import timeit
 class Worker:
     number: int
     _seconds_remaining: int = 0
-    letter: str = None
-
+    letter: str | None = None
 
     @property
     def seconds_remaining(self):
@@ -24,19 +23,18 @@ class Worker:
 
 
 class Instructions:
-
     def __init__(self, instructions):
         self.dependencies = collections.defaultdict(list)
         self.letters = set()
         for line in instructions.splitlines():
-            words = line.split(' ')
+            words = line.split(" ")
             self.dependencies[words[7]].append(words[1])
             self.letters.add(words[1])
             self.letters.add(words[7])
 
     @classmethod
     def read_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls(f.read())
 
     @staticmethod
@@ -74,16 +72,17 @@ class Instructions:
                             break
                 worker.seconds_remaining -= 1
             if set(done) == self.letters:
-                return ''.join(done), seconds
+                return "".join(done), seconds
             seconds += 1
 
 
 def main():
     i = Instructions.read_file()
-    print(f'Instructions with 1 worker: {i.determine_order(worker_no=1, offset=0)}')
-    print(f'Instructions with 5 workers and 60 sec duration: {i.determine_order(worker_no=5, offset=60)}')
+    print(f"Instructions with 1 worker: {i.determine_order(worker_no=1, offset=0)}")
+    print(
+        f"Instructions with 5 workers and 60 sec duration: {i.determine_order(worker_no=5, offset=60)}"
+    )
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
-
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

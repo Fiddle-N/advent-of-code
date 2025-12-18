@@ -2,7 +2,6 @@ import collections
 import dataclasses
 import enum
 import timeit
-import typing
 
 
 @dataclasses.dataclass(frozen=True)
@@ -13,6 +12,7 @@ class Coords:
     def __add__(self, other):
         return Coords(self.x + other.x, self.y + other.y)
 
+
 @dataclasses.dataclass(frozen=True)
 class Path:
     path: list
@@ -20,10 +20,10 @@ class Path:
 
 
 class Map(enum.Enum):
-    CAVERN = '.'
-    WALL = '#'
-    ELF = 'E'
-    GOBLIN = 'G'
+    CAVERN = "."
+    WALL = "#"
+    ELF = "E"
+    GOBLIN = "G"
 
 
 @dataclasses.dataclass(eq=True)
@@ -42,10 +42,10 @@ class Summary:
 
 
 DIRECTIONS = {
-    'UP': Coords(0, -1),
-    'LEFT': Coords(-1, 0),
-    'RIGHT': Coords(1, 0),
-    'DOWN': Coords(0, 1),
+    "UP": Coords(0, -1),
+    "LEFT": Coords(-1, 0),
+    "RIGHT": Coords(1, 0),
+    "DOWN": Coords(0, 1),
 }
 
 
@@ -53,23 +53,24 @@ DEFAULT_ATTACK_POWER = 3
 
 
 class ElfGoblinCombat:
-
     def __init__(self, grid, elf_attack=DEFAULT_ATTACK_POWER):
         self.grid = {coord: space for coord, space in grid.items() if space != Map.WALL}
-        self.grid_walls = {coord: space for coord, space in grid.items() if space == Map.WALL}
+        self.grid_walls = {
+            coord: space for coord, space in grid.items() if space == Map.WALL
+        }
         self._elf_attack = elf_attack
         self._goblin_attack = DEFAULT_ATTACK_POWER
         self._first_elf_death = False
 
     @staticmethod
     def read_file():
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return f.read().strip()
 
     @classmethod
     def read_input(cls, input_, elf_attack=DEFAULT_ATTACK_POWER):
         grid = {}
-        for y, line in enumerate(input_.split('\n')):
+        for y, line in enumerate(input_.split("\n")):
             for x, space in enumerate(line):
                 space_enum = Map(space)
                 if space_enum in (Map.ELF, Map.GOBLIN):
@@ -87,7 +88,7 @@ class ElfGoblinCombat:
         max_width = max_x + 1
         max_height = max_y + 1
 
-        raw_grid_repr: list[list[typing.Optional[str]]] = [([None] * max_width) for _ in range(max_height)]
+        raw_grid_repr = [([None] * max_width) for _ in range(max_height)]
         for grid_coords, grid_space in full_grid.items():
             if isinstance(grid_space, Unit):
                 space_enum = grid_space.unit_type
@@ -95,9 +96,7 @@ class ElfGoblinCombat:
                 space_enum = grid_space
             raw_grid_repr[grid_coords.y][grid_coords.x] = space_enum.value
 
-        raw_grid_repr: list[list[str]]
-
-        grid_repr = '\n'.join([''.join(row) for row in raw_grid_repr])
+        grid_repr = "\n".join(["".join(row) for row in raw_grid_repr])
         return grid_repr
 
     def combat(self, break_at_first_elf_death=False):
@@ -123,9 +122,15 @@ class ElfGoblinCombat:
         """
         Return True if game is won before all turns are complete. Return False if full round occurs.
         """
-        units = [unit_coord for unit_coord, space in self.grid.items() if isinstance(space, Unit)]
+        units = [
+            unit_coord
+            for unit_coord, space in self.grid.items()
+            if isinstance(space, Unit)
+        ]
         for unit_coord in units:
-            if isinstance(self.grid[unit_coord], Unit):     # check unit did not die earlier in the round
+            if isinstance(
+                self.grid[unit_coord], Unit
+            ):  # check unit did not die earlier in the round
                 if self._win_condition():  # one team won before a full round
                     return True
                 self.turn(unit_coord)
@@ -142,9 +147,9 @@ class ElfGoblinCombat:
         try:
             unit = self.grid[unit_coord]
         except KeyError as e:
-            raise ValueError('Wall is not a type of unit') from e
+            raise ValueError("Wall is not a type of unit") from e
         if not isinstance(unit, Unit):
-            raise ValueError('Cavern is not a type of unit')
+            raise ValueError("Cavern is not a type of unit")
         adj_coords = self._adj_coords(unit_coord)
         adj_targets = []
         for adj_coord in adj_coords:
@@ -157,7 +162,7 @@ class ElfGoblinCombat:
     def _choose_step(self, unit_coord):
         unit = self.grid[unit_coord]
         if not isinstance(unit, Unit):
-            raise ValueError('Space is not a type of unit')
+            raise ValueError("Space is not a type of unit")
         visited = [unit_coord]
         queue = collections.deque([Path(path=[], coord=unit_coord)])
         while queue:
@@ -175,7 +180,10 @@ class ElfGoblinCombat:
                 adj_adj_coords = self._adj_coords(adj_coord)
                 for adj_adj_coord in adj_adj_coords:
                     adj_adj_space = self.grid[adj_adj_coord]
-                    if isinstance(adj_adj_space, Unit) and unit.unit_type != adj_adj_space.unit_type:
+                    if (
+                        isinstance(adj_adj_space, Unit)
+                        and unit.unit_type != adj_adj_space.unit_type
+                    ):
                         # if adjacent space is an enemy
                         return next_path.path[0]
         return None
@@ -196,7 +204,9 @@ class ElfGoblinCombat:
 
     def _select_target(self, adj_targets):
         # selects weakest target - chooses first in reading order if tie
-        weakest_target = min(adj_targets, key=lambda unit_coord: self.grid[unit_coord].hit_points)
+        weakest_target = min(
+            adj_targets, key=lambda unit_coord: self.grid[unit_coord].hit_points
+        )
         return weakest_target
 
     def _attack(self, target_coord):
@@ -242,7 +252,6 @@ class ElfGoblinCombat:
 
 
 class VariableElfAttackPower:
-
     def __init__(self, input_):
         self._input_ = input_
 
@@ -296,20 +305,20 @@ def main():
     except StopIteration as e:
         part_1_summary = e.value
 
-    print(f'Part 1: round no: {part_1_summary.round_no}')
-    print(f'Part 1: hit points: {part_1_summary.hit_points}')
-    print(f'Part 1: outcome: {part_1_summary.outcome}')
+    print(f"Part 1: round no: {part_1_summary.round_no}")
+    print(f"Part 1: hit points: {part_1_summary.hit_points}")
+    print(f"Part 1: outcome: {part_1_summary.outcome}")
 
     print()
 
     variable_elf_attack_power = VariableElfAttackPower(input_)
     attack, part_2_summary = variable_elf_attack_power.search(step_size=10)
 
-    print(f'Part 2: attack: {attack}')
-    print(f'Part 2: round no: {part_2_summary.round_no}')
-    print(f'Part 2: hit points: {part_2_summary.hit_points}')
-    print(f'Part 2: outcome: {part_2_summary.outcome}')
+    print(f"Part 2: attack: {attack}")
+    print(f"Part 2: round no: {part_2_summary.round_no}")
+    print(f"Part 2: hit points: {part_2_summary.hit_points}")
+    print(f"Part 2: outcome: {part_2_summary.outcome}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(f"Completed in {timeit.timeit(main, number=1)} seconds")
