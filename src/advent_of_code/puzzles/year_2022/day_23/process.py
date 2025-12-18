@@ -130,7 +130,7 @@ class UnstableDiffusion:
         round_no = 0
         while True:
             round_no += 1
-            elf_proposals: dict[Coords, Direction | None] = {}
+            elf_proposals = {}
             proposal_counts = collections.Counter()
             for elf in self.elves:
                 dir_proposal = self._propose(elf, dirs)

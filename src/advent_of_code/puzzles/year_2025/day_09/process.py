@@ -1,7 +1,7 @@
 from collections import defaultdict
 from itertools import pairwise, combinations
 from operator import itemgetter
-from typing import Self
+from typing import Self, cast
 
 from advent_of_code.common import Coords, read_file, timed_run, merge_intervals
 
@@ -45,6 +45,10 @@ class Polygon:
             if max_y is None or y > max_y:
                 max_y = y
             coords.append(Coords(x, y))
+        min_x = cast(int, min_x)
+        max_x = cast(int, max_x)
+        min_y = cast(int, min_y)
+        max_y = cast(int, max_y)
         return cls(coords, min_x, max_x, min_y, max_y)
 
 

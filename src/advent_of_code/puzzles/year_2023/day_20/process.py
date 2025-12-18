@@ -4,6 +4,8 @@ import enum
 import dataclasses
 import math
 
+from typing import cast
+
 
 BUTTON = "button"
 BROADCASTER = "broadcaster"
@@ -129,10 +131,10 @@ class PulseRunner:
             pulse_history = {dest_name: Pulse.LOW for dest_name in dests}
             self.modules[name].pulse_history = pulse_history
 
-        self.is_special_input = None
-        self.special_conjunction_mods = None
-        self.special_conjunction_mod_cycle_1 = None
-        self.special_conjunction_mod_cycle_2 = None
+        self.is_special_input = False
+        self.special_conjunction_mods: list[str]
+        self.special_conjunction_mod_cycle_1: dict[str, int | None]
+        self.special_conjunction_mod_cycle_2: dict[str, int | None]
         self._assert_special_input()
 
         self.low_pulses = 0
@@ -239,11 +241,17 @@ class PulseRunner:
             count is not None for count in self.special_conjunction_mod_cycle_2.values()
         ):
             for mod in self.special_conjunction_mods:
+                mod_cycle_1_val = self.special_conjunction_mod_cycle_1[mod]
+                mod_cycle_1_val = cast(int, mod_cycle_1_val)
+                mod_cycle_2_val = self.special_conjunction_mod_cycle_2[mod]
+                mod_cycle_2_val = cast(int, mod_cycle_2_val)
                 assert divmod(
-                    self.special_conjunction_mod_cycle_2[mod],
-                    self.special_conjunction_mod_cycle_1[mod],
+                    mod_cycle_2_val,
+                    mod_cycle_1_val,
                 ) == (2, 0)
-            return math.lcm(*self.special_conjunction_mod_cycle_1.values())
+            mod_cycle_1_values = list(self.special_conjunction_mod_cycle_1.values())
+            mod_cycle_1_values = cast(list[int], mod_cycle_1_values)
+            return math.lcm(*mod_cycle_1_values)
         return None
 
     def __iter__(self):

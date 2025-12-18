@@ -2,7 +2,7 @@ import collections
 import dataclasses
 import itertools
 import math
-import typing
+from typing import Self
 
 import lark
 
@@ -38,12 +38,11 @@ sf_parse = sf_parser.parse
 
 @dataclasses.dataclass(frozen=True)
 class SnailfishElement:
-    no: typing.Union[int, list]
+    no: int
     lvl: int
 
-    def __add__(self, other: int):
-        assert isinstance(other, int)
-        return SnailfishElement(self.no + other, self.lvl)
+    def __add__(self, other: int) -> Self:
+        return type(self)(self.no + other, self.lvl)
 
 
 class SnailfishNumber:
@@ -146,14 +145,16 @@ class SnailfishNumber:
         assert len(number) == 1
         return number[0].no
 
-    def __add__(self, other: "SnailfishNumber"):
+    def __add__(self, other: Self) -> Self:
         result = collections.deque(
             SnailfishElement(element.no, element.lvl + 1)
             for element in itertools.chain(self._number, other._number)
         )
-        return SnailfishNumber(result)
+        return type(self)(result)
 
-    def __eq__(self, other: "SnailfishNumber"):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, SnailfishNumber):
+            return False
         return self._number == other._number
 
 

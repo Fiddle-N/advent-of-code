@@ -1,5 +1,5 @@
 import timeit
-import more_itertools
+import itertools
 
 
 class CrabCups:
@@ -22,7 +22,7 @@ class CrabCups:
             self.cups = {}
         else:
             self.cups = [None] * (number_of_cups + 1)
-        for cup, next_cup in more_itertools.windowed(cup_list, 2):
+        for cup, next_cup in itertools.pairwise(cup_list):
             self.cups[cup] = next_cup
         self.cups[next_cup] = cup_list[0]  # tie up last cup and first cup
         self.moves = moves
@@ -63,6 +63,7 @@ class CrabCups:
 
             current = adjacent_to_removed
         cup_1 = cups[1]
+        assert cup_1 is not None
         cup_2 = cups[cup_1]
         return cup_1, cup_2
 

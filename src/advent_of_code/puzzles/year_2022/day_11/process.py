@@ -64,10 +64,13 @@ def raise_unexpected_note_error() -> NoReturn:
     raise ValueError("Unexpected note")
 
 
+def square_fn(val: int) -> int:
+    return pow(val, exp=2)
+
+
 def op_fn_gen(op: str) -> Callable[[int], int]:
     match op.split():
         case ["new", "=", "old", "*", "old"]:
-            square_fn = functools.partial(pow, exp=2)
             return square_fn
         case ["new", "=", "old", ("+" | "*") as op, operand]:
             op_fn = functools.partial(OP_FNS[op], int(operand))

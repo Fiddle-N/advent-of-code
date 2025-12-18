@@ -187,8 +187,7 @@ class _HeatLossMinimiser:
 
             old_cost = self.costs.get(state)
             new_cost = (
-                self.costs.get(current_visited_state)
-                + neighbour_visited_state.heat_loss
+                self.costs[current_visited_state] + neighbour_visited_state.heat_loss
             )
             if old_cost is not None and new_cost >= old_cost:
                 continue

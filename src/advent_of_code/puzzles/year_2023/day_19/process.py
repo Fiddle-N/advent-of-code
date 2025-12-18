@@ -12,12 +12,14 @@ START_NAME = "in"
 MIN_VALUE = 1
 MAX_VALUE = 4000
 
+Ops = Literal["<", "<=", ">", ">="]
+
 OPERATORS = {
     ">": operator.gt,
     "<": operator.lt,
 }
 
-OPPOSITE_OPS = {
+OPPOSITE_OPS: dict[Ops, Ops] = {
     ">": "<=",
     ">=": "<",
     "<": ">=",
@@ -41,7 +43,7 @@ class Part:
 @dataclasses.dataclass(frozen=True)
 class Condition:
     attr: Literal["x", "m", "a", "s"]
-    op: Literal["<", "<=", ">", ">="]
+    op: Ops
     value: int
 
     def opposite(self) -> Self:

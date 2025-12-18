@@ -16,11 +16,11 @@ class CrossedWires:
     def __init__(self, path1=None, path2=None):
         self.path1 = path1
         self.path2 = path2
-        self.coords1 = None
-        self.coords2 = None
-        self.steps1 = None
-        self.steps2 = None
-        self.intersections = None
+        self.coords1: set[tuple[int, int]]
+        self.coords2: set[tuple[int, int]]
+        self.steps1: dict[tuple[int, int], int]
+        self.steps2: dict[tuple[int, int], int]
+        self.intersections: set[tuple[int, int]]
 
     def read_file(self):
         with open("input.txt") as f:

@@ -120,7 +120,7 @@ overall.
 """
 
 import re
-from typing import Literal, TypedDict
+from typing import Literal
 
 from advent_of_code.common import read_file, timed_run
 from advent_of_code.puzzles.year_2021.day_24.alu_vm import (
@@ -158,22 +158,16 @@ SINGLE_DIGIT_INSTRUCTIONS_PATTERN_RE = SINGLE_DIGIT_INSTRUCTIONS_PATTERN.format(
 )
 
 
-class MONADVariableOperands(TypedDict):
-    div_z: int
-    add_x: int
-    add_y: int
-
-
-def parse_variable_operands(instruction_text: str) -> list[MONADVariableOperands]:
+def parse_variable_operands(instruction_text: str) -> list[dict[str, int]]:
     variable_operands = []
     iter_chunks = re.finditer(SINGLE_DIGIT_INSTRUCTIONS_PATTERN_RE, instruction_text)
     for match_ in iter_chunks:
         variable_operands.append(
-            MONADVariableOperands(
-                div_z=int(match_.group("div_z_operand")),
-                add_x=int(match_.group("add_x_operand")),
-                add_y=int(match_.group("add_y_operand")),
-            )
+            {
+                "div_z": int(match_.group("div_z_operand")),
+                "add_x": int(match_.group("add_x_operand")),
+                "add_y": int(match_.group("add_y_operand")),
+            }
         )
     assert len(variable_operands) == MODEL_NO_DIGITS
     return variable_operands
@@ -191,7 +185,7 @@ class ModelNumberValidation:
                 self.section_positions.append(pos)
         self.largest_model_number_range = range(9, 0, -1)
         self.smallest_model_number_range = range(1, 10)
-        self._range = None
+        self._range: range
 
     def _validate_digit(
         self, pos: int, digit: int, end_pos: int, registers: Registers

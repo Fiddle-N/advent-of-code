@@ -6,7 +6,7 @@ class OpCode:
         self.program = instructions
         self.input = input
         self.address = 0
-        self.opcode = None
+        self.opcode: str
 
     def retrieve_param(self, relative_index):
         mode = int(self.opcode[-(relative_index + 2)])

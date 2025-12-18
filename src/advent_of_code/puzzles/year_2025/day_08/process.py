@@ -1,7 +1,7 @@
 from itertools import combinations
 from math import prod
 from operator import itemgetter
-from typing import Self
+from typing import Self, cast
 
 from advent_of_code.common import (
     Coords,
@@ -45,8 +45,8 @@ class CircuitConnector:
                 part_1_result = prod(most_common)
 
             # resolve circuit pair
-            circuit_id_a = None
-            circuit_id_b = None
+            circuit_id_a: int | None = None
+            circuit_id_b: int | None = None
             for circuit_id, circuit in circuits.items():
                 if a in circuit:
                     circuit_id_a = circuit_id
@@ -57,6 +57,9 @@ class CircuitConnector:
                 circuits[self._id] = next_circuit
                 self._id += 1
             elif circuit_id_a is None:
+                circuit_id_b = cast(
+                    int, circuit_id_b
+                )  # type checker not yet able to deduce this from previous if clause
                 circuits[circuit_id_b].add(a)
             elif circuit_id_b is None:
                 circuits[circuit_id_a].add(b)

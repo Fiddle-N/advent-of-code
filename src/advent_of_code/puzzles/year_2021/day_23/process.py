@@ -342,7 +342,7 @@ class AmphipodOrganiser:
         self.start_state = AmphipodConfiguration(0, amphipods, amphipods_state)
 
         self._total_energy = None
-        self._cache = None
+        self._cache: set[frozenset[tuple[Amphipod, Coords]]]
 
     @classmethod
     def read_file(cls, unfolded):
@@ -455,7 +455,7 @@ class AmphipodOrganiser:
         amphipod = next_amphipods.pop(old_coord)
         next_amphipods[new_coord] = amphipod
 
-        next_history = frozenset.union(*[state.history, ((amphipod, new_coord),)])
+        next_history = state.history | frozenset([(amphipod, new_coord)])
 
         next_amphipods_state = state.amphipods_state.copy()
         next_amphipods_state[amphipod] = amphipod_state

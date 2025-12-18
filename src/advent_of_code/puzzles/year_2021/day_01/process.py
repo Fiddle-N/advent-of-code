@@ -1,13 +1,20 @@
 import itertools
 import timeit
+from collections.abc import Sequence
+from typing import cast
 
 import more_itertools
 
 
 def count_depth(depths, window=None):
-    depths = [int(depth) for depth in depths.splitlines()]
+    assert len(depths) >= 3
+    depths: Sequence[int] = [int(depth) for depth in depths.splitlines()]
     if window is not None:
-        depths = [sum(window) for window in more_itertools.windowed(depths, 3)]
+        new_depths = []
+        for w in more_itertools.windowed(depths, n=3):
+            w = cast(tuple[int, ...], w)
+            new_depths.append(sum(w))
+        depths = new_depths
     increasing = sum(
         depth_pair[1] > depth_pair[0] for depth_pair in itertools.pairwise(depths)
     )

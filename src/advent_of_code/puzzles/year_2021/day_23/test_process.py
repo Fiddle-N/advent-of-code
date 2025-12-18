@@ -1,8 +1,5 @@
 from advent_of_code.puzzles.year_2021.day_23 import process
 
-# tests are too slow
-# pytest.skip(allow_module_level=True)
-
 
 def test():
     ao = process.AmphipodOrganiser("""\

@@ -6,9 +6,9 @@ import timeit
 
 class TicketTranslation:
     def __init__(self, ticket_data=None):
-        self.rules = None
-        self.nearby_tickets = None
-        self.valid_tickets = None
+        self.rules: dict[str, set[int]]
+        self.nearby_tickets: list[list[int]]
+        self.valid_tickets: list[list[int]]
         ticket_data = ticket_data if ticket_data is not None else self._read_file()
         self._preprocess(ticket_data)
 

@@ -99,8 +99,8 @@ class MonkeyMap:
 
         # self.min_x = None
         # self.min_y = None
-        self.max_x = None
-        self.max_y = None
+        max_x = None
+        max_y = None
         for y, row in enumerate(map_str.splitlines(), start=1):
             for x, space in enumerate(row, start=1):
                 map_space = Space(space)
@@ -110,10 +110,12 @@ class MonkeyMap:
                     #     self.min_x = x
                     # if self.min_y is None or y < self.min_y:
                     #     self.min_y = y
-                    if self.max_x is None or x > self.max_x:
-                        self.max_x = x
-                    if self.max_y is None or y > self.max_y:
-                        self.max_y = y
+                    if max_x is None or x > max_x:
+                        max_x = x
+                    if max_y is None or y > max_y:
+                        max_y = y
+        self.max_x: int = max_x
+        self.max_y: int = max_y
 
         raw_split_path = re.findall(r"(\d+|[L|R])", raw_path)
         self.path = []

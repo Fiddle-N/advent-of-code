@@ -30,8 +30,8 @@ class Node:
 class Path:
     position: Coords | None = None
     distance_from_start: int | None = None
-    keys: tuple | None = None
-    key_letters: tuple | None = None
+    keys: tuple[bool, ...] = ()
+    key_letters: tuple[str, ...] = ()
     key_set: set | None = None
     blocked_nodes: set | None = None
     seen_nodes: set | None = None
@@ -132,13 +132,13 @@ class Maze:
     DUMMY_NODE = "!"
 
     def __init__(self, maze=None, filename="input.txt"):
-        self.maze = None
+        self.maze: list[list[str]]
         self.filename = filename
         if maze is not None:
             self.preprocess_maze(maze)
         else:
             self.read_file()
-        self.flooded_maze = None
+        self.flooded_maze: list[list[str]]
         self.KEYS = ()
         self.DOORS = ()
         self.item_map = {}

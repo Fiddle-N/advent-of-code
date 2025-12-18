@@ -76,8 +76,8 @@ class Box:
 
         prev_label = removed_label.prev
         next_label = removed_label.next_
-        prev_lens = self.box.get(prev_label)
-        next_lens = self.box.get(next_label)
+        prev_lens = None if prev_label is None else self.box.get(prev_label)
+        next_lens = None if next_label is None else self.box.get(next_label)
 
         if prev_lens:
             prev_lens.next_ = next_label if label != self.last_label else None

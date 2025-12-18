@@ -68,7 +68,7 @@ def _is_valid_coord(coord, max_x, max_y):
 
 class Field:
     def __init__(self, field_input):
-        self.start_coord = None
+        self.start_coord: Coords
         self.grid = {}
         for y, row in enumerate(field_input.splitlines()):
             for x, tile_str in enumerate(row):

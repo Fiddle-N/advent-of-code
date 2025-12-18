@@ -21,14 +21,14 @@ class IntCodeProgram(list):
         extension = [0] * (key - len(self) + 1)
         self.extend(extension)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key):  # ty: ignore[invalid-method-override]
         try:
             return super().__getitem__(key)
         except IndexError:
             self._fill(key)
             return super().__getitem__(key)
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value):  # ty: ignore[invalid-method-override]
         try:
             super().__setitem__(key, value)
         except IndexError:
@@ -43,7 +43,7 @@ class IntCodeVM:
         )
         self.instruction_pointer = 0
         self.relative_base = 0
-        self.opcode = None
+        self.opcode: str
         self.input = [initial] if initial is not None else []
         self.output = []
 

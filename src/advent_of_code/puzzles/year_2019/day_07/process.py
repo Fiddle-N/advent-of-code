@@ -7,7 +7,7 @@ class IntCode:
     def __init__(self, program, initial):
         self.program = [int(instruction) for instruction in program.rstrip().split(",")]
         self.instruction_pointer = 0
-        self.opcode = None
+        self.opcode: str
         self.input = [initial]
         self.output = None
 

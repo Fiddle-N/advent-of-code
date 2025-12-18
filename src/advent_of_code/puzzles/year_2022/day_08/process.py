@@ -98,7 +98,7 @@ class TreetopTreeHouse:
 
     def _create_trees(self) -> dict[Coords, Tree]:
         trees = {}
-        tree_map_iter = np.nditer(self._tree_map, flags=["multi_index"])
+        tree_map_iter = np.nditer(self._tree_map, flags=("multi_index",))
         for _ in tree_map_iter:
             row, col = tree_map_iter.multi_index
             tree = self._create_tree(row, col)

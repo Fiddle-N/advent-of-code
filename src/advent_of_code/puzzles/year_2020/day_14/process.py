@@ -67,11 +67,11 @@ class Version1Decoder(AbstractDecoder):
         return [output]
 
     def process_mem(self, line, mask):
-        mem_re = re.fullmatch(self.mask_regex, line)
-        locations = [int(mem_re.group("location"))]
-        raw_value = int(mem_re.group("value"))
-        (value,) = self.apply_mask(raw_value, mask)
-        return locations, value
+        if (mem_re := re.fullmatch(self.mask_regex, line)) is not None:
+            locations = [int(mem_re.group("location"))]
+            raw_value = int(mem_re.group("value"))
+            (value,) = self.apply_mask(raw_value, mask)
+            return locations, value
 
 
 class Version2Decoder(AbstractDecoder):
@@ -91,11 +91,11 @@ class Version2Decoder(AbstractDecoder):
         return itertools.product(*product_input)
 
     def process_mem(self, line, mask):
-        mem_re = re.fullmatch(self.mask_regex, line)
-        raw_location = int(mem_re.group("location"))
-        value = int(mem_re.group("value"))
-        locations = self.apply_mask(raw_location, mask)
-        return locations, value
+        if (mem_re := re.fullmatch(self.mask_regex, line)) is not None:
+            raw_location = int(mem_re.group("location"))
+            value = int(mem_re.group("value"))
+            locations = self.apply_mask(raw_location, mask)
+            return locations, value
 
 
 def main():

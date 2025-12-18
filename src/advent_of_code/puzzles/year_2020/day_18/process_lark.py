@@ -1,5 +1,6 @@
 import functools
 import timeit
+from typing import cast
 
 import lark
 
@@ -79,11 +80,21 @@ class OperationOrder:
 
     @property
     def result_same_precedence(self):
-        return sum(same_precedence_calc(expression) for expression in self.expressions)
+        total = 0
+        for expression in self.expressions:
+            result = same_precedence_calc(expression)
+            result = cast(int, result)
+            total += result
+        return total
 
     @property
     def result_addition_first(self):
-        return sum(add_first_calc(expression) for expression in self.expressions)
+        total = 0
+        for expression in self.expressions:
+            result = add_first_calc(expression)
+            result = cast(int, result)
+            total += result
+        return total
 
 
 def main():
