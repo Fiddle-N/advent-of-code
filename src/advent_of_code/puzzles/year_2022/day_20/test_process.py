@@ -1,6 +1,6 @@
 import pytest
 
-from advent_of_code.puzzles.year_2022.day_20 import process_other
+from advent_of_code.puzzles.year_2022.day_20 import process
 
 
 def test():
@@ -12,7 +12,7 @@ def test():
 -2
 0
 4"""
-    gps = process_other.GrovePositioningSystem(num_input)
+    gps = process.GrovePositioningSystem(num_input)
 
     assert str(gps.grove_linked_list) == "deque([1, 2, -3, 3, -2, 0, 4])"
 
@@ -52,7 +52,7 @@ def test_full():
 -2
 0
 4"""
-    gps = process_other.GrovePositioningSystem(num_input)
+    gps = process.GrovePositioningSystem(num_input)
 
     gps_it = iter(gps)
 
@@ -71,7 +71,7 @@ def test_full_with_decryption_key():
 -2
 0
 4"""
-    gps = process_other.GrovePositioningSystem(
+    gps = process.GrovePositioningSystem(
         num_input, apply_decryption_key=True, mix_number=10
     )
     assert (
