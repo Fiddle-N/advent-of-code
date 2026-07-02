@@ -1,8 +1,7 @@
- 
-l = []
- 
-with open('input.txt', 'r') as f:
-    for freq in f:
-        l.append(int(freq))
+freq_changes = []
 
-print(sum(l))
+with open("input.txt", "r") as f:
+    for freq in f:
+        freq_changes.append(int(freq))
+
+print(sum(freq_changes))

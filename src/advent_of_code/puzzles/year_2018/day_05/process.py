@@ -12,21 +12,21 @@ def process_polymer(inpt):
             output.pop()
         else:
             output.append(char)
-    return ''.join(output)
-            
+    return "".join(output)
+
 
 def main():
-    with open('input.txt', 'r') as f:
+    with open("input.txt", "r") as f:
         inpt = f.read().rstrip()
     output = process_polymer(inpt)
-    print(f'Puzzle_1 {len(output)}')
-    
+    print(f"Puzzle_1 {len(output)}")
+
     alleges = {
-        char: len(process_polymer(output.replace(char, '').replace(char.upper(), '')))
+        char: len(process_polymer(output.replace(char, "").replace(char.upper(), "")))
         for char in string.ascii_lowercase
     }
-    print(f'Puzzle_2 {min(alleges.values())}')
+    print(f"Puzzle_2 {min(alleges.values())}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

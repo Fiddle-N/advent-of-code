@@ -1,4 +1,3 @@
-import pytest
 from advent_of_code.puzzles.year_2018.day_06 import process
 
 

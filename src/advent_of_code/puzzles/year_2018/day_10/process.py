@@ -19,9 +19,8 @@ class Point:
 
 
 class Points(list):
-
-    POINT = '#'
-    SPACE = '.'
+    POINT = "#"
+    SPACE = "."
 
     @property
     def min_position_x(self):
@@ -41,7 +40,9 @@ class Points(list):
 
     @property
     def area(self):
-        return (self.max_position_x - self.min_position_x) * (self.max_position_y - self.min_position_y)
+        return (self.max_position_x - self.min_position_x) * (
+            self.max_position_y - self.min_position_y
+        )
 
     def image(self):
         positions = {point.position for point in self}
@@ -50,12 +51,11 @@ class Points(list):
             row = []
             for x in range(self.min_position_x, self.max_position_x + 1):
                 row.append(self.POINT if Coords(x, y) in positions else self.SPACE)
-            raw_image.append(''.join(row))
-        return '\n'.join(raw_image)
+            raw_image.append("".join(row))
+        return "\n".join(raw_image)
 
 
 class Stars:
-
     def __init__(self, points):
         self.points = points
 
@@ -64,11 +64,15 @@ class Stars:
         points = Points()
         for line in text.splitlines():
             if match := re.fullmatch(
-                    r'position=<(?P<position_x>.*), (?P<position_y>.*)> velocity=<(?P<velocity_x>.*), (?P<velocity_y>.*)>',
-                    line,
+                r"position=<(?P<position_x>.*), (?P<position_y>.*)> velocity=<(?P<velocity_x>.*), (?P<velocity_y>.*)>",
+                line,
             ):
-                position = Coords(int(match.group('position_x')), int(match.group('position_y')))
-                velocity = Coords(int(match.group('velocity_x')), int(match.group('velocity_y')))
+                position = Coords(
+                    int(match.group("position_x")), int(match.group("position_y"))
+                )
+                velocity = Coords(
+                    int(match.group("velocity_x")), int(match.group("velocity_y"))
+                )
                 points.append(Point(position, velocity))
             else:
                 raise Exception
@@ -76,7 +80,7 @@ class Stars:
 
     @classmethod
     def read_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls.from_string(f.read())
 
     def align(self, yield_image=False):
@@ -86,7 +90,9 @@ class Stars:
             next_points = Points()
             for point in points:
                 next_position = point.position + point.velocity
-                next_points.append(Point(position=next_position, velocity=point.velocity))
+                next_points.append(
+                    Point(position=next_position, velocity=point.velocity)
+                )
             if next_points.area > points.area:
                 if not yield_image:
                     yield points.image()
@@ -108,10 +114,10 @@ def main():
             message = next(iter_align)
     except StopIteration as e:
         number_of_seconds = e.value
-    print('Message:')
+    print("Message:")
     print(message)
-    print(f'Number of seconds:', number_of_seconds)
+    print("Number of seconds:", number_of_seconds)
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

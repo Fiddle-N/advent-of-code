@@ -2,7 +2,6 @@ from advent_of_code.puzzles.year_2018.day_18 import process
 
 
 class TestLumberCollectionAreaModel:
-
     def test_lumber_collection_area_run(self):
         initial_grid = """\
 .#.#...|#.
@@ -16,7 +15,8 @@ class TestLumberCollectionAreaModel:
 |.||||..|.
 ...#.|..|."""
 
-        exp_grids = ["""\
+        exp_grids = [
+            """\
 .......##.
 ......|###
 .|..|...#.
@@ -27,7 +27,7 @@ class TestLumberCollectionAreaModel:
 |||||.||.|
 ||||||||||
 ....||..|.""",
-                     """\
+            """\
 .......#..
 ......|#..
 .|.|||....
@@ -38,7 +38,7 @@ class TestLumberCollectionAreaModel:
 ||||||||||
 ||||||||||
 .|||||||||""",
-                     """\
+            """\
 .......#..
 ....|||#..
 .|.||||...
@@ -49,7 +49,7 @@ class TestLumberCollectionAreaModel:
 ||||||||||
 ||||||||||
 ||||||||||""",
-                     """\
+            """\
 .....|.#..
 ...||||#..
 .|.#||||..
@@ -60,7 +60,7 @@ class TestLumberCollectionAreaModel:
 ||||||||||
 ||||||||||
 ||||||||||""",
-                     """\
+            """\
 ....|||#..
 ...||||#..
 .|.##||||.
@@ -71,7 +71,7 @@ class TestLumberCollectionAreaModel:
 ||||||||||
 ||||||||||
 ||||||||||""",
-                     """\
+            """\
 ...||||#..
 ...||||#..
 .|.###|||.
@@ -82,7 +82,7 @@ class TestLumberCollectionAreaModel:
 ||||||||||
 ||||||||||
 ||||||||||""",
-                     """\
+            """\
 ...||||#..
 ..||#|##..
 .|.####||.
@@ -93,7 +93,7 @@ class TestLumberCollectionAreaModel:
 ||||||||||
 ||||||||||
 ||||||||||""",
-                     """\
+            """\
 ..||||##..
 ..|#####..
 |||#####|.
@@ -104,7 +104,7 @@ class TestLumberCollectionAreaModel:
 ||||#|||||
 ||||||||||
 ||||||||||""",
-                     """\
+            """\
 ..||###...
 .||#####..
 ||##...##.
@@ -115,7 +115,7 @@ class TestLumberCollectionAreaModel:
 |||###||||
 ||||||||||
 ||||||||||""",
-                     """\
+            """\
 .||##.....
 ||###.....
 ||##......
@@ -126,7 +126,7 @@ class TestLumberCollectionAreaModel:
 ||#####|||
 ||||#|||||
 ||||||||||""",
-                     ]
+        ]
 
         lumber_collection_area = process.LumberCollectionArea(initial_grid)
         model = process.LumberCollectionAreaModel(lumber_collection_area)

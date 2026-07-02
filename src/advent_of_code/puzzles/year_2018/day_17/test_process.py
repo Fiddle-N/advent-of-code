@@ -1,10 +1,7 @@
-import pytest
-
 from advent_of_code.puzzles.year_2018.day_17 import process
 
 
 class TestMapGeneration:
-
     def test_map_gen(self):
         input_ = """\
 x=495, y=2..7
@@ -36,7 +33,6 @@ y=13, x=498..504"""
 
 
 class TestSimulateFlow:
-
     def test_simulate_flow_one_column_well_of_clay(self):
         input_ = """\
 y=7, x=499..501
@@ -87,7 +83,9 @@ x=502, y=6..7"""
         act_map = rr.map()
         assert act_map == exp_map
 
-    def test_simulate_flow_one_row_well_of_clay_with_missing_bottom_left_clay_contains_non_settled_water(self):
+    def test_simulate_flow_one_row_well_of_clay_with_missing_bottom_left_clay_contains_non_settled_water(
+        self,
+    ):
         input_ = """\
 y=7, x=500..502
 x=498, y=6..7
@@ -101,7 +99,9 @@ x=502, y=6..7"""
         act_map = rr.map()
         assert act_map == exp_map
 
-    def test_simulate_flow_one_row_well_of_clay_with_missing_bottom_right_clay_contains_non_settled_water(self):
+    def test_simulate_flow_one_row_well_of_clay_with_missing_bottom_right_clay_contains_non_settled_water(
+        self,
+    ):
         input_ = """\
 y=7, x=498..500
 x=498, y=6..7
@@ -115,7 +115,9 @@ x=502, y=6..7"""
         act_map = rr.map()
         assert act_map == exp_map
 
-    def test_simulate_flow_one_row_well_of_clay_with_missing_bottom_left_and_right_clay_contains_non_settled_water(self):
+    def test_simulate_flow_one_row_well_of_clay_with_missing_bottom_left_and_right_clay_contains_non_settled_water(
+        self,
+    ):
         input_ = """\
 y=7, x=500..500
 x=498, y=6..7
@@ -129,7 +131,9 @@ x=502, y=6..7"""
         act_map = rr.map()
         assert act_map == exp_map
 
-    def test_simulate_flow_one_row_well_of_clay_with_missing_left_clay_contains_non_settled_water(self):
+    def test_simulate_flow_one_row_well_of_clay_with_missing_left_clay_contains_non_settled_water(
+        self,
+    ):
         input_ = """\
 y=7, x=498..502
 x=502, y=6..7"""
@@ -142,7 +146,9 @@ x=502, y=6..7"""
         act_map = rr.map()
         assert act_map == exp_map
 
-    def test_simulate_flow_one_row_well_of_clay_with_missing_right_clay_contains_non_settled_water(self):
+    def test_simulate_flow_one_row_well_of_clay_with_missing_right_clay_contains_non_settled_water(
+        self,
+    ):
         input_ = """\
 y=7, x=498..502
 x=498, y=6..7"""
@@ -155,7 +161,9 @@ x=498, y=6..7"""
         act_map = rr.map()
         assert act_map == exp_map
 
-    def test_simulate_flow_one_row_well_of_clay_with_missing_both_side_clay_contains_non_settled_water(self):
+    def test_simulate_flow_one_row_well_of_clay_with_missing_both_side_clay_contains_non_settled_water(
+        self,
+    ):
         input_ = """\
 y=7, x=498..502"""
         rr = process.ReservoirResearch(input_)
@@ -165,7 +173,6 @@ y=7, x=498..502"""
 |#####|"""
         act_map = rr.map()
         assert act_map == exp_map
-
 
     def test_simulate_flow_two_row_well_of_clay_contains_settled_water(self):
         input_ = """\

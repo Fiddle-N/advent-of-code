@@ -37,7 +37,9 @@ position=< 5,  9> velocity=< 1, -2>
 position=<14,  7> velocity=<-2,  0>
 position=<-3,  6> velocity=< 2, -1>"""
     stars = process.Stars.from_string(input_)
-    assert stars.points.image() == """\
+    assert (
+        stars.points.image()
+        == """\
 ........#.............
 ................#.....
 .........#.#..#.......
@@ -54,9 +56,12 @@ position=<-3,  6> velocity=< 2, -1>"""
 ...........#..#.......
 #...........#.........
 ...#.......#.........."""
+    )
 
     iter_align = stars.align(yield_image=True)
-    assert next(iter_align) == """\
+    assert (
+        next(iter_align)
+        == """\
 ........#....#....
 ......#.....#.....
 #.........#......#
@@ -69,7 +74,10 @@ position=<-3,  6> velocity=< 2, -1>"""
 ......#...#.....#.
 #...........#.....
 ..#.....#.#......."""
-    assert next(iter_align) == """\
+    )
+    assert (
+        next(iter_align)
+        == """\
 ..........#...
 #..#...####..#
 ..............
@@ -80,7 +88,10 @@ position=<-3,  6> velocity=< 2, -1>"""
 #....#.#......
 .#...#...##.#.
 ....#........."""
-    assert next(iter_align) == """\
+    )
+    assert (
+        next(iter_align)
+        == """\
 #...#..###
 #...#...#.
 #...#...#.
@@ -89,6 +100,7 @@ position=<-3,  6> velocity=< 2, -1>"""
 #...#...#.
 #...#...#.
 #...#..###"""
+    )
     with pytest.raises(StopIteration) as e:
         next(iter_align)
     assert e.value.value == 3

@@ -6,7 +6,7 @@ import typing
 
 @dataclasses.dataclass
 class Node:
-    children: typing.Sequence['Node']
+    children: typing.Sequence["Node"]
     metadata: typing.Sequence[int]
 
     @property
@@ -28,14 +28,13 @@ class Node:
 
 
 class TreeParser:
-
     def __init__(self, raw_nodes):
         nodes = [int(node) for node in raw_nodes.split()]
         self._nodes = collections.deque(nodes)
 
     @classmethod
     def read_file(cls):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls(f.read())
 
     def parse(self):
@@ -49,9 +48,9 @@ class TreeParser:
 def main():
     tree_parser = TreeParser.read_file()
     tree = tree_parser.parse()
-    print(f'Metadata sum: {tree.metadata_sum}')
-    print(f'Root node value: {tree.value}')
+    print(f"Metadata sum: {tree.metadata_sum}")
+    print(f"Root node value: {tree.value}")
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")

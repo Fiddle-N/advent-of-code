@@ -1,5 +1,3 @@
-import ast
-import collections
 import dataclasses
 import functools
 import operator
@@ -23,7 +21,6 @@ class ProgramBreakpoint:
 
 
 class DeviceVM:
-
     def __init__(self, ip_register, instrs, reg_0=0, debug=False):
         self.ip_register = ip_register
         self.instrs = instrs
@@ -32,7 +29,7 @@ class DeviceVM:
 
     @classmethod
     def read_file(cls, reg_0=0):
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return cls.read_input(f.read().strip(), reg_0)
 
     @classmethod
@@ -41,8 +38,8 @@ class DeviceVM:
         instrs = []
         for instr_no, raw_instr in enumerate(program.splitlines()):
             if instr_no == 0:
-                assert raw_instr.startswith('#ip')
-                ip_register = int(raw_instr.split(' ')[1])
+                assert raw_instr.startswith("#ip")
+                ip_register = int(raw_instr.split(" ")[1])
             else:
                 opcode, *raw_io = raw_instr.split()
                 io = [int(num) for num in raw_io]
@@ -131,22 +128,22 @@ class DeviceVM:
     @property
     def OPCODE_FNS(self):
         opcodes = [
-            'addr',
-            'addi',
-            'mulr',
-            'muli',
-            'banr',
-            'bani',
-            'borr',
-            'bori',
-            'setr',
-            'seti',
-            'gtir',
-            'gtri',
-            'gtrr',
-            'eqir',
-            'eqri',
-            'eqrr',
+            "addr",
+            "addi",
+            "mulr",
+            "muli",
+            "banr",
+            "bani",
+            "borr",
+            "bori",
+            "setr",
+            "seti",
+            "gtir",
+            "gtri",
+            "gtrr",
+            "eqir",
+            "eqri",
+            "eqrr",
         ]
         return {opcode: getattr(self, opcode) for opcode in opcodes}
 
@@ -162,9 +159,11 @@ def main(reg_0):
             results = e.value
             break
 
-    print(f'Register 0 value after executing test program: {results[0]}')
+    print(f"Register 0 value after executing test program: {results[0]}")
 
 
-if __name__ == '__main__':
-    print(f"Completed in {timeit.timeit('main(0)', setup='from __main__ import main', number=1)} seconds")
+if __name__ == "__main__":
+    print(
+        f"Completed in {timeit.timeit('main(0)', setup='from __main__ import main', number=1)} seconds"
+    )
     # print(f"Completed in {timeit.timeit('main(1)', setup='from __main__ import main', number=1)} seconds")

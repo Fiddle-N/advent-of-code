@@ -1,8 +1,7 @@
-
 def main():
     twos = 0
     threes = 0
-    with open('input.txt', 'r') as f:
+    with open("input.txt", "r") as f:
         for string in f:
             is_two_found = False
             is_three_found = False
@@ -21,6 +20,6 @@ def main():
                     break
     chksum = twos * threes
     return chksum
-    
+
 
 print(main())

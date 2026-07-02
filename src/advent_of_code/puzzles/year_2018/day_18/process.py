@@ -4,28 +4,27 @@ import timeit
 
 
 class Acre(enum.Enum):
-    OPEN_GROUND = '.'
-    TREES = '|'
-    LUMBERYARD = '#'
+    OPEN_GROUND = "."
+    TREES = "|"
+    LUMBERYARD = "#"
 
 
-Coords = collections.namedtuple('Coords', 'x y')
+Coords = collections.namedtuple("Coords", "x y")
 
 
 DIRECTIONS = {
-    'up': Coords(0, 1),
-    'right-up': Coords(1, 1),
-    'right': Coords(1, 0),
-    'right-down': Coords(1, -1),
-    'down': Coords(0, -1),
-    'left-down': Coords(-1, -1),
-    'left': Coords(-1, 0),
-    'left-up': Coords(-1, 1),
+    "up": Coords(0, 1),
+    "right-up": Coords(1, 1),
+    "right": Coords(1, 0),
+    "right-down": Coords(1, -1),
+    "down": Coords(0, -1),
+    "left-down": Coords(-1, -1),
+    "left": Coords(-1, 0),
+    "left-up": Coords(-1, 1),
 }
 
 
 class LumberCollectionArea:
-
     def __init__(self, grid_str=None):
         grid_str = grid_str if grid_str is not None else self._read_file()
         grid = [list(line) for line in grid_str.splitlines()]
@@ -39,7 +38,7 @@ class LumberCollectionArea:
 
     @staticmethod
     def _read_file():
-        with open('input.txt') as f:
+        with open("input.txt") as f:
             return f.read()
 
     def output_grid(self, area):
@@ -50,17 +49,16 @@ class LumberCollectionArea:
 
     @staticmethod
     def _to_str(input_list):
-        return '\n'.join([
-            ''.join([acre.value for acre in row])
-            for row in input_list
-        ])
+        return "\n".join(["".join([acre.value for acre in row]) for row in input_list])
 
 
 class LumberCollectionAreaModel:
-
     def __init__(self, lumber_collection_area):
         self.area = lumber_collection_area.area
-        self.adj_acres = {acre_coords: self.surrounding_acres(acre_coords) for acre_coords in self.area}
+        self.adj_acres = {
+            acre_coords: self.surrounding_acres(acre_coords)
+            for acre_coords in self.area
+        }
 
     def __iter__(self):
         return self
@@ -70,12 +68,17 @@ class LumberCollectionAreaModel:
         self.area = {}
         for acre_coords, acre in current_seats.items():
             adj_acre_coords = self.adj_acres[acre_coords]
-            adj_acres = collections.Counter(current_seats[adj_seat] for adj_seat in adj_acre_coords)
+            adj_acres = collections.Counter(
+                current_seats[adj_seat] for adj_seat in adj_acre_coords
+            )
             if acre == Acre.OPEN_GROUND and adj_acres.get(Acre.TREES, 0) >= 3:
                 self.area[acre_coords] = Acre.TREES
             elif acre == Acre.TREES and adj_acres.get(Acre.LUMBERYARD, 0) >= 3:
                 self.area[acre_coords] = Acre.LUMBERYARD
-            elif acre == Acre.LUMBERYARD and not (adj_acres.get(Acre.LUMBERYARD, 0) >= 1 and adj_acres.get(Acre.TREES, 0) >= 1):
+            elif acre == Acre.LUMBERYARD and not (
+                adj_acres.get(Acre.LUMBERYARD, 0) >= 1
+                and adj_acres.get(Acre.TREES, 0) >= 1
+            ):
                 self.area[acre_coords] = Acre.OPEN_GROUND
             else:
                 self.area[acre_coords] = acre
@@ -84,7 +87,9 @@ class LumberCollectionAreaModel:
     def surrounding_acres(self, acre_coords):
         next_coords = []
         for direction in DIRECTIONS.values():
-            next_coord = Coords(acre_coords.x + direction.x, acre_coords.y + direction.y)
+            next_coord = Coords(
+                acre_coords.x + direction.x, acre_coords.y + direction.y
+            )
             if next_coord in self.area:
                 next_coords.append(next_coord)
         return next_coords
@@ -124,14 +129,18 @@ def run_model_part_2():
     periodicity = len(repeating_group)
     multiply_factor = (runs - first_repetition_start) // periodicity
     offset = runs - (first_repetition_start + (multiply_factor * periodicity))
-    area_count = collections.Counter(repeating_group[offset-1])
+    area_count = collections.Counter(repeating_group[offset - 1])
     return area_count[Acre.TREES.value] * area_count[Acre.LUMBERYARD.value]
 
 
 def main():
-    print(f'Resource value for lumber collection area model after 10 runs: {run_model_part_1()}')
-    print(f'Resource value for lumber collection area model after more runs: {run_model_part_2()}')
+    print(
+        f"Resource value for lumber collection area model after 10 runs: {run_model_part_1()}"
+    )
+    print(
+        f"Resource value for lumber collection area model after more runs: {run_model_part_2()}"
+    )
 
 
-if __name__ == '__main__':
-    print(f'Completed in {timeit.timeit(main, number=1)} seconds')
+if __name__ == "__main__":
+    print(f"Completed in {timeit.timeit(main, number=1)} seconds")
