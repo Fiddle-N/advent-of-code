@@ -31,10 +31,15 @@ class Directions(Enum):
     LEFT = "<"
 
 
+class Turn(Enum):
+    LEFT = "L"
+    RIGHT = "R"
+
+
 class CardinalDirections(Enum):
     NORTH = "^"
-    SOUTH = "v"
     EAST = ">"
+    SOUTH = "v"
     WEST = "<"
 
 
@@ -44,6 +49,8 @@ FOUR_POINT_DIRECTION_COORDS = [
     Coords(0, 1),
     Coords(-1, 0),
 ]
+
+FOUR_POINT_CARDINAL_DIRECTIONS = list(CardinalDirections)
 
 
 FOUR_POINT_DIRECTION_TO_COORDS = {
@@ -93,3 +100,12 @@ def merge_intervals(intervals: list[tuple[int, int]]) -> list[tuple[int, int]]:
         else:
             left.extend((last_i, next_i))
     return left
+
+
+def turn_cardinal_direction(
+    dir_: CardinalDirections, turn: Turn, no_of_turns: int
+) -> CardinalDirections:
+    offset = -1 if turn == turn.LEFT else 1
+    dir_pos = FOUR_POINT_CARDINAL_DIRECTIONS.index(dir_)
+    new_dir_pos = dir_pos + (offset * no_of_turns)
+    return FOUR_POINT_CARDINAL_DIRECTIONS[new_dir_pos % 4]
