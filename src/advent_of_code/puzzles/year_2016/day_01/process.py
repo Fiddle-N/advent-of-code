@@ -5,13 +5,13 @@ from advent_of_code.common import (
     read_file,
     timed_run,
     Coords,
-    CardinalDirections,
+    CardinalDirection,
     Turn,
     turn_cardinal_direction,
     FOUR_POINT_CARDINAL_DIRECTION_TO_COORDS,
 )
 
-STARTING_DIR = CardinalDirections.NORTH
+STARTING_DIR = CardinalDirection.NORTH
 
 
 @dataclasses.dataclass(frozen=True)

@@ -4,7 +4,7 @@ from typing import Self
 
 from advent_of_code.common import (
     Coords,
-    Directions,
+    Direction,
     FOUR_POINT_DIRECTION_TO_COORDS,
     read_file,
     timed_run,
@@ -42,12 +42,12 @@ class TachyonManifoldSimulator:
     @cache
     def _split(self, splitter: Coords) -> int:
         return self._simulate(
-            splitter + FOUR_POINT_DIRECTION_TO_COORDS[Directions.LEFT]
-        ) + self._simulate(splitter + FOUR_POINT_DIRECTION_TO_COORDS[Directions.RIGHT])
+            splitter + FOUR_POINT_DIRECTION_TO_COORDS[Direction.LEFT]
+        ) + self._simulate(splitter + FOUR_POINT_DIRECTION_TO_COORDS[Direction.RIGHT])
 
     def _simulate(self, curr: Coords) -> int:
         while True:
-            next_ = curr + FOUR_POINT_DIRECTION_TO_COORDS[Directions.DOWN]
+            next_ = curr + FOUR_POINT_DIRECTION_TO_COORDS[Direction.DOWN]
             if next_.y == self.tm.length:
                 # end of manifold - beam terminates
                 return 1

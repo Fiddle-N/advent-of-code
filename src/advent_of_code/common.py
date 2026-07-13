@@ -24,7 +24,7 @@ class Coords:
         )
 
 
-class Directions(Enum):
+class Direction(Enum):
     UP = "^"
     DOWN = "v"
     RIGHT = ">"
@@ -36,7 +36,7 @@ class Turn(Enum):
     RIGHT = "R"
 
 
-class CardinalDirections(Enum):
+class CardinalDirection(Enum):
     NORTH = "^"
     EAST = ">"
     SOUTH = "v"
@@ -50,22 +50,22 @@ FOUR_POINT_DIRECTION_COORDS = [
     Coords(-1, 0),
 ]
 
-FOUR_POINT_CARDINAL_DIRECTIONS = list(CardinalDirections)
+FOUR_POINT_CARDINAL_DIRECTIONS = list(CardinalDirection)
 
 
 FOUR_POINT_DIRECTION_TO_COORDS = {
-    Directions.UP: FOUR_POINT_DIRECTION_COORDS[0],
-    Directions.RIGHT: FOUR_POINT_DIRECTION_COORDS[1],
-    Directions.DOWN: FOUR_POINT_DIRECTION_COORDS[2],
-    Directions.LEFT: FOUR_POINT_DIRECTION_COORDS[3],
+    Direction.UP: FOUR_POINT_DIRECTION_COORDS[0],
+    Direction.RIGHT: FOUR_POINT_DIRECTION_COORDS[1],
+    Direction.DOWN: FOUR_POINT_DIRECTION_COORDS[2],
+    Direction.LEFT: FOUR_POINT_DIRECTION_COORDS[3],
 }
 
 
 FOUR_POINT_CARDINAL_DIRECTION_TO_COORDS = {
-    CardinalDirections.NORTH: FOUR_POINT_DIRECTION_COORDS[0],
-    CardinalDirections.EAST: FOUR_POINT_DIRECTION_COORDS[1],
-    CardinalDirections.SOUTH: FOUR_POINT_DIRECTION_COORDS[2],
-    CardinalDirections.WEST: FOUR_POINT_DIRECTION_COORDS[3],
+    CardinalDirection.NORTH: FOUR_POINT_DIRECTION_COORDS[0],
+    CardinalDirection.EAST: FOUR_POINT_DIRECTION_COORDS[1],
+    CardinalDirection.SOUTH: FOUR_POINT_DIRECTION_COORDS[2],
+    CardinalDirection.WEST: FOUR_POINT_DIRECTION_COORDS[3],
 }
 
 EIGHT_POINT_DIRECTION_COORDS = [
@@ -103,8 +103,8 @@ def merge_intervals(intervals: list[tuple[int, int]]) -> list[tuple[int, int]]:
 
 
 def turn_cardinal_direction(
-    dir_: CardinalDirections, turn: Turn, no_of_turns: int
-) -> CardinalDirections:
+    dir_: CardinalDirection, turn: Turn, no_of_turns: int
+) -> CardinalDirection:
     offset = -1 if turn == turn.LEFT else 1
     dir_pos = FOUR_POINT_CARDINAL_DIRECTIONS.index(dir_)
     new_dir_pos = dir_pos + (offset * no_of_turns)
