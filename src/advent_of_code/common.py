@@ -1,6 +1,6 @@
 from typing import Self
 from collections.abc import Callable
-from enum import Enum
+from enum import Enum, auto
 from dataclasses import dataclass
 from math import sqrt
 import timeit
@@ -25,10 +25,10 @@ class Coords:
 
 
 class Direction(Enum):
-    UP = "^"
-    DOWN = "v"
-    RIGHT = ">"
-    LEFT = "<"
+    UP = auto()
+    DOWN = auto()
+    RIGHT = auto()
+    LEFT = auto()
 
 
 class Turn(Enum):
