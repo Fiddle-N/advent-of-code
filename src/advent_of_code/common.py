@@ -15,10 +15,10 @@ class Coords:
     def __add__(self, other: Self) -> Self:
         return type(self)(self.x + other.x, self.y + other.y, self.z + other.z)
 
-    def manhattan_distance(self, other: Self) -> int:
+    def manhattan_distance_to(self, other: Self) -> int:
         return abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)
 
-    def distance(self, other: Self) -> float:
+    def distance_to(self, other: Self) -> float:
         return sqrt(
             (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2
         )

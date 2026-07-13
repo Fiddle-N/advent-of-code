@@ -15,7 +15,7 @@ def resolve_distances(
 ) -> list[tuple[tuple[Coords, Coords], float]]:
     distances: list[tuple[tuple[Coords, Coords], float]] = []
     for a, b in combinations(coords, 2):
-        distances.append(((a, b), a.distance(b)))
+        distances.append(((a, b), a.distance_to(b)))
     return distances
 
 

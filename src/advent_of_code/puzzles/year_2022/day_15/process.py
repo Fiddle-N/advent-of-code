@@ -20,7 +20,7 @@ class Reading:
         return diff_fn(getattr(self.sensor, axis), self.distance)
 
     def __post_init__(self) -> None:
-        self.distance = self.sensor.manhattan_distance(self.beacon)
+        self.distance = self.sensor.manhattan_distance_to(self.beacon)
         self.sensor_min_x = self._get_boundary(operator.sub, "x")
         self.sensor_max_x = self._get_boundary(operator.add, "x")
         self.sensor_min_y = self._get_boundary(operator.sub, "y")
