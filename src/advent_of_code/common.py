@@ -50,6 +50,15 @@ FOUR_POINT_DIRECTION_COORDS = [
     Coords(-1, 0),
 ]
 
+
+DIRECTION_LETTERS_TO_DIRECTION = {
+    "U": Direction.UP,
+    "D": Direction.DOWN,
+    "R": Direction.RIGHT,
+    "L": Direction.LEFT,
+}
+
+
 FOUR_POINT_CARDINAL_DIRECTIONS = list(CardinalDirection)
 
 
