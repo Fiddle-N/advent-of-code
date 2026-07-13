@@ -66,7 +66,7 @@ def run_instrs(instrs: list[Instr], dest: Literal["end", "ebhq"]):
         if dest == "end"
         else _run_instrs_to_ebhq(start, instrs)
     )
-    return start.manhatten_distance(end)
+    return start.manhattan_distance(end)
 
 
 def run():
