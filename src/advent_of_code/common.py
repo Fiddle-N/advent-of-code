@@ -6,6 +6,30 @@ from math import sqrt
 import timeit
 
 
+class Grid(dict):
+    def __init__(self, rows: int, cols: int):
+        self.rows = rows
+        self.cols = cols
+        super().__init__(
+            (Coords(x, y), False) for y in range(rows) for x in range(cols)
+        )
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(rows={self.rows}, cols={self.cols})"
+
+    def __str__(self) -> str:
+        return "\n".join(
+            "".join(["#" if self[Coords(x, y)] else "." for x in range(self.cols)])
+            for y in range(self.rows)
+        )
+
+    def render(self) -> str:
+        return "\n".join(
+            "".join(["██" if self[Coords(x, y)] else "  " for x in range(self.cols)])
+            for y in range(self.rows)
+        )
+
+
 @dataclass(frozen=True, order=True)
 class Coords:
     x: int
