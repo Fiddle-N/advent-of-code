@@ -1,9 +1,40 @@
 from typing import Self
-from collections.abc import Callable
 from enum import Enum, auto
 from dataclasses import dataclass
 from math import sqrt
-import timeit
+
+__all__ = [
+    "Coords",
+    "Grid",
+    "Direction",
+    "Turn",
+    "CardinalDirection",
+    "FOUR_POINT_DIRECTION_COORDS",
+    "DIRECTION_LETTERS_TO_DIRECTION",
+    "FOUR_POINT_CARDINAL_DIRECTIONS",
+    "FOUR_POINT_DIRECTION_TO_COORDS",
+    "FOUR_POINT_CARDINAL_DIRECTION_TO_COORDS",
+    "EIGHT_POINT_DIRECTION_COORDS",
+    "turn_cardinal_direction",
+]
+
+
+@dataclass(frozen=True, order=True)
+class Coords:
+    x: int
+    y: int
+    z: int = 0
+
+    def __add__(self, other: Self) -> Self:
+        return type(self)(self.x + other.x, self.y + other.y, self.z + other.z)
+
+    def manhattan_distance_to(self, other: Self) -> int:
+        return abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)
+
+    def distance_to(self, other: Self) -> float:
+        return sqrt(
+            (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2
+        )
 
 
 class Grid(dict):
@@ -27,24 +58,6 @@ class Grid(dict):
         return "\n".join(
             "".join(["██" if self[Coords(x, y)] else "  " for x in range(self.cols)])
             for y in range(self.rows)
-        )
-
-
-@dataclass(frozen=True, order=True)
-class Coords:
-    x: int
-    y: int
-    z: int = 0
-
-    def __add__(self, other: Self) -> Self:
-        return type(self)(self.x + other.x, self.y + other.y, self.z + other.z)
-
-    def manhattan_distance_to(self, other: Self) -> int:
-        return abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)
-
-    def distance_to(self, other: Self) -> float:
-        return sqrt(
-            (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2
         )
 
 
@@ -111,28 +124,6 @@ EIGHT_POINT_DIRECTION_COORDS = [
     Coords(-1, 0),
     Coords(-1, -1),
 ]
-
-
-def read_file() -> str:
-    with open("input.txt") as f:
-        return f.read().rstrip("\n")
-
-
-def timed_run(fn: Callable) -> None:
-    print(f"Ran in {timeit.timeit(fn, number=1)} seconds.")
-
-
-def merge_intervals(intervals: list[tuple[int, int]]) -> list[tuple[int, int]]:
-    intervals = sorted(intervals)
-    left, right = intervals[:1], intervals[1:]
-    for next_i in right:
-        last_i = left.pop()
-        if last_i[0] <= next_i[0] <= last_i[1]:
-            i = (last_i[0], max(last_i[1], next_i[1]))
-            left.append(i)
-        else:
-            left.extend((last_i, next_i))
-    return left
 
 
 def turn_cardinal_direction(
