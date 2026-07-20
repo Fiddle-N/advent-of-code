@@ -1,8 +1,6 @@
 import math
 import timeit
 
-import sympy.ntheory.modular
-
 
 class ShuttleSearch:
     def __init__(self, bus_input=None):
@@ -38,15 +36,12 @@ class ShuttleSearch:
     def _mod_inv(bus_id_prod, bus_id):
         return pow(bus_id_prod, -1, bus_id)
 
-    def chinese_remainder(self, use_sympy=False):
+    def chinese_remainder(self):
         mods = {}
         for pos, bus_id in enumerate(self.bus_ids):
             if bus_id == "x":
                 continue
             mods[bus_id] = (bus_id - pos) % bus_id
-        if use_sympy:
-            result, _ = sympy.ntheory.modular.crt(mods.keys(), mods.values())
-            return result
         else:
             if math.gcd(*mods.keys()) != 1:
                 raise Exception(
