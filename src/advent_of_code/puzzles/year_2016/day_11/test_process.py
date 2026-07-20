@@ -1,7 +1,7 @@
 from advent_of_code.puzzles.year_2016.day_11 import process
 
 
-def test_a():
+def test_containment_simulator():
     comps = process.parse_components("""\
 The first floor contains a hydrogen-compatible microchip and a lithium-compatible microchip.
 The second floor contains a hydrogen generator.
