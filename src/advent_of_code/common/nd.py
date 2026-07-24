@@ -11,6 +11,7 @@ __all__ = [
     "CardinalDirection",
     "FOUR_POINT_DIRECTION_COORDS",
     "DIRECTION_LETTER_TO_DIRECTION",
+    "DIRECTION_TO_DIRECTION_LETTER",
     "FOUR_POINT_CARDINAL_DIRECTIONS",
     "FOUR_POINT_DIRECTION_TO_COORDS",
     "FOUR_POINT_CARDINAL_DIRECTION_TO_COORDS",
@@ -95,6 +96,12 @@ DIRECTION_LETTER_TO_DIRECTION = {
     "L": Direction.LEFT,
 }
 
+DIRECTION_TO_DIRECTION_LETTER = {
+    Direction.UP: "U",
+    Direction.RIGHT: "R",
+    Direction.DOWN: "D",
+    Direction.LEFT: "L",
+}
 
 FOUR_POINT_CARDINAL_DIRECTIONS = list(CardinalDirection)
 
