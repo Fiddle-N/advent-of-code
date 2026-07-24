@@ -10,7 +10,7 @@ __all__ = [
     "Turn",
     "CardinalDirection",
     "FOUR_POINT_DIRECTION_COORDS",
-    "DIRECTION_LETTERS_TO_DIRECTION",
+    "DIRECTION_LETTER_TO_DIRECTION",
     "FOUR_POINT_CARDINAL_DIRECTIONS",
     "FOUR_POINT_DIRECTION_TO_COORDS",
     "FOUR_POINT_CARDINAL_DIRECTION_TO_COORDS",
@@ -63,8 +63,8 @@ class Grid(dict):
 
 class Direction(Enum):
     UP = auto()
-    DOWN = auto()
     RIGHT = auto()
+    DOWN = auto()
     LEFT = auto()
 
 
@@ -88,10 +88,10 @@ FOUR_POINT_DIRECTION_COORDS = [
 ]
 
 
-DIRECTION_LETTERS_TO_DIRECTION = {
+DIRECTION_LETTER_TO_DIRECTION = {
     "U": Direction.UP,
-    "D": Direction.DOWN,
     "R": Direction.RIGHT,
+    "D": Direction.DOWN,
     "L": Direction.LEFT,
 }
 

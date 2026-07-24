@@ -5,7 +5,7 @@ from advent_of_code.common import (
     timed_run,
     Coords,
     Direction,
-    DIRECTION_LETTERS_TO_DIRECTION,
+    DIRECTION_LETTER_TO_DIRECTION,
     FOUR_POINT_DIRECTION_TO_COORDS,
 )
 
@@ -40,7 +40,7 @@ KEYPAD = {
 
 def parse_instrs(raw_input: str) -> list[list[Direction]]:
     return [
-        [DIRECTION_LETTERS_TO_DIRECTION[letter] for letter in line]
+        [DIRECTION_LETTER_TO_DIRECTION[letter] for letter in line]
         for line in raw_input.splitlines()
     ]
 
