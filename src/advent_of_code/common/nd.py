@@ -5,7 +5,7 @@ from math import sqrt
 
 __all__ = [
     "Coords",
-    "Grid",
+    "PixelGrid",
     "Direction",
     "Turn",
     "CardinalDirection",
@@ -38,7 +38,7 @@ class Coords:
         )
 
 
-class Grid(dict):
+class PixelGrid(dict):
     def __init__(self, rows: int, cols: int):
         self.rows = rows
         self.cols = cols

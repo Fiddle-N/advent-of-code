@@ -7,7 +7,7 @@ rect 3x2
 rotate column x=1 by 1
 rotate row y=0 by 4
 rotate column x=1 by 1""")
-    grid = process.Grid(rows=3, cols=7)
+    grid = process.PixelGrid(rows=3, cols=7)
     process.run_instrs(grid, instrs)
     assert (
         str(grid)

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Literal, cast
 from collections import deque
 
-from advent_of_code.common import read_file, timed_run, Coords, Grid
+from advent_of_code.common import read_file, timed_run, Coords, PixelGrid
 
 RECT_PATTERN = r"rect (?P<cols>\d+)x(?P<rows>\d+)"
 ROTATE_PATTERN = (
@@ -47,13 +47,15 @@ def parse_instrs(raw_instrs: str) -> list[Instrs]:
     return instrs
 
 
-def draw_rect(grid: Grid, rows: int, cols: int) -> None:
+def draw_rect(grid: PixelGrid, rows: int, cols: int) -> None:
     for y in range(rows):
         for x in range(cols):
             grid[Coords(x, y)] = True
 
 
-def rotate(grid: Grid, axis: Literal["x", "y"], axis_pos: int, rotate_val: int) -> None:
+def rotate(
+    grid: PixelGrid, axis: Literal["x", "y"], axis_pos: int, rotate_val: int
+) -> None:
     coords = (
         [Coords(axis_pos, y) for y in range(grid.rows)]
         if axis == "x"
@@ -65,7 +67,7 @@ def rotate(grid: Grid, axis: Literal["x", "y"], axis_pos: int, rotate_val: int) 
         grid[coord] = val
 
 
-def run_instrs(grid: Grid, instrs: list[Instrs]) -> None:
+def run_instrs(grid: PixelGrid, instrs: list[Instrs]) -> None:
     for instr in instrs:
         match instr:
             case Rect():
@@ -84,7 +86,7 @@ def sum_lit_pixels(grid) -> int:
 
 
 def run() -> None:
-    grid = Grid(rows=6, cols=50)
+    grid = PixelGrid(rows=6, cols=50)
     raw_instrs = read_file()
     instrs = parse_instrs(raw_instrs)
     run_instrs(grid, instrs)
