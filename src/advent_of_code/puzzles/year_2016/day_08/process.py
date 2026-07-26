@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Literal, cast
 from collections import deque
 
-from advent_of_code.common import read_file, timed_run, Coords, PixelGrid
+from advent_of_code.common import read_file, timed_run, Coords
 
 RECT_PATTERN = r"rect (?P<cols>\d+)x(?P<rows>\d+)"
 ROTATE_PATTERN = (
@@ -25,6 +25,30 @@ class Rotate:
 
 
 type Instrs = Rect | Rotate
+
+
+class PixelGrid(dict[Coords, bool]):
+    def __init__(self, rows: int, cols: int):
+        self.rows = rows
+        self.cols = cols
+        super().__init__(
+            (Coords(x, y), False) for y in range(rows) for x in range(cols)
+        )
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}(rows={self.rows}, cols={self.cols})"
+
+    def __str__(self) -> str:
+        return "\n".join(
+            "".join(["#" if self[Coords(x, y)] else "." for x in range(self.cols)])
+            for y in range(self.rows)
+        )
+
+    def render(self) -> str:
+        return "\n".join(
+            "".join(["██" if self[Coords(x, y)] else "  " for x in range(self.cols)])
+            for y in range(self.rows)
+        )
 
 
 def parse_instrs(raw_instrs: str) -> list[Instrs]:
