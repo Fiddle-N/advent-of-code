@@ -1,55 +1,36 @@
+from enum import StrEnum, auto
 from dataclasses import dataclass
 
 
-@dataclass(frozen=True)
-class Cpy:
-    val: str | int
-    register: str
+class InstrType(StrEnum):
+    CPY = auto()
+    INC = auto()
+    DEC = auto()
+    JNZ = auto()
 
 
 @dataclass(frozen=True)
-class Inc:
-    register: str
-
-
-@dataclass(frozen=True)
-class Dec:
-    register: str
-
-
-@dataclass(frozen=True)
-class Jnz:
-    val: str | int
-    offset: int
-
-
-type Instruction = Cpy | Inc | Dec | Jnz
+class Instruction:
+    type: InstrType
+    args: tuple[int | str] | tuple[int | str, int | str]
 
 
 def parse(raw_instrs: str) -> list[Instruction]:
     instrs = []
     for raw_instr in raw_instrs.splitlines():
-        instr_type, instr_vals = raw_instr.split(maxsplit=1)
-        match instr_type:
-            case "cpy":
-                val, register = instr_vals.split()
-                try:
-                    val = int(val)
-                except ValueError:
-                    pass
-                instr = Cpy(val=val, register=register)
-            case "inc":
-                instr = Inc(register=instr_vals)
-            case "dec":
-                instr = Dec(register=instr_vals)
-            case "jnz":
-                val, offset = instr_vals.split()
-                try:
-                    val = int(val)
-                except ValueError:
-                    pass
-                instr = Jnz(val=val, offset=int(offset))
-        instrs.append(instr)
+        instr_type, raw_instr_vals = raw_instr.split(maxsplit=1)
+        raw_instr_vals = raw_instr_vals.split()
+        assert len(raw_instr_vals) in (1, 2)
+
+        instr_vals = []
+        for val in raw_instr_vals:
+            try:
+                val = int(val)
+            except ValueError:
+                pass
+            instr_vals.append(val)
+
+        instrs.append(Instruction(type=InstrType(instr_type), args=tuple(instr_vals)))
     return instrs
 
 
@@ -60,19 +41,22 @@ def run(regs: dict[str, int], instrs: list[Instruction]) -> dict[str, int]:
             return regs
         instr = instrs[idx]
         match instr:
-            case Cpy():
-                val = regs[instr.val] if isinstance(instr.val, str) else instr.val
-                regs[instr.register] = val
+            case Instruction(InstrType.CPY, (val, register)):
+                val = regs[val] if isinstance(val, str) else val
+                regs[register] = val
                 idx += 1
-            case Inc():
-                regs[instr.register] += 1
+
+            case Instruction(InstrType.INC, (register,)):
+                regs[register] += 1
                 idx += 1
-            case Dec():
-                regs[instr.register] -= 1
+
+            case Instruction(InstrType.DEC, (register,)):
+                regs[register] -= 1
                 idx += 1
-            case Jnz():
-                val = regs[instr.val] if isinstance(instr.val, str) else instr.val
+
+            case Instruction(InstrType.JNZ, (val, offset)):
+                val = regs[val] if isinstance(val, str) else val
                 if val != 0:
-                    idx += instr.offset
+                    idx += offset
                 else:
                     idx += 1
