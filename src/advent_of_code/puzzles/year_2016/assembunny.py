@@ -12,6 +12,7 @@ class InstrType(StrEnum):
     DEC = auto()
     JNZ = auto()
     TGL = auto()
+    OUT = auto()
 
     # optimisation instructions
     MUL = auto()
@@ -47,7 +48,7 @@ def _is_optimisable_jnz(jnz: Instruction) -> bool:
     return (
         isinstance(jnz.args[0], str)
         and isinstance(jnz.args[1], int)
-        and jnz.args[1] < 0
+        and jnz.args[1] in (-2, -5)
     )
 
 
@@ -124,7 +125,8 @@ def _optimise(instrs: list[Instruction]) -> list[Instruction]:
             )
 
             # amend instructions whilst keeping same length
-            optimised[idx - 4] = copy_instr
+            optimised[idx - 5] = copy_instr
+            optimised[idx - 4] = Instruction(type=InstrType.NOP, args=())
             optimised[idx - 3] = Instruction(type=InstrType.NOP, args=())
             optimised[idx - 2] = Instruction(type=InstrType.NOP, args=())
             optimised[idx - 1] = Instruction(type=InstrType.NOP, args=())
@@ -208,6 +210,11 @@ def run(
 
                 idx += 1
 
+            case Instruction(InstrType.OUT, (val,)):
+                val = regs[val] if isinstance(val, str) else val
+                yield val
+                idx += 1
+
             case Instruction(InstrType.MUL, (loop_registers, changing_register, sign)):
                 loop_val_prod = 1
                 for loop_register, loop_sign in loop_registers:
@@ -226,5 +233,3 @@ def run(
 
             case Instruction(InstrType.NOP, _):
                 idx += 1
-
-        yield 1
