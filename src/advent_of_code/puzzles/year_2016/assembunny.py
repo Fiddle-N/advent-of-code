@@ -2,6 +2,8 @@ from enum import StrEnum, auto
 from collections import deque
 from dataclasses import dataclass
 
+from collections.abc import Generator
+
 
 class InstrType(StrEnum):
     # assembunny instructions
@@ -156,7 +158,9 @@ def _tgl(regs: dict[str, int], instrs: list[Instruction], idx: int, register: st
             )
 
 
-def run(regs: dict[str, int], instrs: list[Instruction]) -> dict[str, int]:
+def run(
+    regs: dict[str, int], instrs: list[Instruction]
+) -> Generator[int, None, dict[str, int]]:
     instrs = instrs.copy()
     optimised = _optimise(instrs)
 
@@ -222,3 +226,5 @@ def run(regs: dict[str, int], instrs: list[Instruction]) -> dict[str, int]:
 
             case Instruction(InstrType.NOP, _):
                 idx += 1
+
+        yield 1
