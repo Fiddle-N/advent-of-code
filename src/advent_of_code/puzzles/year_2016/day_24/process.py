@@ -111,8 +111,8 @@ def calculate_shortest_route(
     )
 
     pq: list[ShortestLocationState] = []
-    seen = {(starting_state, 0): 0}
-    heappush(pq, ShortestLocationState(0, 0, starting_state))
+    seen = {(starting_state, START): 0}
+    heappush(pq, ShortestLocationState(0, START, starting_state))
     while pq:
         sls = heappop(pq)
         if not sls.state:
