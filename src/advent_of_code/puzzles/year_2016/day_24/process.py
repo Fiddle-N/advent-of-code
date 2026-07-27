@@ -111,6 +111,7 @@ def calculate_shortest_route(
     )
 
     pq: list[ShortestLocationState] = []
+    seen = {(starting_state, 0): 0}
     heappush(pq, ShortestLocationState(0, 0, starting_state))
     while pq:
         sls = heappop(pq)
@@ -123,11 +124,20 @@ def calculate_shortest_route(
                 # when it is the last place to visit
                 continue
             dist = shortest_pairs[sls.location][next_location]
+            total_dist = sls.steps + dist
             next_state = sls.state & ~next_location_bits
-            heappush(
-                pq,
-                ShortestLocationState(sls.steps + dist, next_location, next_state),
-            )
+
+            if (next_state, next_location) in seen and total_dist > seen[
+                (next_state, next_location)
+            ]:
+                continue
+            else:
+                seen[(next_state, next_location)] = total_dist
+                heappush(
+                    pq,
+                    ShortestLocationState(total_dist, next_location, next_state),
+                )
+
     raise ValueError("Result must be present")
 
 
