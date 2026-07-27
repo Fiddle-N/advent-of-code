@@ -28,6 +28,9 @@ class Coords:
     def __add__(self, other: Self) -> Self:
         return type(self)(self.x + other.x, self.y + other.y, self.z + other.z)
 
+    def __mul__(self, other: int) -> Self:
+        return type(self)(self.x * other, self.y * other, self.z * other)
+
     def manhattan_distance_to(self, other: Self) -> int:
         return abs(self.x - other.x) + abs(self.y - other.y) + abs(self.z - other.z)
 
