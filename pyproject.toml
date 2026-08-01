@@ -17,7 +17,6 @@ dependencies = [
     "regex>=2024.9.11",
     "ruff>=0.13.0",
     "sortedcontainers>=2.4.0",
-    "sympy>=1.14.0",
     "tqdm>=4.68.4",
     "ty>=0.0.3",
 ]
