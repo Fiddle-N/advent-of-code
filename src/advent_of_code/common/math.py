@@ -1,5 +1,26 @@
+import operator
 from dataclasses import dataclass
+from enum import Enum
 from math import gcd, prod
+
+
+class Operator(Enum):
+    EQ = "=="
+    NE = "!="
+    LT = "<"
+    LE = "<="
+    GT = ">"
+    GE = ">="
+
+
+OP_FNS = {
+    Operator.EQ: operator.eq,
+    Operator.NE: operator.ne,
+    Operator.LT: operator.lt,
+    Operator.LE: operator.le,
+    Operator.GT: operator.gt,
+    Operator.GE: operator.ge,
+}
 
 
 @dataclass(frozen=True)
