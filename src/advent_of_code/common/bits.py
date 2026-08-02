@@ -1,8 +1,12 @@
-__all__ = ["int_to_bitstr", "bitstr_to_int", "iter_bits", "ones_mask"]
+__all__ = ["int_to_bitstr", "int_to_hex", "bitstr_to_int", "iter_bits", "ones_mask"]
 
 
 def int_to_bitstr(int_: int, padding: int = 0) -> str:
     return f"{int_:0{padding}b}"
+
+
+def int_to_hex(int_: int, padding: int = 0) -> str:
+    return f"{int_:0{padding}x}"
 
 
 def bitstr_to_int(bitstr: str) -> int:
