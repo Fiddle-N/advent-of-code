@@ -5,6 +5,7 @@ from math import sqrt
 
 __all__ = [
     "Coords",
+    "START_COORDS",
     "Direction",
     "Turn",
     "CardinalDirection",
@@ -38,6 +39,9 @@ class Coords:
         return sqrt(
             (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2
         )
+
+
+START_COORDS = Coords(0, 0)
 
 
 class Direction(Enum):
