@@ -3,7 +3,7 @@ from itertools import batched
 from operator import xor
 from functools import reduce
 
-from advent_of_code.common import int_to_hex
+from advent_of_code.common import int_to_hex, int_to_binary
 
 STANDARD_MARKS = 256
 SPARSE_HASH_ROUNDS = 64
@@ -14,6 +14,9 @@ EXTRA_KNOT_HASH_LENGTHS = [17, 31, 73, 47, 23]
 class KnotHashResult:
     def __init__(self, result: list[int]):
         self.result = result
+
+    def bindigest(self):
+        return "".join(int_to_binary(hash_val, padding=8) for hash_val in self.result)
 
     def hexdigest(self):
         return "".join(int_to_hex(hash_val, padding=2) for hash_val in self.result)
