@@ -1,10 +1,10 @@
 import pytest
 
-from advent_of_code.puzzles.year_2017.day_10 import process
+from advent_of_code.puzzles.year_2017 import knot_hash
 
 
 def test_run_knot_hash_round() -> None:
-    result = process.run_knot_hash_round(lengths=[3, 4, 1, 5], marks=5)
+    result = knot_hash.run_knot_hash_round(lengths=[3, 4, 1, 5], marks=5)
     assert result[:2] == [3, 4]
 
 
@@ -18,4 +18,5 @@ def test_run_knot_hash_round() -> None:
     ],
 )
 def test_calculate_knot_hash(hash_input: str, hash_: str) -> None:
-    assert process.calculate_knot_hash(hash_input) == hash_
+    hash_result = knot_hash.calculate_knot_hash(hash_input)
+    assert hash_result.hexdigest() == hash_
