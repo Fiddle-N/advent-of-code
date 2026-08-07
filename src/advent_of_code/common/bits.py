@@ -1,7 +1,7 @@
-__all__ = ["int_to_bitstr", "int_to_hex", "bitstr_to_int", "iter_bits", "ones_mask"]
+__all__ = ["int_to_binary", "int_to_hex", "binary_to_int", "iter_bits", "ones_mask"]
 
 
-def int_to_bitstr(int_: int, padding: int = 0) -> str:
+def int_to_binary(int_: int, padding: int = 0) -> str:
     return f"{int_:0{padding}b}"
 
 
@@ -9,8 +9,8 @@ def int_to_hex(int_: int, padding: int = 0) -> str:
     return f"{int_:0{padding}x}"
 
 
-def bitstr_to_int(bitstr: str) -> int:
-    return int(bitstr, 2)
+def binary_to_int(binary: str) -> int:
+    return int(binary, 2)
 
 
 def iter_bits(bitmask: int):
