@@ -66,7 +66,7 @@ def parse(raw_instrs: str) -> list[Instr]:
     return instrs
 
 
-def _run_duet(
+def _duet_gen(
     regs: dict[Reg, int],
     instrs: list[Instr],
     mode: Literal["sound", "duet"],
@@ -122,7 +122,7 @@ def _run_duet(
 
 def run_singlet(instrs: list[Instr]) -> int:
     q = deque()
-    gen = _run_duet(regs={}, instrs=instrs, mode="sound", send_q=q, receive_q=q)
+    gen = _duet_gen(regs={}, instrs=instrs, mode="sound", send_q=q, receive_q=q)
     result = cast(int, next(gen))
     return result
 
@@ -131,14 +131,14 @@ def run_duet(instrs: list[Instr]) -> int:
     queue_0_to_1 = MonitoredDeque()
     queue_1_to_0 = MonitoredDeque()
 
-    gen_0 = _run_duet(
+    gen_0 = _duet_gen(
         regs={Reg("p"): 0},
         instrs=instrs,
         mode="duet",
         send_q=queue_0_to_1,
         receive_q=queue_1_to_0,
     )
-    gen_1 = _run_duet(
+    gen_1 = _duet_gen(
         regs={Reg("p"): 1},
         instrs=instrs,
         mode="duet",
