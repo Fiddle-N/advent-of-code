@@ -53,7 +53,7 @@ def parse(raw_moves: str) -> list[Move]:
 
 def dance(programs: str, moves: list[Move]) -> tuple[str, list[str]]:
     progs = list(programs)
-    dance_cycle = ["".join(progs)]
+    dance_cycle = [programs]
     for cycle in count():
         for move in moves:
             match move:
