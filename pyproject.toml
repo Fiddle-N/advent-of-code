@@ -27,3 +27,17 @@ build-backend = "uv_build"
 
 [tool.uv]
 exclude-newer = "2 weeks"
+
+[tool.ty.src]
+# exclude type checking for years not yet updated
+# especially as ty is not yet stable
+exclude = [
+    "src/advent_of_code/puzzles/year_2018",
+    "src/advent_of_code/puzzles/year_2019",
+    "src/advent_of_code/puzzles/year_2020",
+    "src/advent_of_code/puzzles/year_2021",
+    "src/advent_of_code/puzzles/year_2022",
+    "src/advent_of_code/puzzles/year_2023",
+    "src/advent_of_code/puzzles/year_2024",
+    "src/advent_of_code/puzzles/year_2025",
+]

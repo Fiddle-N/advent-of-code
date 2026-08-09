@@ -25,8 +25,12 @@ def find_lowest_house(
             elf, (target if delivery_limit is None else (elf * delivery_limit)) + 1, elf
         ):
             if house <= target:
-                houses[house] += elf * present_multiplier
-        if houses[elf] >= target:
+                house_presents = houses[house]
+                assert house_presents is not None
+                houses[house] = house_presents + (elf * present_multiplier)
+        house_presents = houses[elf]
+        assert house_presents is not None
+        if house_presents >= target:
             return elf
 
 

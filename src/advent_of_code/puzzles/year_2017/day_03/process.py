@@ -1,4 +1,4 @@
-from collections.abc import Iterator
+from collections.abc import Iterator, Callable
 from itertools import count, cycle, dropwhile, repeat
 
 from advent_of_code.common import (
@@ -14,6 +14,13 @@ START_SQUARE = 1
 START_LOCATION = Coords(0, 0)
 
 SPIRAL_ORDER = [Direction.RIGHT, Direction.UP, Direction.LEFT, Direction.DOWN]
+
+
+def le_factory(condition: int) -> Callable[[int], bool]:
+    def le(val: int) -> bool:
+        return val <= condition
+
+    return le
 
 
 def get_spiral_dist() -> Iterator[int]:
@@ -67,7 +74,7 @@ def execute_stress_test() -> Iterator[int]:
 def run():
     target = int(read_file())
     print(calculate_dist_to_square(target))
-    print(next(dropwhile(lambda square: square <= target, execute_stress_test())))
+    print(next(dropwhile(le_factory(target), execute_stress_test())))
 
 
 def main() -> None:

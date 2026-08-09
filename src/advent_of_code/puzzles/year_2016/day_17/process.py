@@ -34,7 +34,7 @@ class LocationState:
     length: int
 
 
-def find_vault(passcode: str) -> tuple[int | None, int | None]:
+def find_vault(passcode: str) -> tuple[str | None, int | None]:
     passcode_bytes = passcode.encode()
     q = deque([LocationState(location=START, path=b"", length=0)])
     shortest_path = None

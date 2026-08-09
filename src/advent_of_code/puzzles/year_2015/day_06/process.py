@@ -20,14 +20,14 @@ intersections.
 
 import dataclasses
 import enum
+import re
 from collections.abc import Callable
 from typing import Self
 from collections import defaultdict
 from advent_of_code.common import read_file, Coords, timed_run
 
-import parse
 
-STEP_TEMPLATE = "{instruction} {x_start:d},{y_start:d} through {x_end:d},{y_end:d}"
+STEP_PATTERN = r"(?P<instruction>.*) (?P<x_start>\d+),(?P<y_start>\d+) through (?P<x_end>\d+),(?P<y_end>\d+)"
 
 
 class Instruction(enum.Enum):
@@ -68,18 +68,19 @@ class Rectangle:
 def parse_steps(step_input: str) -> list[tuple[Rectangle, Instruction]]:
     steps = []
     for raw_step in step_input.splitlines():
-        parsed_step = parse.parse(STEP_TEMPLATE, raw_step)
+        parsed_step = re.fullmatch(STEP_PATTERN, raw_step)
+        assert parsed_step is not None
 
         steps.append(
             (
                 Rectangle(
                     start=Coords(
-                        parsed_step["x_start"],
-                        parsed_step["y_start"],
+                        int(parsed_step["x_start"]),
+                        int(parsed_step["y_start"]),
                     ),
                     end=Coords(
-                        parsed_step["x_end"],
-                        parsed_step["y_end"],
+                        int(parsed_step["x_end"]),
+                        int(parsed_step["y_end"]),
                     ),
                 ),
                 INSTRUCTION_MAP[parsed_step["instruction"]],
