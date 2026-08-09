@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from math import sqrt
 
 __all__ = [
+    "BaseCoords",
     "Coords",
     "START_COORDS",
     "Direction",
@@ -20,8 +21,8 @@ __all__ = [
 ]
 
 
-@dataclass(frozen=True, order=True)
-class Coords:
+@dataclass(frozen=True)
+class BaseCoords:
     x: int
     y: int
     z: int = 0
@@ -39,6 +40,11 @@ class Coords:
         return sqrt(
             (self.x - other.x) ** 2 + (self.y - other.y) ** 2 + (self.z - other.z) ** 2
         )
+
+
+@dataclass(frozen=True, order=True)
+class Coords(BaseCoords):
+    pass
 
 
 START_COORDS = Coords(0, 0)

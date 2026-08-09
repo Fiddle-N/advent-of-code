@@ -56,3 +56,13 @@ def crt(mod_ints: list[ModInt]) -> ModInt:
         mod_inv = pow(partial_product, -1, mod_int.mod)
         val += mod_int.val * partial_product * mod_inv
     return ModInt(val % total_modulus, total_modulus)
+
+
+def quad_formula(a: int, b: int, c: int) -> set[float]:
+    # assumes form ax^2 + bx + c = 0
+    if a == 0:
+        raise ValueError("Not quadratic")
+    b2_4ac = b**2 - 4 * a * c
+    positive_sol = (-b + b2_4ac**0.5) / (2 * a)
+    negative_sol = (-b - b2_4ac**0.5) / (2 * a)
+    return {positive_sol, negative_sol}
