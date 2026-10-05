@@ -13,10 +13,12 @@ __all__ = [
     "FOUR_POINT_DIRECTION_COORDS",
     "DIRECTION_LETTER_TO_DIRECTION",
     "DIRECTION_TO_DIRECTION_LETTER",
+    "FOUR_POINT_DIRECTIONS",
     "FOUR_POINT_CARDINAL_DIRECTIONS",
     "FOUR_POINT_DIRECTION_TO_COORDS",
     "FOUR_POINT_CARDINAL_DIRECTION_TO_COORDS",
     "EIGHT_POINT_DIRECTION_COORDS",
+    "turn_direction",
     "turn_cardinal_direction",
 ]
 
@@ -91,6 +93,9 @@ DIRECTION_TO_DIRECTION_LETTER = {
     Direction.LEFT: "L",
 }
 
+
+FOUR_POINT_DIRECTIONS = list(Direction)
+
 FOUR_POINT_CARDINAL_DIRECTIONS = list(CardinalDirection)
 
 
@@ -121,8 +126,15 @@ EIGHT_POINT_DIRECTION_COORDS = [
 ]
 
 
+def turn_direction(dir_: Direction, turn: Turn, no_of_turns: int = 1) -> Direction:
+    offset = -1 if turn == turn.LEFT else 1
+    dir_pos = FOUR_POINT_DIRECTIONS.index(dir_)
+    new_dir_pos = dir_pos + (offset * no_of_turns)
+    return FOUR_POINT_DIRECTIONS[new_dir_pos % 4]
+
+
 def turn_cardinal_direction(
-    dir_: CardinalDirection, turn: Turn, no_of_turns: int
+    dir_: CardinalDirection, turn: Turn, no_of_turns: int = 1
 ) -> CardinalDirection:
     offset = -1 if turn == turn.LEFT else 1
     dir_pos = FOUR_POINT_CARDINAL_DIRECTIONS.index(dir_)
