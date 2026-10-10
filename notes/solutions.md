@@ -19,3 +19,4 @@ When attempting to solve a problem but the solution will either be far too compl
 1. Is the real input set up differently from the example input such that you can choose a vastly more simplified/
    performant algorithm? Often, test inputs are red herrings; or meant to be illustrative of some trick that you would 
    need to understand the real algorithm to solve the puzzle.
+   1. For inputs that are assembly code, consider rewriting in pseudocode to better understand the script.
