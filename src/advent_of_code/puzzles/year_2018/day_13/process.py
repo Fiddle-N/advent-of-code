@@ -137,6 +137,7 @@ class TrackPiece:
             (next_location,) = next_locations.items()
             return next_location
         else:
+            assert direction is not None
             return direction, self.location + DIRECTION_COORDS[direction]
 
 

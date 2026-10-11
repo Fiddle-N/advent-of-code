@@ -65,8 +65,14 @@ class ChronalCharge:
         ):
             square_coords = itertools.product(*square_split_coords)
             (top_left,), square_coords = more_itertools.spy(square_coords)
-            power = sum(self.fuel_cells.map[Coords(x, y)] for x, y in square_coords)
-            powers[Coords(*top_left)] = power
+            power = 0
+            for x, y in square_coords:
+                assert x is not None
+                assert y is not None
+                power += self.fuel_cells.map[Coords(x, y)]
+            assert top_left[0] is not None
+            assert top_left[1] is not None
+            powers[Coords(top_left[0], top_left[1])] = power
         largest_power = max(powers, key=lambda coords: powers[coords])
         return largest_power.x, largest_power.y
 
