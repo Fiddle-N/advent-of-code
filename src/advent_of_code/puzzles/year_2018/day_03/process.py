@@ -1,55 +1,79 @@
-import itertools
-import collections
+import re
+from collections import Counter
+from itertools import product
+from dataclasses import dataclass
+
+from advent_of_code.common import (
+    read_file,
+    timed_run,
+    Coords,
+)
+
+CLAIM_PATTERN = r"#(?P<id>\d+) @ (?P<top_left_x>\d+),(?P<top_left_y>\d+): (?P<width>\d+)x(?P<height>\d+)"
 
 
-Claim = collections.namedtuple("Claim", "left_coord top_coord width height")
+@dataclass(frozen=True)
+class FabricClaim:
+    id: int
+    top_left: Coords
+    width: int
+    height: int
 
 
-def _create_square_grid(length):
-    tuple_grid = ((0,) * length,) * length
-    list_grid = list(list(row) for row in tuple_grid)
-    return list_grid
-
-
-def _read_claim(raw_claim):
-    id, area = raw_claim.split(" @ ")
-    coords, dimensions = area.split(": ")
-    left_coord, top_coord = coords.split(",")
-    width, height = dimensions.split("x")
-    return Claim(int(left_coord), int(top_coord), int(width), int(height))
-
-
-def _update_grid(grid, ranges):
-    top_range, left_range = ranges
-    for top_idx, left_idx in itertools.product(left_range, top_range):
-        grid[top_idx][left_idx] += 1
-
-
-def _generate_ranges(claim):
-    top_range = range(claim.top_coord, claim.top_coord + claim.height)
-    left_range = range(claim.left_coord, claim.left_coord + claim.width)
-    return top_range, left_range
-
-
-def _collate_overlaps(grid):
-    return sum((square >= 2) for row in grid for square in row)
-
-
-def main():
-    grid = _create_square_grid(1000)
-
+def parse(raw_claims: str) -> list[FabricClaim]:
     claims = []
-    with open("input.txt", "r") as f:
-        for raw_claim in f:
-            claims.append(_read_claim(raw_claim))
+    for raw_claim in raw_claims.splitlines():
+        match = re.fullmatch(CLAIM_PATTERN, raw_claim)
+        assert match is not None
+        claims.append(
+            FabricClaim(
+                id=int(match["id"]),
+                top_left=Coords(int(match["top_left_x"]), int(match["top_left_y"])),
+                width=int(match["width"]),
+                height=int(match["height"]),
+            )
+        )
+    return claims
 
-    claim_ranges = (_generate_ranges(claim) for claim in claims)
 
-    for ranges in claim_ranges:
-        _update_grid(grid, ranges)
+def _find_non_overlapping_id(
+    claims: list[FabricClaim],
+    claim_coords: list[list[tuple[int, int]]],
+    coord_counts: Counter[tuple[int, int]],
+):
+    for claim, coord_range in zip(claims, claim_coords):
+        if all(coord_counts[coord] == 1 for coord in coord_range):
+            return claim.id
+    raise ValueError("non-overlapping claim must be present")
 
-    overlaps = _collate_overlaps(grid)
-    return overlaps
+
+def calculate_overlaps_and_non_overlapping_id(
+    claims: list[FabricClaim],
+) -> tuple[int, int]:
+    claim_coords = []
+    for claim in claims:
+        width_range = range(claim.top_left.x, claim.top_left.x + claim.width)
+        height_range = range(claim.top_left.y, claim.top_left.y + claim.height)
+        claim_coords.append(list(product(width_range, height_range)))
+    coord_counts = Counter(
+        [coord for coord_range in claim_coords for coord in coord_range]
+    )
+
+    overlaps = sum((count >= 2) for count in coord_counts.values())
+    non_overlapping_id = _find_non_overlapping_id(claims, claim_coords, coord_counts)
+
+    return overlaps, non_overlapping_id
 
 
-print(main())
+def run():
+    raw_claims = read_file()
+    claims = parse(raw_claims)
+    print(calculate_overlaps_and_non_overlapping_id(claims))
+
+
+def main() -> None:
+    timed_run(run)
+
+
+if __name__ == "__main__":
+    main()
