@@ -1,31 +1,34 @@
 import string
 
-
-def _check_upper_or_lower(char1, char2):
-    return char1.swapcase() == char2
+from advent_of_code.common import read_file, timed_run
 
 
-def process_polymer(inpt):
-    output = []
-    for char in inpt:
-        if output and _check_upper_or_lower(char, output[-1]):
-            output.pop()
+def _react_polymer(polymer: str) -> str:
+    reactions = []
+    for unit in polymer:
+        if reactions and unit.swapcase() == reactions[-1]:
+            reactions.pop()
         else:
-            output.append(char)
-    return "".join(output)
+            reactions.append(unit)
+    return "".join(reactions)
 
 
-def main():
-    with open("input.txt", "r") as f:
-        inpt = f.read().rstrip()
-    output = process_polymer(inpt)
-    print(f"Puzzle_1 {len(output)}")
-
-    alleges = {
-        char: len(process_polymer(output.replace(char, "").replace(char.upper(), "")))
+def react_polymer(polymer: str) -> tuple[int, int]:
+    reacted_polymer = _react_polymer(polymer)
+    reacted_improved_polymers = [
+        _react_polymer(reacted_polymer.replace(char, "").replace(char.upper(), ""))
         for char in string.ascii_lowercase
-    }
-    print(f"Puzzle_2 {min(alleges.values())}")
+    ]
+    return len(reacted_polymer), len(min(reacted_improved_polymers, key=len))
+
+
+def run() -> None:
+    polymer = read_file()
+    print(react_polymer(polymer))
+
+
+def main() -> None:
+    timed_run(run)
 
 
 if __name__ == "__main__":
