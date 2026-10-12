@@ -1,117 +1,100 @@
-import collections
 import operator
-from datetime import datetime
 import re
+from collections import defaultdict, Counter
+from datetime import datetime
 
-SleepyCombo = collections.namedtuple("SleepyCombo", "minute count")
+from advent_of_code.common import read_file, timed_run
 
-
-def process_file(f):
-    log = {}
-    for line in f:
-        line = line.rstrip()
-        _, raw_dt, raw_action = re.split(
-            r"\[|] ", line
-        )  # splits on [, or on ] with a space followed
-        dt = datetime.strptime(raw_dt, "%Y-%m-%d %H:%M")
-        if dt in log:
-            raise Exception("this timestamp has already been seen")
-        log[dt] = raw_action
-    return {k: v for k, v in sorted(log.items(), key=operator.itemgetter(0))}
+LOG_PATTERN = r"\[(?P<timestamp>.+)\] (?P<entry>.+)"
+TIMESTAMP_PATTERN = "%Y-%m-%d %H:%M"
+GUARD_PATTERN = r"Guard #(?P<guard>\d+) begins shift"
 
 
-def process_log(log):
-    guard_log = collections.defaultdict(list)
+def _sort_log(raw_log: str) -> list[tuple[datetime, str]]:
+    timestamped_log = []
+    for log_line in raw_log.splitlines():
+        match = re.fullmatch(LOG_PATTERN, log_line)
+        assert match is not None
+        timestamp = datetime.strptime(match["timestamp"], "%Y-%m-%d %H:%M")
+        timestamped_log.append((timestamp, match["entry"]))
+    return sorted(timestamped_log, key=operator.itemgetter(0))
 
-    current_id = None
+
+def _transform_to_record(
+    sorted_log: list[tuple[datetime, str]],
+) -> dict[int, list[set[int]]]:
+    sleep_record = defaultdict(list)
+
+    current_guard = None
     start_min = None
     end_min = None
-    for idx, (dt, raw_log) in enumerate(log.items()):
-        if raw_log.startswith("Guard"):
-            # new day new guard
-            if (m := re.search(r"Guard #(\d+) begins shift", raw_log)) is not None:
-                id = m.group(1)
-                current_id = int(id)
-        elif raw_log == "falls asleep":
-            start_min = dt.minute
-        elif raw_log == "wakes up":
-            end_min = dt.minute
+
+    for timestamp, entry in sorted_log:
+        if (match := re.fullmatch(GUARD_PATTERN, entry)) is not None:
+            current_guard = int(match["guard"])
+        elif entry == "falls asleep":
+            start_min = timestamp.minute
+        elif entry == "wakes up":
+            end_min = timestamp.minute
         else:
-            raise Exception("should not get here")
+            raise ValueError("invalid entry")
         if start_min is not None and end_min is not None:
-            guard_log[current_id].append(set(range(start_min, end_min)))
+            sleep_record[current_guard].append(set(range(start_min, end_min)))
             start_min = None
             end_min = None
 
-    return dict(guard_log)
+    return dict(sleep_record)
 
 
-def retrieve_minutes_asleep(guard_log):
-    minutes_asleep = {}
-    for id, asleep_ranges in guard_log.items():
-        minutes_asleep_for_guard = sum(
-            len(asleep_range) for asleep_range in asleep_ranges
-        )
-        minutes_asleep[id] = minutes_asleep_for_guard
-    return minutes_asleep
-
-
-def retrieve_minute_sleep_count(ranges):
-    minute_sleep_count = collections.defaultdict(int)
-    for range in ranges:
-        for minute in range:
-            minute_sleep_count[minute] += 1
-    return minute_sleep_count
-
-
-def key_for_max_value(d):
-    return max(d.items(), key=operator.itemgetter(1))[0]
-
-
-def key_and_max_value(d):
-    max_combo = max(d.items(), key=operator.itemgetter(1))
-    return max_combo[0], max_combo[1]
-
-
-def key_for_max_value_at_end_of_nested_tuple(d):
-    tpl = max(d.items(), key=lambda x: x[1][1])
-    return tpl[0], tpl[1]
-
-
-def retrieve_guards_and_sleepiest_minutes(log):
-    guards_and_sleepiest_minutes = {}
-    for id, ranges in log.items():
-        minute_sleep_count = retrieve_minute_sleep_count(ranges)
-        sleepiest_min_count = key_and_max_value(minute_sleep_count)
-        sleepiest_min_count = SleepyCombo(*sleepiest_min_count)
-        guards_and_sleepiest_minutes[id] = sleepiest_min_count
-    return guards_and_sleepiest_minutes
-
-
-def main():
-    with open("input.txt", "r") as f:
-        raw_log = process_file(f)
-
-    log = process_log(raw_log)
-
-    minutes_asleep = retrieve_minutes_asleep(log)
-    sleepiest_guard = key_for_max_value(minutes_asleep)
-    print(f"sleepiest_guard {sleepiest_guard}")
-
-    sleepiest_ranges = log[sleepiest_guard]
-    minute_sleep_count = retrieve_minute_sleep_count(sleepiest_ranges)
-    sleepiest_minute = key_for_max_value(minute_sleep_count)
-    print(f"sleepiest_minute {sleepiest_minute}")
-
-    print(f"answer_1 {sleepiest_guard * sleepiest_minute}")
-
-    sleepiest_minute_log = retrieve_guards_and_sleepiest_minutes(log)
-    sleepiest_minute_guard, combo = key_for_max_value_at_end_of_nested_tuple(
-        sleepiest_minute_log
+def calculate_sleepiest_strategy(
+    sleep_record: dict[int, list[set[int]]],
+) -> tuple[int, int]:
+    minutes_asleep = Counter(
+        {
+            guard: sum(len(asleep_range) for asleep_range in asleep_ranges)
+            for guard, asleep_ranges in sleep_record.items()
+        }
     )
-    print(f"sleepiest_minute_guard {sleepiest_minute_guard}")
-    print(f"sleepiest_minute_guard_minute {combo.minute}")
-    print(f"answer_2 {sleepiest_minute_guard * combo.minute}")
+
+    minutes_asleep_count = {}
+    for guard, asleep_ranges in sleep_record.items():
+        count = Counter()
+        for asleep_range in asleep_ranges:
+            count.update(asleep_range)
+        minutes_asleep_count[guard] = count
+
+    sleepiest_guard = minutes_asleep.most_common(1)[0][0]
+    sleepiest_guard_sleepiest_minute = minutes_asleep_count[
+        sleepiest_guard
+    ].most_common(1)[0][0]
+
+    guards_sleepiest_minute = {
+        guard: count.most_common(1)[0] for guard, count in minutes_asleep_count.items()
+    }
+
+    (sleepiest_minute_guard, (sleepiest_minute, _)) = max(
+        guards_sleepiest_minute.items(), key=lambda sleepiest_min: sleepiest_min[1][1]
+    )
+
+    return (sleepiest_guard * sleepiest_guard_sleepiest_minute), (
+        sleepiest_minute_guard * sleepiest_minute
+    )
+
+
+def parse_to_record(raw_log: str):
+    sorted_log = _sort_log(raw_log)
+    sleep_record = _transform_to_record(sorted_log)
+    return sleep_record
+
+
+def run():
+    raw_log = read_file()
+    sleep_record = parse_to_record(raw_log)
+    print(calculate_sleepiest_strategy(sleep_record))
+
+
+def main() -> None:
+    timed_run(run)
 
 
 if __name__ == "__main__":
