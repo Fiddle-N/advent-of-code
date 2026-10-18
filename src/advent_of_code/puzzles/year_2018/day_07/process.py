@@ -2,7 +2,7 @@ import re
 import collections
 import copy
 import string
-import dataclasses
+from dataclasses import dataclass
 from itertools import count
 
 from advent_of_code.common import read_file, timed_run
@@ -22,7 +22,7 @@ def parse_dependencies(raw_dependencies: str) -> dict[str, list[str]]:
     return dict(deps)
 
 
-@dataclasses.dataclass
+@dataclass
 class Worker:
     number: int
     _seconds_remaining: int = 0
