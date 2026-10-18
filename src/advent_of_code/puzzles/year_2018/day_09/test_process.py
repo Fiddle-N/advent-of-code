@@ -15,7 +15,9 @@ from advent_of_code.puzzles.year_2018.day_09 import process
     ],
 )
 def test_marble_game(n_players: int, last_marble_pts, winning_score: int) -> None:
-    marble_game = process.MarbleGame(
-        process.MarbleGameConditions(n_players, last_marble_pts)
+    assert (
+        process.play_marble_game(
+            process.MarbleGameConditions(n_players, last_marble_pts)
+        )
+        == winning_score
     )
-    assert marble_game.play() == winning_score

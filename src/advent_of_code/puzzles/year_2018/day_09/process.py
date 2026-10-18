@@ -31,33 +31,31 @@ class Player:
     score: int = 0
 
 
-class MarbleGame:
-    def __init__(self, conditions: MarbleGameConditions, marble_multiplier: int = 1):
-        self.circle = deque()
-        self.players = [Player(player_no) for player_no in range(conditions.n_players)]
-        self.last_marble_pts = conditions.last_marble_pts * marble_multiplier
+def play_marble_game(
+    conditions: MarbleGameConditions, marble_multiplier: int = 1
+) -> int:
+    circle = deque()
+    players = [Player(player_no) for player_no in range(conditions.n_players)]
+    last_marble_pts = conditions.last_marble_pts * marble_multiplier
 
-    def play(self) -> int:
-        for marble, player in enumerate(cycle(self.players)):
-            if marble and (marble % 23 == 0):
-                self.circle.rotate(7)
-                player.score += self.circle.pop() + marble
-                self.circle.rotate(-1)
-            else:
-                self.circle.rotate(-1)
-                self.circle.append(marble)
-            if marble == self.last_marble_pts:
-                return max(self.players, key=lambda player_: player_.score).score
-        raise ValueError("Zero players is not allowed")
+    for marble, player in enumerate(cycle(players)):
+        if marble and (marble % 23 == 0):
+            circle.rotate(7)
+            player.score += circle.pop() + marble
+            circle.rotate(-1)
+        else:
+            circle.rotate(-1)
+            circle.append(marble)
+        if marble == last_marble_pts:
+            return max(players, key=lambda player_: player_.score).score
+    raise ValueError("Zero players is not allowed")
 
 
 def run() -> None:
     raw_conditions = read_file()
     conditions = parse_game_conditions(raw_conditions)
-    game_1 = MarbleGame(conditions)
-    print(game_1.play())
-    game_2 = MarbleGame(conditions, marble_multiplier=100)
-    print(game_2.play())
+    print(play_marble_game(conditions))
+    print(play_marble_game(conditions, marble_multiplier=100))
 
 
 def main() -> None:
