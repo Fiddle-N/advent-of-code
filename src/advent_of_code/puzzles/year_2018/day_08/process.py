@@ -1,20 +1,21 @@
 import collections
 import dataclasses
-import timeit
-import typing
+from typing import Sequence
+
+from advent_of_code.common import read_file, timed_run
 
 
 @dataclasses.dataclass
 class Node:
-    children: typing.Sequence["Node"]
-    metadata: typing.Sequence[int]
+    children: Sequence[Node]
+    metadata: Sequence[int]
 
     @property
-    def metadata_sum(self):
+    def metadata_sum(self) -> int:
         return sum([node.metadata_sum for node in self.children]) + sum(self.metadata)
 
     @property
-    def value(self):
+    def value(self) -> int:
         if self.children:
             values = []
             for metadatum in self.metadata:
@@ -28,29 +29,28 @@ class Node:
 
 
 class TreeParser:
-    def __init__(self, raw_nodes):
-        nodes = [int(node) for node in raw_nodes.split()]
-        self._nodes = collections.deque(nodes)
+    def __init__(self, data: str):
+        self._data = collections.deque([int(no) for no in data.split()])
 
-    @classmethod
-    def read_file(cls):
-        with open("input.txt") as f:
-            return cls(f.read())
-
-    def parse(self):
-        children_no = self._nodes.popleft()
-        metadata_no = self._nodes.popleft()
-        children = [self.parse() for _ in range(children_no)]
-        metadata = [self._nodes.popleft() for _ in range(metadata_no)]
+    def parse(self) -> Node:
+        raw_children = self._data.popleft()
+        raw_metadata = self._data.popleft()
+        children = [self.parse() for _ in range(raw_children)]
+        metadata = [self._data.popleft() for _ in range(raw_metadata)]
         return Node(children, metadata)
 
 
-def main():
-    tree_parser = TreeParser.read_file()
+def run() -> None:
+    data = read_file()
+    tree_parser = TreeParser(data)
     tree = tree_parser.parse()
-    print(f"Metadata sum: {tree.metadata_sum}")
-    print(f"Root node value: {tree.value}")
+    print(tree.metadata_sum)
+    print(tree.value)
+
+
+def main() -> None:
+    timed_run(run)
 
 
 if __name__ == "__main__":
-    print(f"Completed in {timeit.timeit(main, number=1)} seconds")
+    main()
