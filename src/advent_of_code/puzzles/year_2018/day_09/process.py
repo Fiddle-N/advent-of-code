@@ -1,64 +1,68 @@
-import collections
-import dataclasses
-import itertools
-import re
-import timeit
+from collections import deque
+from dataclasses import dataclass
+from itertools import cycle
+from re import fullmatch
+
+from advent_of_code.common import read_file, timed_run
 
 
-@dataclasses.dataclass
-class Marble:
-    previous: int
-    next: int
+CONDITIONS_PATTERN = (
+    r"(?P<n_players>\d+) players; last marble is worth (?P<last_marble_pts>\d+) points"
+)
 
 
-@dataclasses.dataclass
-class Elf:
+@dataclass(frozen=True)
+class MarbleGameConditions:
+    n_players: int
+    last_marble_pts: int
+
+
+def parse_game_conditions(raw_conditions: str) -> MarbleGameConditions:
+    conditions_match = fullmatch(CONDITIONS_PATTERN, raw_conditions)
+    assert conditions_match
+    return MarbleGameConditions(
+        int(conditions_match["n_players"]), int(conditions_match["last_marble_pts"])
+    )
+
+
+@dataclass
+class Player:
     number: int
     score: int = 0
 
 
 class MarbleGame:
-    def __init__(self, elves, last_marble):
-        self.circle = collections.deque()
-        self.elves = [Elf(elf_no) for elf_no in range(elves)]
-        self.last_marble = last_marble
+    def __init__(self, conditions: MarbleGameConditions, marble_multiplier: int = 1):
+        self.circle = deque()
+        self.players = [Player(player_no) for player_no in range(conditions.n_players)]
+        self.last_marble_pts = conditions.last_marble_pts * marble_multiplier
 
-    @classmethod
-    def from_string(cls, string, marble_multiplier=1):
-        if match := re.fullmatch(
-            r"(\d+) players; last marble is worth (\d+) points", string
-        ):
-            return cls(int(match.group(1)), int(match.group(2)) * marble_multiplier)
-        else:
-            raise Exception
-
-    @classmethod
-    def read_file(cls, marble_multiplier=1):
-        with open("input.txt") as f:
-            return cls.from_string(f.read().rstrip(), marble_multiplier)
-
-    def play(self):
-        for marble, elf in enumerate(itertools.cycle(self.elves)):
+    def play(self) -> int:
+        for marble, player in enumerate(cycle(self.players)):
             if marble and (marble % 23 == 0):
                 self.circle.rotate(7)
-                elf.score += self.circle.pop() + marble
+                player.score += self.circle.pop() + marble
                 self.circle.rotate(-1)
             else:
                 self.circle.rotate(-1)
                 self.circle.append(marble)
-            if marble == self.last_marble:
-                return max(self.elves, key=lambda elf_: elf_.score).score
+            if marble == self.last_marble_pts:
+                return max(self.players, key=lambda player_: player_.score).score
+        raise ValueError("Zero players is not allowed")
 
 
-def main():
-    marble_game = MarbleGame.read_file()
-    print(f"Winning elf's score: {marble_game.play()}")
+def run() -> None:
+    raw_conditions = read_file()
+    conditions = parse_game_conditions(raw_conditions)
+    game_1 = MarbleGame(conditions)
+    print(game_1.play())
+    game_2 = MarbleGame(conditions, marble_multiplier=100)
+    print(game_2.play())
 
-    marble_game_2 = MarbleGame.read_file(marble_multiplier=100)
-    print(
-        f"Winning elf's score with last marble 100 times larger: {marble_game_2.play()}"
-    )
+
+def main() -> None:
+    timed_run(run)
 
 
 if __name__ == "__main__":
-    print(f"Completed in {timeit.timeit(main, number=1)} seconds")
+    main()
