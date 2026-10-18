@@ -1,123 +1,119 @@
-import dataclasses
-import re
-import timeit
+from dataclasses import dataclass
+from typing import Literal
+from re import fullmatch
+
+from advent_of_code.common import BaseCoords, read_file, timed_run
 
 
-@dataclasses.dataclass(frozen=True)
-class Coords:
-    x: int
-    y: int
+POINT_PATTERN = r"position=<(?P<position_x>.*), (?P<position_y>.*)> velocity=<(?P<velocity_x>.*), (?P<velocity_y>.*)>"
 
-    def __add__(self, other):
-        return Coords(self.x + other.x, self.y + other.y)
+Position = BaseCoords
+Velocity = BaseCoords
 
 
-@dataclasses.dataclass
+@dataclass
 class Point:
-    position: Coords
-    velocity: Coords
+    position: Position
+    velocity: Velocity
 
 
-class Points(list):
-    POINT = "#"
-    SPACE = "."
+class Points(list[Point]):
+    _POINT = "#"
+    _SPACE = "."
+    _P_POINT = "██"
+    _P_SPACE = "  "
 
-    @property
-    def min_position_x(self):
-        return min(self, key=lambda point: point.position.x).position.x
+    _BOUNDARY_FNS = {"min": min, "max": max}
 
-    @property
-    def max_position_x(self):
-        return max(self, key=lambda point: point.position.x).position.x
-
-    @property
-    def min_position_y(self):
-        return min(self, key=lambda point: point.position.y).position.y
-
-    @property
-    def max_position_y(self):
-        return max(self, key=lambda point: point.position.y).position.y
+    def _get_boundary_val(
+        self, boundary: Literal["min", "max"], axis: Literal["x", "y"]
+    ) -> int:
+        boundary_fn = self._BOUNDARY_FNS[boundary]
+        return getattr(
+            boundary_fn(self, key=lambda point: getattr(point.position, axis)).position,
+            axis,
+        )
 
     @property
-    def area(self):
+    def min_position_x(self) -> int:
+        return self._get_boundary_val("min", "x")
+
+    @property
+    def max_position_x(self) -> int:
+        return self._get_boundary_val("max", "x")
+
+    @property
+    def min_position_y(self) -> int:
+        return self._get_boundary_val("min", "y")
+
+    @property
+    def max_position_y(self) -> int:
+        return self._get_boundary_val("max", "y")
+
+    @property
+    def area(self) -> int:
         return (self.max_position_x - self.min_position_x) * (
             self.max_position_y - self.min_position_y
         )
 
-    def image(self):
+    def _render(self, point_px: str, space_px: str) -> str:
         positions = {point.position for point in self}
-        raw_image = []
-        for y in range(self.min_position_y, self.max_position_y + 1):
-            row = []
-            for x in range(self.min_position_x, self.max_position_x + 1):
-                row.append(self.POINT if Coords(x, y) in positions else self.SPACE)
-            raw_image.append("".join(row))
-        return "\n".join(raw_image)
+        return "\n".join(
+            "".join(
+                [
+                    point_px if Position(x, y) in positions else space_px
+                    for x in range(self.min_position_x, self.max_position_x + 1)
+                ]
+            )
+            for y in range(self.min_position_y, self.max_position_y + 1)
+        )
+
+    def __str__(self) -> str:
+        return self._render(self._POINT, self._SPACE)
+
+    def render(self) -> str:
+        return self._render(self._P_POINT, self._P_SPACE)
 
 
-class Stars:
-    def __init__(self, points):
-        self.points = points
-
-    @classmethod
-    def from_string(cls, text):
-        points = Points()
-        for line in text.splitlines():
-            if match := re.fullmatch(
-                r"position=<(?P<position_x>.*), (?P<position_y>.*)> velocity=<(?P<velocity_x>.*), (?P<velocity_y>.*)>",
-                line,
-            ):
-                position = Coords(
-                    int(match.group("position_x")), int(match.group("position_y"))
-                )
-                velocity = Coords(
-                    int(match.group("velocity_x")), int(match.group("velocity_y"))
-                )
-                points.append(Point(position, velocity))
-            else:
-                raise Exception
-        return cls(points)
-
-    @classmethod
-    def read_file(cls):
-        with open("input.txt") as f:
-            return cls.from_string(f.read())
-
-    def align(self, yield_image=False):
-        iteration = 0
-        points = self.points
-        while True:
-            next_points = Points()
-            for point in points:
-                next_position = point.position + point.velocity
-                next_points.append(
-                    Point(position=next_position, velocity=point.velocity)
-                )
-            if next_points.area > points.area:
-                if not yield_image:
-                    yield points.image()
-                return iteration
-            if yield_image:
-                yield next_points.image()
-            else:
-                yield
-            points = next_points
-            iteration += 1
+def parse_points(raw_points: str) -> Points:
+    points = Points()
+    for raw_point in raw_points.splitlines():
+        point_match = fullmatch(POINT_PATTERN, raw_point)
+        assert point_match
+        position = Position(
+            int(point_match["position_x"]), int(point_match["position_y"])
+        )
+        velocity = Velocity(
+            int(point_match["velocity_x"]), int(point_match["velocity_y"])
+        )
+        points.append(Point(position, velocity))
+    return points
 
 
-def main():
-    stars = Stars.read_file()
-    iter_align = stars.align()
-    message = None
-    try:
-        while True:
-            message = next(iter_align)
-    except StopIteration as e:
-        number_of_seconds = e.value
-    print("Message:")
-    print(message)
-    print("Number of seconds:", number_of_seconds)
+def align_points(points: Points) -> tuple[Points, int]:
+    seconds = 0
+    while True:
+        next_points = Points()
+        for point in points:
+            next_position = point.position + point.velocity
+            next_points.append(Point(position=next_position, velocity=point.velocity))
+        if next_points.area > points.area:
+            return points, seconds
+        points = next_points
+        seconds += 1
+
+
+def run() -> None:
+    raw_points = read_file()
+    points = parse_points(raw_points)
+    message_points, seconds_taken = align_points(points)
+    print(message_points.render())
+    print(seconds_taken)
+
+
+def main() -> None:
+    timed_run(run)
 
 
 if __name__ == "__main__":
-    print(f"Completed in {timeit.timeit(main, number=1)} seconds")
+    main()
